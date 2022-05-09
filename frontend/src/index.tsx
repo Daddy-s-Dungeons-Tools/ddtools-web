@@ -9,6 +9,7 @@ import "./services/firebase";
 
 import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LoginPage from "./pages/LoginPage/LoginPage";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
@@ -18,7 +19,7 @@ root.render(
       <Router>
         <Routes>
           <Route path="/" element={<App />}>
-            <Route index element={<p>Home</p>} />
+            <Route index element={<LoginPage />} />
             <Route path="*" element={<p>Page not found!</p>} />
           </Route>
         </Routes>
