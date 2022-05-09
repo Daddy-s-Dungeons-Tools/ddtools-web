@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { sendSignInLinkToEmail } from "firebase/auth";
 import { auth } from "../../services/firebase";
+import { useSignInWithEmailLink } from "../../hooks/firebase";
 
 enum SignInLinkStatus {
   SENT,
@@ -22,6 +23,9 @@ export default function LoginPage() {
   const [signInLinkStatus, setSignInLinkStatus] = useState<SignInLinkStatus>(
     SignInLinkStatus.NOT_SENT
   );
+
+  // Checks if URL is a sign in url (user clicked on sign in link from email and ended up here)
+  const signInError = useSignInWithEmailLink();
 
   /** Login handler that sends sign-in email with Firebase */
   const handleLoginFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
