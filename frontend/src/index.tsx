@@ -8,13 +8,21 @@ import App from "./App";
 import "./services/firebase";
 
 import "./index.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <App />
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<p>Home</p>} />
+            <Route path="*" element={<p>Page not found!</p>} />
+          </Route>
+        </Routes>
+      </Router>
     </ChakraProvider>
   </React.StrictMode>
 );
