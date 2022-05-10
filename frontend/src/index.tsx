@@ -10,16 +10,21 @@ import "./services/firebase";
 import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
+import theme from "./services/theme";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Router>
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<LoginPage />} />
+            <Route path="campaigns">
+              <Route index element={<CampaignsPage />} />
+            </Route>
             <Route path="*" element={<p>Page not found!</p>} />
           </Route>
         </Routes>
