@@ -1,10 +1,12 @@
-import { Flex, Box, Text } from "@chakra-ui/react";
+import { Flex, Box, Text, Button, Spacer } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
 
 export default function TopNavbar() {
   const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
 
   return (
     <Flex
@@ -22,15 +24,24 @@ export default function TopNavbar() {
         </Text>
       </Box>
 
+      <Spacer />
+
       {user ? (
         <>
-          <Text display={"block"} onClick={() => signOut(auth)}>
+          <Text display={"block"} onClick={() => signOut(auth)} mx="2">
             Logged in as <strong>{user.displayName ?? user.email}</strong> |
-            Sign-out
           </Text>
+          <Button colorScheme="teal">Sign out</Button>
         </>
       ) : (
-        <Text display={"block"}>Not signed in</Text>
+        <>
+          <Text display={"block"} mx="2">
+            Not signed in
+          </Text>
+          <Button colorScheme="teal" onClick={() => navigate("/")}>
+            Sign in
+          </Button>
+        </>
       )}
     </Flex>
   );

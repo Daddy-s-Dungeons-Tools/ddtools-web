@@ -80,7 +80,7 @@ export default function LoginPage() {
 
   return (
     <Container maxW="container.md">
-      <Heading>Daddy's Dungeon Tools</Heading>
+      <Heading mb="5">Daddy's Dungeon Tools</Heading>
 
       <form id="login-form" onSubmit={handleLoginFormSubmit}>
         <FormControl>
