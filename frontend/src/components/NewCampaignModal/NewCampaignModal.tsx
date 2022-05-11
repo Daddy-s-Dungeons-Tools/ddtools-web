@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   useToast,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { addCampaign } from "../../services/api";
 
 type NewCampaignModalPropTypes = {
@@ -20,12 +21,18 @@ type NewCampaignModalPropTypes = {
   onClose: () => void;
 };
 export function NewCampaignModal(props: NewCampaignModalPropTypes) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
 
   const handleNewCampaignFormSubmit: React.FormEventHandler<
     HTMLFormElement
   > = async (event) => {
     event.preventDefault();
+
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
 
     // Grab the email and trim whitespace
     const campaignName: string = event.currentTarget.campaignName.value.trim();
@@ -46,7 +53,9 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
           <p>
             You have created a new campaign
             {campaignDMInviteEmails.length
-              ? `and have invited ${campaignDMInviteEmails.join(", ")}.`
+              ? ` and have invited ${campaignDMInviteEmails.join(
+                  ", "
+                )} to co-DM.`
               : "."}
           </p>
         ),
@@ -64,6 +73,8 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,6 +91,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
               <Input
                 name="campaignName"
                 placeholder="Cooky Name Here"
+                isReadOnly={isLoading}
                 required
               />
             </FormControl>
@@ -91,6 +103,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
                 type="email"
                 name="campaignDMInviteEmails"
                 placeholder="DM email addresses"
+                isReadOnly={isLoading}
               />
               <FormHelperText>
                 Optional. You can add DMs later as well.
@@ -98,7 +111,12 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme={"purple"} type="submit">
+            <Button
+              colorScheme={"purple"}
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Creating..."
+            >
               Create
             </Button>
           </ModalFooter>
