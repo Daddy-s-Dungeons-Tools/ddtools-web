@@ -9,6 +9,7 @@ import {
   Button,
   Skeleton,
   Stack,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -17,6 +18,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
+import { campaignConverter } from "../../services/converter";
 
 type PlayerCampaignBoxPropTypes = {
   campaign: Campaign;
@@ -84,24 +86,53 @@ function DMCampaignBox({ campaign }: DMCampaignBoxPropTypes) {
 }
 
 export default function CampaignsPage() {
+  useProtectedRoute();
+
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     useState<boolean>(false);
+
+  // Player data
   const [playerCampaigns, isPlayerCampaignsLoading, playerCampaignsError] =
     useCollectionData(
       query(
         collection(firestore, "campaigns"),
         where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null)
-      )
+      ).withConverter(campaignConverter)
     );
+  const [
+    playerCampaignInvites,
+    isPlayerCampaignInvitesLoading,
+    playerCampaignInvitesError,
+  ] = useCollectionData(
+    query(
+      collection(firestore, "campaigns"),
+      where(
+        "playerInviteEmails",
+        "array-contains",
+        auth.currentUser?.email ?? null
+      )
+    ).withConverter(campaignConverter)
+  );
+
+  // DM data
   const [dmCampaigns, isDMCampaignsLoading, dmCampaignsError] =
     useCollectionData(
       query(
         collection(firestore, "campaigns"),
         where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null)
-      )
+      ).withConverter(campaignConverter)
     );
 
-  useProtectedRoute();
+  const [
+    dmCampaignInvites,
+    isDMCampaignInvitesLoading,
+    dmCampaignInvitesError,
+  ] = useCollectionData(
+    query(
+      collection(firestore, "campaigns"),
+      where("dmInviteEmails", "array-contains", auth.currentUser?.email ?? null)
+    ).withConverter(campaignConverter)
+  );
 
   return (
     <Container maxW="container.lg">
@@ -128,15 +159,21 @@ export default function CampaignsPage() {
             ))
           )}
 
-          <Button minW="100%" disabled>
-            No Pending Invites
-          </Button>
+          {playerCampaignInvites?.length ? (
+            <Button minW="100%" colorScheme="teal">
+              View {playerCampaignInvites.length} Pending{" "}
+              {playerCampaignInvites.length > 1 ? "Invites" : "Invite"}
+            </Button>
+          ) : (
+            <Button minW="100%" disabled>
+              No Pending Invites
+            </Button>
+          )}
         </VStack>
 
         {/* DM listing */}
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your DM Campaigns</Heading>
-
           {isDMCampaignsLoading ? (
             <Stack w="100%">
               <Skeleton height="130px" />
@@ -150,9 +187,25 @@ export default function CampaignsPage() {
             ))
           )}
 
-          <Button minW="100%" onClick={() => setIsNewCampaignModalOpen(true)}>
-            Start Campaign
-          </Button>
+          <Flex width="100%">
+            {dmCampaignInvites?.length ? (
+              <Button minW="100%" colorScheme="teal" flex={"1"}>
+                View {dmCampaignInvites.length} Pending{" "}
+                {dmCampaignInvites.length > 1 ? "Invites" : "Invite"}
+              </Button>
+            ) : (
+              <Button disabled flex={"1"}>
+                No Pending DM Invites
+              </Button>
+            )}
+            <Button
+              ml={"2"}
+              onClick={() => setIsNewCampaignModalOpen(true)}
+              flex={"1"}
+            >
+              Start Campaign
+            </Button>
+          </Flex>
         </VStack>
       </Flex>
     </Container>
