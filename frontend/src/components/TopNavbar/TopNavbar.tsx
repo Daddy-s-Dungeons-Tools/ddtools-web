@@ -1,8 +1,10 @@
-import { Flex, Box, Text, Button, Spacer } from "@chakra-ui/react";
+import { Flex, Box, Text, Button, Spacer, Link } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
+
+import { Link as ReactRouterLink } from "react-router-dom";
 
 export default function TopNavbar() {
   const [user, loading, error] = useAuthState(auth);
@@ -18,11 +20,14 @@ export default function TopNavbar() {
       mb={8}
       p={8}
     >
-      <Box>
+      <Box mr="10">
         <Text fontSize={"lg"} fontWeight="bold">
           DDTools
         </Text>
       </Box>
+      <Link as={ReactRouterLink} to="/campaigns">
+        Campaigns
+      </Link>
 
       <Spacer />
 
