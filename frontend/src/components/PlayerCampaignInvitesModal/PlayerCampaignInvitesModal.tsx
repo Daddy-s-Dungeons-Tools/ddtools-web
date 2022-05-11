@@ -16,6 +16,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
+import { useState } from "react";
 import {
   addPlayersToCampaign,
   removePlayerCampaignInvites,
@@ -23,8 +24,15 @@ import {
 import { auth } from "../../services/firebase";
 
 function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
+
   const handleAcceptInvite = async () => {
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
     try {
       await Promise.allSettled([
         addPlayersToCampaign(
@@ -64,6 +72,8 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,7 +108,12 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
               <Text>{campaign.description ?? "No description provided."}</Text>
             </Box>
             <ButtonGroup size="sm">
-              <Button colorScheme="teal" onClick={handleAcceptInvite}>
+              <Button
+                colorScheme="teal"
+                onClick={handleAcceptInvite}
+                isLoading={isLoading}
+                loadingText="Accepting..."
+              >
                 Accept
               </Button>
               <Button>Decline</Button>
