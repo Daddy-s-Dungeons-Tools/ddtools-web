@@ -39,8 +39,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
       toast({
         title: (
           <span>
-            {" "}
-            "Created campaign <strong>{campaignName}</strong>
+            Created campaign <strong>{campaignName}</strong>
           </span>
         ),
         description: (
