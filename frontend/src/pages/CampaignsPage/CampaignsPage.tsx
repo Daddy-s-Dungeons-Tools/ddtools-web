@@ -18,7 +18,10 @@ import { collection, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 
-function PlayerCampaignBox() {
+type PlayerCampaignBoxPropTypes = {
+  campaign: Campaign;
+};
+function PlayerCampaignBox({ campaign }: PlayerCampaignBoxPropTypes) {
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" overflow="hidden">
       <Flex>
@@ -28,7 +31,7 @@ function PlayerCampaignBox() {
           alt=""
         />
         <Box p={6}>
-          <Text>Silly Campaign Title</Text>
+          <Text>{campaign.name}</Text>
           <Heading size="md" mb="8">
             Atreyu, Level 9 Human Monk
           </Heading>
@@ -39,7 +42,8 @@ function PlayerCampaignBox() {
             fontSize="xs"
             textTransform="uppercase"
           >
-            8 players | 30 sessions | DMed by Aaron Reers
+            {campaign.playerUserIds?.length ?? 0} players | ?? sessions | DMed
+            by ??
           </Box>
         </Box>
       </Flex>
@@ -82,11 +86,18 @@ function DMCampaignBox({ campaign }: DMCampaignBoxPropTypes) {
 export default function CampaignsPage() {
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     useState<boolean>(false);
+  const [playerCampaigns, isPlayerCampaignsLoading, playerCampaignsError] =
+    useCollectionData(
+      query(
+        collection(firestore, "campaigns"),
+        where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null)
+      )
+    );
   const [dmCampaigns, isDMCampaignsLoading, dmCampaignsError] =
     useCollectionData(
       query(
         collection(firestore, "campaigns"),
-        where("dmUserIds", "array-contains", auth.currentUser?.uid)
+        where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null)
       )
     );
 
@@ -104,7 +115,18 @@ export default function CampaignsPage() {
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your Player Campaigns</Heading>
 
-          <PlayerCampaignBox />
+          {isPlayerCampaignsLoading ? (
+            <Stack w="100%">
+              <Skeleton height="130px" />
+            </Stack>
+          ) : (
+            playerCampaigns?.map((campaign) => (
+              <PlayerCampaignBox
+                key={campaign.id}
+                campaign={campaign as Campaign}
+              />
+            ))
+          )}
 
           <Button minW="100%" disabled>
             No Pending Invites
