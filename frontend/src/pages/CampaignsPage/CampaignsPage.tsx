@@ -19,6 +19,7 @@ import { collection, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
+import { PlayerCampaignInvitesModal } from "../../components/PlayerCampaignInvitesModal/PlayerCampaignInvitesModal";
 
 type PlayerCampaignBoxPropTypes = {
   campaign: Campaign;
@@ -90,6 +91,10 @@ export default function CampaignsPage() {
 
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     useState<boolean>(false);
+  const [
+    isPlayerCampaignInvitesModalOpen,
+    setIsPlayerCampaignInvitesModalOpen,
+  ] = useState<boolean>(false);
 
   // Player data
   const [playerCampaigns, isPlayerCampaignsLoading, playerCampaignsError] =
@@ -140,6 +145,11 @@ export default function CampaignsPage() {
         isOpen={isNewCampaignModalOpen}
         onClose={() => setIsNewCampaignModalOpen(false)}
       />
+      <PlayerCampaignInvitesModal
+        isOpen={isPlayerCampaignInvitesModalOpen}
+        onClose={() => setIsPlayerCampaignInvitesModalOpen(false)}
+        campaignInvites={playerCampaignInvites ?? []}
+      />
 
       <Flex w="100%">
         {/* Player listing */}
@@ -160,7 +170,11 @@ export default function CampaignsPage() {
           )}
 
           {playerCampaignInvites?.length ? (
-            <Button minW="100%" colorScheme="teal">
+            <Button
+              minW="100%"
+              colorScheme="teal"
+              onClick={() => setIsPlayerCampaignInvitesModalOpen(true)}
+            >
               View {playerCampaignInvites.length} Pending{" "}
               {playerCampaignInvites.length > 1 ? "Invites" : "Invite"}
             </Button>

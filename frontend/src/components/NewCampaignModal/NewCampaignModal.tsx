@@ -27,9 +27,6 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
   > = async (event) => {
     event.preventDefault();
 
-    console.log("ere");
-    console.log(event.currentTarget);
-
     // Grab the email and trim whitespace
     const campaignName: string = event.currentTarget.campaignName.value.trim();
     const campaignDMInviteEmails: string[] =
