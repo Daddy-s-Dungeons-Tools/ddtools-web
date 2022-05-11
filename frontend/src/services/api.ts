@@ -1,4 +1,5 @@
 import { collection, doc, setDoc } from "firebase/firestore";
+import { campaignConverter } from "./converter";
 import { auth, firestore } from "./firebase";
 
 export function addCampaign(name: string, dmInviteEmails: string[]) {
@@ -7,10 +8,18 @@ export function addCampaign(name: string, dmInviteEmails: string[]) {
   const docId = name.toLowerCase().replaceAll(" ", "-");
 
   // TODO: CHECK IF DOCID ALREADY EXISTS
+  const col = collection(firestore, "campaigns").withConverter(
+    campaignConverter
+  );
 
-  return setDoc(doc(collection(firestore, "campaigns"), docId), {
+  const dmUserIds = [];
+  if (auth.currentUser?.uid) {
+    dmUserIds.push(auth.currentUser.uid);
+  }
+
+  return setDoc(doc(col, docId), {
     name,
-    dmUserIds: [auth.currentUser?.uid],
+    dmUserIds,
     dmInviteEmails,
   });
 }
