@@ -29,7 +29,7 @@ export default function TopNavbar() {
       {user ? (
         <>
           <Text display={"block"} onClick={() => signOut(auth)} mx="2">
-            Logged in as <strong>{user.displayName ?? user.email}</strong> |
+            Logged in as <strong>{user.displayName ?? user.email}</strong>
           </Text>
           <Button colorScheme="teal">Sign out</Button>
         </>
