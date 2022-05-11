@@ -13,10 +13,60 @@ import {
   ButtonGroup,
   Button,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
+import {
+  addPlayersToCampaign,
+  removePlayerCampaignInvites,
+} from "../../services/api";
+import { auth } from "../../services/firebase";
 
 function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
+  const toast = useToast();
+  const handleAcceptInvite = async () => {
+    try {
+      await Promise.allSettled([
+        addPlayersToCampaign(
+          campaign.id,
+          auth.currentUser ? [auth.currentUser.uid] : []
+        ),
+        removePlayerCampaignInvites(
+          campaign.id,
+          auth.currentUser && auth.currentUser.email
+            ? [auth.currentUser.email]
+            : []
+        ),
+      ]);
+
+      toast({
+        title: "Accepted Invite",
+        description: (
+          <p>
+            You have joined campaign <strong>{campaign.name}</strong>
+          </p>
+        ),
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Uwu!",
+        description: (
+          <p>
+            Something went wrong when joining <strong>{campaign.name}</strong>.
+            Please try again later.
+          </p>
+        ),
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Box
       minW="100%"
@@ -48,7 +98,9 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
               <Text>{campaign.description ?? "No description provided."}</Text>
             </Box>
             <ButtonGroup size="sm">
-              <Button colorScheme="teal">Accept</Button>
+              <Button colorScheme="teal" onClick={handleAcceptInvite}>
+                Accept
+              </Button>
               <Button>Decline</Button>
             </ButtonGroup>
           </VStack>
@@ -73,9 +125,13 @@ export function PlayerCampaignInvitesModal(
         <ModalHeader>Your Campaign Invites</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {props.campaignInvites.map((campaign) => (
-            <CampaignInviteBox key={campaign.id} campaign={campaign} />
-          ))}
+          {props.campaignInvites.length > 0 ? (
+            props.campaignInvites.map((campaign) => (
+              <CampaignInviteBox key={campaign.id} campaign={campaign} />
+            ))
+          ) : (
+            <Box mb="5">You have no pending campaign invitations.</Box>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>
