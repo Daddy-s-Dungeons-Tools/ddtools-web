@@ -31,7 +31,9 @@ export default function TopNavbar() {
           <Text display="block" mx="2">
             Logged in as <strong>{user.displayName ?? user.email}</strong>
           </Text>
-          <Button colorScheme="teal">Sign out</Button>
+          <Button colorScheme="teal" onClick={() => auth.signOut()}>
+            Sign out
+          </Button>
         </>
       ) : (
         <>
