@@ -24,15 +24,16 @@ import {
 import { auth } from "../../services/firebase";
 
 function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isAccepting, setIsAccepting] = useState<boolean>(false);
+  const [isDeclining, setIsDeclining] = useState<boolean>(false);
   const toast = useToast();
 
   const handleAcceptInvite = async () => {
-    if (isLoading) {
+    if (isAccepting) {
       return;
     }
 
-    setIsLoading(true);
+    setIsAccepting(true);
     try {
       await Promise.allSettled([
         addPlayersToCampaign(
@@ -73,7 +74,48 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
         isClosable: true,
       });
     } finally {
-      setIsLoading(false);
+      setIsAccepting(false);
+    }
+  };
+
+  const handleDeclineInvite = async () => {
+    if (isDeclining) {
+      return;
+    }
+
+    setIsDeclining(true);
+    try {
+      await removePlayerCampaignInvites(
+        campaign.id,
+        auth.currentUser && auth.currentUser.email
+          ? [auth.currentUser.email]
+          : []
+      );
+
+      toast({
+        title: "Declined Invite",
+        description: (
+          <p>
+            You have <strong>declined</strong> the invite to campaign{" "}
+            <strong>{campaign.name}</strong>. Harsh!
+          </p>
+        ),
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Uwu!",
+        description:
+          "Something went wrong when declining the invite. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsDeclining(false);
     }
   };
 
@@ -111,12 +153,18 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
               <Button
                 colorScheme="teal"
                 onClick={handleAcceptInvite}
-                isLoading={isLoading}
+                isLoading={isAccepting}
                 loadingText="Accepting..."
               >
                 Accept
               </Button>
-              <Button>Decline</Button>
+              <Button
+                onClick={handleDeclineInvite}
+                isLoading={isDeclining}
+                loadingText="Declining..."
+              >
+                Decline
+              </Button>
             </ButtonGroup>
           </VStack>
         </Box>
