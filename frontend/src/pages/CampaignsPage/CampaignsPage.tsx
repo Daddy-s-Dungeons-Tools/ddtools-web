@@ -8,6 +8,7 @@ import {
   VStack,
   Button,
 } from "@chakra-ui/react";
+import { useProtectedRoute } from "../../hooks/routes";
 
 function PlayerCampaignBox() {
   return (
@@ -39,6 +40,8 @@ function PlayerCampaignBox() {
 }
 
 export default function CampaignsPage() {
+  useProtectedRoute();
+
   return (
     <Container maxW="container.lg">
       <Flex w="100%">

@@ -24,7 +24,13 @@ export function useSignInWithEmailLink() {
           .then((user) => {
             window.localStorage.removeItem("emailForSignIn");
             setError(null);
-            navigate({ search: "" });
+
+            // Attempt to redirect to desired page after login
+            const redirectAfterLogin =
+              window.localStorage.getItem("redirectAfterLogin");
+
+            navigate(redirectAfterLogin ? redirectAfterLogin : { search: "" });
+            window.localStorage.removeItem("redirectAfterLogin");
           })
           .catch((error) => {
             console.error(error);
