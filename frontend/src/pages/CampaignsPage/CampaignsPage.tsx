@@ -8,6 +8,8 @@ import {
   VStack,
   Button,
 } from "@chakra-ui/react";
+import { useState } from "react";
+import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
 import { useProtectedRoute } from "../../hooks/routes";
 
 function PlayerCampaignBox() {
@@ -40,11 +42,20 @@ function PlayerCampaignBox() {
 }
 
 export default function CampaignsPage() {
+  const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
+    useState<boolean>(false);
+
   useProtectedRoute();
 
   return (
     <Container maxW="container.lg">
+      <NewCampaignModal
+        isOpen={isNewCampaignModalOpen}
+        onClose={() => setIsNewCampaignModalOpen(false)}
+      />
+
       <Flex w="100%">
+        {/* Player listing */}
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your Player Campaigns</Heading>
 
@@ -54,9 +65,13 @@ export default function CampaignsPage() {
             No Pending Invites
           </Button>
         </VStack>
+
+        {/* DM listing */}
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your DM Campaigns</Heading>
-          <Button minW="100%">Start Campaign</Button>
+          <Button minW="100%" onClick={() => setIsNewCampaignModalOpen(true)}>
+            Start Campaign
+          </Button>
         </VStack>
       </Flex>
     </Container>
