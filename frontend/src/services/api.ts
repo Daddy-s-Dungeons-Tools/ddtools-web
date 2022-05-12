@@ -44,22 +44,26 @@ export async function addCampaign({
   });
 }
 
-/** Add desired players (by their user IDs) to a campaign. */
-export function addPlayersToCampaign(
+/** Add desired users (by their user IDs) to a campaign. */
+export function addUsersToCampaigns(
   campaignId: Campaign["id"],
-  playerUserIds: string[]
+  as: "player" | "dm",
+  userIds: string[]
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
-    playerUserIds: arrayUnion(...playerUserIds),
+    [as === "player" ? "playerUserIds" : "dmUserIds"]: arrayUnion(...userIds),
   });
 }
 
 /** Remove the desired players (by their user IDs) from a campaign. */
-export function removePlayerCampaignInvites(
+export function removeUserCampaignInvites(
   campaignId: Campaign["id"],
-  playerUserEmails: string[]
+  as: "player" | "dm",
+  userEmails: string[]
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
-    playerInviteEmails: arrayRemove(...playerUserEmails),
+    [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayRemove(
+      ...userEmails
+    ),
   });
 }

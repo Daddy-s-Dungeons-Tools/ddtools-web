@@ -19,7 +19,7 @@ import { collection, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
-import { PlayerCampaignInvitesModal } from "../../components/PlayerCampaignInvitesModal/PlayerCampaignInvitesModal";
+import { CampaignInvitesModal } from "../../components/PlayerCampaignInvitesModal/PlayerCampaignInvitesModal";
 
 type PlayerCampaignBoxPropTypes = {
   campaign: Campaign;
@@ -95,6 +95,8 @@ export default function CampaignsPage() {
     isPlayerCampaignInvitesModalOpen,
     setIsPlayerCampaignInvitesModalOpen,
   ] = useState<boolean>(false);
+  const [isDMCampaignInvitesModalOpen, setIsDMCampaignInvitesModalOpen] =
+    useState<boolean>(false);
 
   // Player data
   const [playerCampaigns, isPlayerCampaignsLoading, playerCampaignsError] =
@@ -145,10 +147,17 @@ export default function CampaignsPage() {
         isOpen={isNewCampaignModalOpen}
         onClose={() => setIsNewCampaignModalOpen(false)}
       />
-      <PlayerCampaignInvitesModal
+      <CampaignInvitesModal
+        as="player"
         isOpen={isPlayerCampaignInvitesModalOpen}
         onClose={() => setIsPlayerCampaignInvitesModalOpen(false)}
         campaignInvites={playerCampaignInvites ?? []}
+      />
+      <CampaignInvitesModal
+        as="dm"
+        isOpen={isDMCampaignInvitesModalOpen}
+        onClose={() => setIsDMCampaignInvitesModalOpen(false)}
+        campaignInvites={dmCampaignInvites ?? []}
       />
 
       <Flex w="100%">
@@ -203,7 +212,11 @@ export default function CampaignsPage() {
 
           <Flex width="100%">
             {dmCampaignInvites?.length ? (
-              <Button minW="100%" colorScheme="teal" flex={"1"}>
+              <Button
+                colorScheme="teal"
+                flex="1"
+                onClick={() => setIsDMCampaignInvitesModalOpen(true)}
+              >
                 View {dmCampaignInvites.length} Pending{" "}
                 {dmCampaignInvites.length > 1 ? "Invites" : "Invite"}
               </Button>

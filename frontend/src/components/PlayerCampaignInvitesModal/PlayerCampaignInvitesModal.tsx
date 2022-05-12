@@ -18,12 +18,18 @@ import {
 import { Campaign } from "ddtools-types";
 import { useState } from "react";
 import {
-  addPlayersToCampaign,
-  removePlayerCampaignInvites,
+  addUsersToCampaigns,
+  removeUserCampaignInvites,
 } from "../../services/api";
 import { auth } from "../../services/firebase";
 
-function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
+function CampaignInviteBox({
+  campaign,
+  as,
+}: {
+  campaign: Campaign;
+  as: "player" | "dm";
+}) {
   const [isAccepting, setIsAccepting] = useState<boolean>(false);
   const [isDeclining, setIsDeclining] = useState<boolean>(false);
   const toast = useToast();
@@ -36,12 +42,14 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
     setIsAccepting(true);
     try {
       await Promise.allSettled([
-        addPlayersToCampaign(
+        addUsersToCampaigns(
           campaign.id,
+          as,
           auth.currentUser ? [auth.currentUser.uid] : []
         ),
-        removePlayerCampaignInvites(
+        removeUserCampaignInvites(
           campaign.id,
+          as,
           auth.currentUser && auth.currentUser.email
             ? [auth.currentUser.email]
             : []
@@ -52,7 +60,8 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
         title: "Accepted Invite",
         description: (
           <p>
-            You have joined campaign <strong>{campaign.name}</strong>
+            You have joined campaign <strong>{campaign.name}</strong> as{" "}
+            {as === "player" ? "a player" : "DM"}.
           </p>
         ),
         status: "success",
@@ -85,8 +94,9 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
 
     setIsDeclining(true);
     try {
-      await removePlayerCampaignInvites(
+      await removeUserCampaignInvites(
         campaign.id,
+        as,
         auth.currentUser && auth.currentUser.email
           ? [auth.currentUser.email]
           : []
@@ -96,7 +106,8 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
         title: "Declined Invite",
         description: (
           <p>
-            You have <strong>declined</strong> the invite to campaign{" "}
+            You have <strong>declined</strong> the invite to{" "}
+            {as === "player" ? "play in" : "DM"} campaign{" "}
             <strong>{campaign.name}</strong>. Harsh!
           </p>
         ),
@@ -173,27 +184,35 @@ function CampaignInviteBox({ campaign }: { campaign: Campaign }) {
   );
 }
 
-type PlayerCampaignInvitesModalPropTypes = {
+type CampaignInvitesModalPropTypes = {
   isOpen: boolean;
+  as: "player" | "dm";
   onClose: () => void;
   campaignInvites: Campaign[];
 };
-export function PlayerCampaignInvitesModal(
-  props: PlayerCampaignInvitesModalPropTypes
-) {
+export function CampaignInvitesModal(props: CampaignInvitesModalPropTypes) {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Your Campaign Invites</ModalHeader>
+        <ModalHeader>
+          Your {props.as === "player" ? "Player" : "DM"} Invites
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {props.campaignInvites.length > 0 ? (
             props.campaignInvites.map((campaign) => (
-              <CampaignInviteBox key={campaign.id} campaign={campaign} />
+              <CampaignInviteBox
+                key={campaign.id}
+                as={props.as}
+                campaign={campaign}
+              />
             ))
           ) : (
-            <Box mb="5">You have no pending campaign invitations.</Box>
+            <Box mb="5">
+              You have no pending {props.as === "player" ? "player" : "DM"}{" "}
+              campaign invitations.
+            </Box>
           )}
         </ModalBody>
       </ModalContent>
