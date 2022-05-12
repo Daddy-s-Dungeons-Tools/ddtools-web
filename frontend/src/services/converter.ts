@@ -1,4 +1,4 @@
-import { Campaign } from "ddtools-types";
+import { Campaign, Note } from "ddtools-types";
 import {
   DocumentData,
   FirestoreDataConverter,
@@ -19,6 +19,26 @@ export const campaignConverter: FirestoreDataConverter<Campaign> = {
     options: SnapshotOptions
   ): Campaign {
     const data = snapshot.data(options) as Campaign;
+    return {
+      ...data,
+      id: snapshot.id,
+      ref: snapshot.ref,
+    };
+  },
+};
+
+export const noteConverter: FirestoreDataConverter<Note> = {
+  toFirestore(note: WithFieldValue<Note>): DocumentData {
+    const n = { ...note };
+    delete n.ref;
+    delete n.id;
+    return n;
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options: SnapshotOptions
+  ): Note {
+    const data = snapshot.data(options) as Note;
     return {
       ...data,
       id: snapshot.id,
