@@ -7,6 +7,7 @@ import {
   VStack,
   FormLabel,
   useToast,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { updateProfile } from "firebase/auth";
 import { useState } from "react";
@@ -96,14 +97,19 @@ export function ProfilePage() {
             />
           </FormControl>
 
-          <Button
-            colorScheme="teal"
-            type="submit"
-            isLoading={isLoading}
-            loadingText="Saving..."
-          >
-            Save
-          </Button>
+          <ButtonGroup>
+            <Button
+              colorScheme="teal"
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Saving..."
+            >
+              Save
+            </Button>
+            <Button colorScheme="red" disabled>
+              Delete Accont
+            </Button>
+          </ButtonGroup>
         </VStack>
       </form>
     </Container>
