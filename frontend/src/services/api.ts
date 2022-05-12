@@ -1,4 +1,4 @@
-import { Campaign } from "ddtools-types";
+import { Campaign, Note } from "ddtools-types";
 import {
   collection,
   doc,
@@ -7,8 +7,10 @@ import {
   arrayUnion,
   arrayRemove,
   getDoc,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
-import { campaignConverter } from "./converter";
+import { campaignConverter, noteConverter } from "./converter";
 import { auth, firestore } from "./firebase";
 
 const campaignCollection = collection(firestore, "campaigns").withConverter(
@@ -65,5 +67,25 @@ export function removeUserCampaignInvites(
     [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayRemove(
       ...userEmails
     ),
+  });
+}
+
+/** Add a new note for a particular user in a particular campaign. Can be empty. */
+export function addNote(
+  userId: string,
+  campaignId: Campaign["id"],
+  note?: Partial<Omit<Note, "timestamp" | "authorUserId">>
+) {
+  const notesCollection = collection(
+    firestore,
+    "campaigns",
+    campaignId,
+    "notes"
+  ).withConverter(noteConverter);
+  return addDoc(notesCollection, {
+    authorUserId: userId,
+    timestamp: serverTimestamp(),
+    visibility: note?.visibility ?? "owners",
+    ...note,
   });
 }
