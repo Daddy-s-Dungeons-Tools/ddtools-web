@@ -12,6 +12,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
 import theme from "./services/theme";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
@@ -22,6 +23,7 @@ root.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<LoginPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="campaigns">
               <Route index element={<CampaignsPage />} />
             </Route>

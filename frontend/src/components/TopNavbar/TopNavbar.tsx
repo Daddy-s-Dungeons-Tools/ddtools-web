@@ -1,4 +1,12 @@
-import { Flex, Box, Text, Button, Spacer, Link } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Text,
+  Button,
+  Spacer,
+  Link,
+  HStack,
+} from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +33,14 @@ export default function TopNavbar() {
           DDTools
         </Text>
       </Box>
-      <Link as={ReactRouterLink} to="/campaigns">
-        Campaigns
-      </Link>
+      <HStack>
+        <Link as={ReactRouterLink} to="/profile">
+          Profile
+        </Link>
+        <Link as={ReactRouterLink} to="/campaigns">
+          Campaigns
+        </Link>
+      </HStack>
 
       <Spacer />
 
