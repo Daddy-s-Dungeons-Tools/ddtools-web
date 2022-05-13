@@ -24,6 +24,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const toast = useToast();
 
+  /** Attempt to add a new campaign with the form details. */
   const handleNewCampaignFormSubmit: React.FormEventHandler<
     HTMLFormElement
   > = async (event) => {
@@ -40,7 +41,10 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
       event.currentTarget.campaignDMInviteEmails.value.trim().split(",");
 
     try {
-      await addCampaign(campaignName, campaignDMInviteEmails);
+      await addCampaign({
+        name: campaignName,
+        dmInviteEmails: campaignDMInviteEmails,
+      });
 
       props.onClose();
       toast({
@@ -64,7 +68,10 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
         isClosable: true,
       });
     } catch (error) {
+      // Handle error
       console.error(error);
+
+      // Show a generic error message
       toast({
         title: "Yikes!",
         description:

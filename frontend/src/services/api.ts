@@ -6,6 +6,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  getDoc,
 } from "firebase/firestore";
 import { campaignConverter } from "./converter";
 import { auth, firestore } from "./firebase";
@@ -14,12 +15,22 @@ const campaignCollection = collection(firestore, "campaigns").withConverter(
   campaignConverter
 );
 
-export function addCampaign(name: string, dmInviteEmails: string[]) {
+/** Add a new campaign with the desired name and DM invitations. */
+export async function addCampaign({
+  name,
+  dmInviteEmails,
+}: {
+  name: string;
+  dmInviteEmails: string[];
+}) {
   if (!name || name.trim().length === 0) return;
 
   const docId = name.toLowerCase().replaceAll(" ", "-");
 
-  // TODO: CHECK IF DOCID ALREADY EXISTS
+  // CHECK IF DOCID ALREADY EXISTS
+  if ((await getDoc(doc(campaignCollection, docId))).exists()) {
+    throw new Error("Campaign already exists with that ID.");
+  }
 
   const dmUserIds = [];
   if (auth.currentUser?.uid) {
@@ -33,20 +44,26 @@ export function addCampaign(name: string, dmInviteEmails: string[]) {
   });
 }
 
-export function addPlayersToCampaign(
+/** Add desired users (by their user IDs) to a campaign. */
+export function addUsersToCampaigns(
   campaignId: Campaign["id"],
-  playerUserIds: string[]
+  as: "player" | "dm",
+  userIds: string[]
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
-    playerUserIds: arrayUnion(...playerUserIds),
+    [as === "player" ? "playerUserIds" : "dmUserIds"]: arrayUnion(...userIds),
   });
 }
 
-export function removePlayerCampaignInvites(
+/** Remove the desired players (by their user IDs) from a campaign. */
+export function removeUserCampaignInvites(
   campaignId: Campaign["id"],
-  playerUserEmails: string[]
+  as: "player" | "dm",
+  userEmails: string[]
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
-    playerInviteEmails: arrayRemove(...playerUserEmails),
+    [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayRemove(
+      ...userEmails
+    ),
   });
 }
