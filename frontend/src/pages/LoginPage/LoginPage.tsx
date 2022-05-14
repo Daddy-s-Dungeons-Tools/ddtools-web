@@ -3,7 +3,10 @@ import {
   FormControl,
   Heading,
   Input,
+  Image,
   useToast,
+  VStack,
+  Button,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -33,6 +36,10 @@ export default function LoginPage() {
   ) => {
     // Prevent form from submitting and refreshing page
     event.preventDefault();
+
+    if (signInLinkStatus !== SignInLinkStatus.NOT_SENT) {
+      return;
+    }
 
     // Grab the email and trim whitespace
     const enteredEmail: string = event.currentTarget.email.value.trim();
@@ -80,20 +87,38 @@ export default function LoginPage() {
 
   return (
     <Container maxW="container.md">
-      <Heading mb="5">Daddy's Dungeon Tools</Heading>
+      <VStack spacing="5">
+        <Image
+          src="https://images.squarespace-cdn.com/content/v1/5f8a7f6ce7e6c83bd00002f4/1604782480312-TOREECY0FP29FKHWA9R4/hero_dmgscreen_0.jpg"
+          borderRadius={10}
+        />
 
-      <form id="login-form" onSubmit={handleLoginFormSubmit}>
-        <FormControl>
-          <Input
-            name="email"
-            type="email"
-            id="email"
-            placeholder="Please enter your email for a sign-in link"
-            required
-            isReadOnly={signInLinkStatus !== SignInLinkStatus.NOT_SENT}
-          />
-        </FormControl>
-      </form>
+        <Heading>Daddy's Dungeon Tools</Heading>
+
+        <form id="login-form" onSubmit={handleLoginFormSubmit}>
+          <FormControl>
+            <Input
+              name="email"
+              type="email"
+              id="email"
+              placeholder="Please enter your email for a sign-in link"
+              required
+              isReadOnly={signInLinkStatus !== SignInLinkStatus.NOT_SENT}
+            />
+          </FormControl>
+          <Button
+            minW="100%"
+            type="submit"
+            isLoading={signInLinkStatus === SignInLinkStatus.LOADING}
+            loadingText="Sending..."
+            disabled={signInLinkStatus === SignInLinkStatus.SENT}
+          >
+            {signInLinkStatus === SignInLinkStatus.SENT
+              ? "Check Your Email"
+              : "Send Sign-in Email"}
+          </Button>
+        </form>
+      </VStack>
     </Container>
   );
 }
