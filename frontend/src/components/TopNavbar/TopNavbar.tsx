@@ -15,7 +15,7 @@ import { auth } from "../../services/firebase";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 export default function TopNavbar() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, isUserLoading, userRrror] = useAuthState(auth);
   const navigate = useNavigate();
 
   return (
@@ -33,14 +33,16 @@ export default function TopNavbar() {
           DDTools
         </Text>
       </Box>
-      <HStack>
-        <Link as={ReactRouterLink} to="/profile">
-          Profile
-        </Link>
-        <Link as={ReactRouterLink} to="/campaigns">
-          Campaigns
-        </Link>
-      </HStack>
+      {!isUserLoading && user && (
+        <HStack>
+          <Link as={ReactRouterLink} to="/profile">
+            Profile
+          </Link>
+          <Link as={ReactRouterLink} to="/campaigns">
+            Campaigns
+          </Link>
+        </HStack>
+      )}
 
       <Spacer />
 
