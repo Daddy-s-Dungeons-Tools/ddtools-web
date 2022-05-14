@@ -43,6 +43,7 @@ export async function addCampaign({
     name,
     dmUserIds,
     dmInviteEmails,
+    createdAt: new Date().getTime(),
   });
 }
 
@@ -83,9 +84,9 @@ export function addNote(
     "notes"
   ).withConverter(noteConverter);
   return addDoc(notesCollection, {
-    authorUserId: userId,
-    timestamp: serverTimestamp(),
-    visibility: note?.visibility ?? "owners",
+    ownerUserId: userId,
+    createdAt: serverTimestamp(),
+    sharedWith: [],
     ...note,
   });
 }
