@@ -7,7 +7,6 @@ import {
   Link,
   HStack,
 } from "@chakra-ui/react";
-import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
@@ -15,7 +14,7 @@ import { auth } from "../../services/firebase";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 export default function TopNavbar() {
-  const [user, isUserLoading, userRrror] = useAuthState(auth);
+  const [user, isUserLoading, userError] = useAuthState(auth);
   const navigate = useNavigate();
 
   return (
