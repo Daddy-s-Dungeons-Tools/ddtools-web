@@ -1,7 +1,4 @@
 import {
-  Image,
-  Text,
-  Box,
   Container,
   Flex,
   Heading,
@@ -9,7 +6,6 @@ import {
   Button,
   Skeleton,
   Stack,
-  ButtonGroup,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -19,72 +15,8 @@ import { collection, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
-import { CampaignInvitesModal } from "../../components/PlayerCampaignInvitesModal/PlayerCampaignInvitesModal";
-
-type PlayerCampaignBoxPropTypes = {
-  campaign: Campaign;
-};
-function PlayerCampaignBox({ campaign }: PlayerCampaignBoxPropTypes) {
-  return (
-    <Box minW="100%" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Flex>
-        <Image
-          w={"32"}
-          src="https://cdn.vox-cdn.com/thumbor/ShgZ3-pi6BnxczAG1ycmmk3l8uE=/0x23:1513x1032/1400x1400/filters:focal(0x23:1513x1032):format(jpeg)/cdn.vox-cdn.com/uploads/chorus_image/image/33511669/905825_10152396043776071_8883312392855826763_o.0.jpg"
-          alt=""
-        />
-        <Box p={6}>
-          <Text>{campaign.name}</Text>
-          <Heading size="md" mb="8">
-            Atreyu, Level 9 Human Monk
-          </Heading>
-
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            fontSize="xs"
-            textTransform="uppercase"
-          >
-            {campaign.playerUserIds?.length ?? 0} players | ?? sessions | DMed
-            by ??
-          </Box>
-        </Box>
-      </Flex>
-    </Box>
-  );
-}
-
-type DMCampaignBoxPropTypes = {
-  campaign: Campaign;
-};
-function DMCampaignBox({ campaign }: DMCampaignBoxPropTypes) {
-  return (
-    <Box minW="100%" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Flex>
-        <Image
-          w={"32"}
-          src="https://cdn.vox-cdn.com/thumbor/ShgZ3-pi6BnxczAG1ycmmk3l8uE=/0x23:1513x1032/1400x1400/filters:focal(0x23:1513x1032):format(jpeg)/cdn.vox-cdn.com/uploads/chorus_image/image/33511669/905825_10152396043776071_8883312392855826763_o.0.jpg"
-          alt=""
-        />
-        <Box p={6}>
-          <Heading size="md" mb="8">
-            {campaign.name}
-          </Heading>
-
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            fontSize="xs"
-            textTransform="uppercase"
-          >
-            {campaign.playerUserIds?.length ?? 0} players | ?? sessions | DMed
-            by ??
-          </Box>
-        </Box>
-      </Flex>
-    </Box>
-  );
-}
+import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
+import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
 
 export default function CampaignIndexPage() {
   useProtectedRoute();
@@ -171,9 +103,12 @@ export default function CampaignIndexPage() {
             </Stack>
           ) : (
             playerCampaigns?.map((campaign) => (
-              <PlayerCampaignBox
+              <CampaignBox
                 key={campaign.id}
+                as="player"
                 campaign={campaign as Campaign}
+                // character={null}
+                isLink
               />
             ))
           )}
@@ -188,7 +123,12 @@ export default function CampaignIndexPage() {
               {playerCampaignInvites.length > 1 ? "Invites" : "Invite"}
             </Button>
           ) : (
-            <Button minW="100%" disabled>
+            <Button
+              minW="100%"
+              isLoading={isPlayerCampaignInvitesLoading}
+              loadingText="Loading invites..."
+              disabled
+            >
               No Pending Invites
             </Button>
           )}
@@ -203,9 +143,11 @@ export default function CampaignIndexPage() {
             </Stack>
           ) : (
             dmCampaigns?.map((campaign) => (
-              <DMCampaignBox
+              <CampaignBox
                 key={campaign.id}
+                as="dm"
                 campaign={campaign as Campaign}
+                isLink
               />
             ))
           )}
@@ -221,7 +163,12 @@ export default function CampaignIndexPage() {
                 {dmCampaignInvites.length > 1 ? "Invites" : "Invite"}
               </Button>
             ) : (
-              <Button disabled flex={"1"}>
+              <Button
+                disabled
+                flex={"1"}
+                isLoading={isDMCampaignInvitesLoading}
+                loadingText="Loading invites..."
+              >
                 No Pending DM Invites
               </Button>
             )}
