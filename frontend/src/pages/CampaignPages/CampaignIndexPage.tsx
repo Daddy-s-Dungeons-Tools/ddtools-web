@@ -86,7 +86,7 @@ function DMCampaignBox({ campaign }: DMCampaignBoxPropTypes) {
   );
 }
 
-export default function CampaignsPage() {
+export default function CampaignIndexPage() {
   useProtectedRoute();
 
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =

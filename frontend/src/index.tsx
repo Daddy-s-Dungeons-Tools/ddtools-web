@@ -10,7 +10,7 @@ import "./services/firebase";
 import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
+import CampaignIndexPage from "./pages/CampaignPages/CampaignIndexPage";
 import theme from "./services/theme";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 
@@ -25,7 +25,7 @@ root.render(
             <Route index element={<LoginPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="campaigns">
-              <Route index element={<CampaignsPage />} />
+              <Route index element={<CampaignIndexPage />} />
             </Route>
             <Route path="*" element={<p>Page not found!</p>} />
           </Route>
