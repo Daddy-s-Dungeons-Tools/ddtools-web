@@ -8,11 +8,13 @@ import {
   VStack,
   Button,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { sendSignInLinkToEmail } from "firebase/auth";
 import { auth } from "../../services/firebase";
 import { useSignInWithEmailLink } from "../../hooks/firebase";
+import { useNavigate } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 enum SignInLinkStatus {
   SENT,
@@ -21,7 +23,9 @@ enum SignInLinkStatus {
 }
 
 export default function LoginPage() {
+  const [user, isUserLoading, userError] = useAuthState(auth);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const [signInLinkStatus, setSignInLinkStatus] = useState<SignInLinkStatus>(
     SignInLinkStatus.NOT_SENT
@@ -29,6 +33,13 @@ export default function LoginPage() {
 
   // Checks if URL is a sign in url (user clicked on sign in link from email and ended up here)
   const signInError = useSignInWithEmailLink();
+
+  useEffect(() => {
+    console.log("here");
+    if (user) {
+      navigate("/campaigns", { replace: true });
+    }
+  }, [navigate, user]);
 
   /** Login handler that sends sign-in email with Firebase */
   const handleLoginFormSubmit: React.FormEventHandler<HTMLFormElement> = async (

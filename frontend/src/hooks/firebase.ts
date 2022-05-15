@@ -29,7 +29,11 @@ export function useSignInWithEmailLink() {
             const redirectAfterLogin =
               window.localStorage.getItem("redirectAfterLogin");
 
-            navigate(redirectAfterLogin ? redirectAfterLogin : { search: "" });
+            navigate(
+              redirectAfterLogin
+                ? redirectAfterLogin
+                : { pathname: "/campaigns", search: "" }
+            );
             window.localStorage.removeItem("redirectAfterLogin");
           })
           .catch((error) => {
