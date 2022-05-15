@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
 
 import { Link as ReactRouterLink } from "react-router-dom";
+import { Logo } from "../Logo";
 
 export default function TopNavbar() {
   const [user, isUserLoading, userError] = useAuthState(auth);
@@ -27,10 +28,13 @@ export default function TopNavbar() {
       mb={8}
       p={8}
     >
-      <Box mr="10">
-        <Text fontSize={"lg"} fontWeight="bold">
-          DDTools
-        </Text>
+      <Box mr="5">
+        <HStack>
+          <Logo />
+          <Text fontSize={"lg"} fontWeight="bold">
+            DDTools
+          </Text>
+        </HStack>
       </Box>
       {!isUserLoading && user && (
         <HStack>
