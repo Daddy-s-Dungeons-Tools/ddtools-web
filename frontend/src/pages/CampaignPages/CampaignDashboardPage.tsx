@@ -1,10 +1,4 @@
-import {
-  Center,
-  Container,
-  Heading,
-  Spinner,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Center, Container, Spinner, useToast } from "@chakra-ui/react";
 import { collection, doc } from "firebase/firestore";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -13,6 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
 import { campaignConverter } from "../../services/converter";
 import { auth, firestore } from "../../services/firebase";
+
+import { Sidebar } from "./dashboards/components/Sidebar";
 
 export default function CampaignDashboardPage() {
   useProtectedRoute();
@@ -69,8 +65,9 @@ export default function CampaignDashboardPage() {
     );
   } else {
     return (
-      <Container maxW="container.xl">
-        <Heading>{campaignDoc.name}</Heading>
+      <Container maxW="100%" p="0">
+        <Sidebar />
+        <Box p="8"></Box>
       </Container>
     );
   }
