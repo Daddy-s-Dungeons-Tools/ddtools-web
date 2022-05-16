@@ -21,9 +21,11 @@ const campaignCollection = collection(firestore, "campaigns").withConverter(
 export async function addCampaign({
   name,
   dmInviteEmails,
+  color,
 }: {
   name: string;
   dmInviteEmails: string[];
+  color?: string;
 }) {
   if (!name || name.trim().length === 0) return;
 
@@ -39,12 +41,23 @@ export async function addCampaign({
     dmUserIds.push(auth.currentUser.uid);
   }
 
-  return setDoc(doc(campaignCollection, docId), {
+  // Filter empty values
+  dmInviteEmails = dmInviteEmails.filter((email) => !!email);
+
+  const campaignDoc: Campaign = {
     name,
     dmUserIds,
     dmInviteEmails,
+    mode: "out-of-combat",
     createdAt: new Date().getTime(),
-  });
+  };
+
+  // Optional starting values
+  if (color) {
+    campaignDoc.color = color;
+  }
+
+  return setDoc(doc(campaignCollection, docId), campaignDoc);
 }
 
 /** Add desired users (by their user IDs) to a campaign. */
