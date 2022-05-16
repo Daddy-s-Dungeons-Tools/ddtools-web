@@ -142,6 +142,8 @@ export function CampaignBox({
       borderRadius="lg"
       overflow="hidden"
       mb="5"
+      borderRightWidth="thick"
+      borderRightColor={campaign.color}
     >
       <Flex>
         <Image

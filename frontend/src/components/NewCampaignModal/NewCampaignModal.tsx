@@ -39,11 +39,13 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
     const campaignName: string = event.currentTarget.campaignName.value.trim();
     const campaignDMInviteEmails: string[] =
       event.currentTarget.campaignDMInviteEmails.value.trim().split(",");
+    const color: string | undefined = event.currentTarget.campaignColor.value;
 
     try {
       await addCampaign({
         name: campaignName,
         dmInviteEmails: campaignDMInviteEmails,
+        color,
       });
 
       props.onClose();
@@ -114,6 +116,20 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
               />
               <FormHelperText>
                 Optional. You can add DMs later as well.
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel htmlFor="color">Color</FormLabel>
+              <Input
+                id="color"
+                type="color"
+                name="campaignColor"
+                defaultValue="#FFFFFF"
+                isReadOnly={isLoading}
+              />
+              <FormHelperText>
+                Optional. You can change this later.
               </FormHelperText>
             </FormControl>
           </ModalBody>

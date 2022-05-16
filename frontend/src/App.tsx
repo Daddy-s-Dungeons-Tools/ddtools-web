@@ -1,4 +1,4 @@
-import { Center, Spinner } from "@chakra-ui/react";
+import { Box, Center, Spinner } from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Outlet } from "react-router-dom";
 import { BottomFooter } from "./components/BottomFooter/BottomFooter";
@@ -13,7 +13,7 @@ function App() {
       <header>
         <TopNavbar />
       </header>
-      <main>
+      <Box as="main" mb="20">
         {isUserLoading ? (
           <Center pos={"fixed"} top={0} left={0} w={"100%"} h="100vh">
             <Spinner size={"xl"} />
@@ -21,7 +21,7 @@ function App() {
         ) : (
           <Outlet />
         )}
-      </main>
+      </Box>
       {/* <BottomFooter /> */}
     </div>
   );
