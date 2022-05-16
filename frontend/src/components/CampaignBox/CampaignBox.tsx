@@ -182,7 +182,8 @@ export function CampaignBox({
               mt="3"
             >
               {campaign.playerUserIds?.length ?? 0} players | started{" "}
-              {new Date(campaign.createdAt).toLocaleDateString()} | DMed by ??
+              {new Date(campaign.createdAt).toLocaleDateString()} | DMed by{" "}
+              {campaign.dmUserNames?.join("/")}
             </Box>
           </LinkOverlay>
           {isInvite && (
