@@ -29,11 +29,18 @@ export async function addCampaign({
 }) {
   if (!name || name.trim().length === 0) return;
 
-  const docId = name.toLowerCase().replaceAll(" ", "-");
+  let docId = name.toLowerCase().replaceAll(" ", "-");
+  let counter = 2;
 
-  // CHECK IF DOCID ALREADY EXISTS
-  if ((await getDoc(doc(campaignCollection, docId))).exists()) {
-    throw new Error("Campaign already exists with that ID.");
+  // CHECK IF DOCID ALREADY EXISTS, TRY TO ADD COUNTER UP TO 100
+  while ((await getDoc(doc(campaignCollection, docId))).exists()) {
+    console.warn("Campaign already exists with ID " + docId);
+    docId = name.toLowerCase().replaceAll(" ", "-") + "-" + counter;
+    counter++;
+
+    if (counter > 100) {
+      throw new Error("Too many campaigns with that title already exist!");
+    }
   }
 
   const dmUserIds = [];
