@@ -35,7 +35,6 @@ export default function LoginPage() {
   const signInError = useSignInWithEmailLink();
 
   useEffect(() => {
-    console.log("here");
     if (user) {
       navigate("/campaigns", { replace: true });
     }
