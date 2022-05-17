@@ -1,8 +1,50 @@
-import { Flex, Box, VStack, Tooltip, IconButton } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  VStack,
+  Tooltip,
+  IconButton,
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  Input,
+} from "@chakra-ui/react";
+import { useState } from "react";
 import { FaUsers } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
 
+type NavbarItem = {
+  label: string;
+  ariaLabel: string;
+  icon: JSX.Element;
+  component: JSX.Element;
+};
+
 export function Sidebar() {
+  const [activeNavbarItemIndex, setActiveNavbarItemIndex] = useState<
+    number | null
+  >(null);
+
+  const navbarItems: NavbarItem[] = [
+    {
+      label: "Notes",
+      ariaLabel: "notes",
+      icon: <GiScrollQuill />,
+      component: <p>Notes</p>,
+    },
+    {
+      label: "Event Log",
+      ariaLabel: "event log",
+      icon: <GiScrollUnfurled />,
+      component: <p>stuff</p>,
+    },
+  ];
+
   return (
     <Flex align="center">
       <Box
@@ -13,18 +55,42 @@ export function Sidebar() {
         borderBottomRightRadius="base"
       >
         <VStack>
-          <Tooltip label="Notes" placement="right">
-            <IconButton icon={<GiScrollQuill />} aria-label={"notes"} />
-          </Tooltip>
-          <Tooltip label="Event Log" placement="right">
-            <IconButton icon={<GiScrollUnfurled />} aria-label={"event log"} />
-          </Tooltip>
-          <Tooltip label="Party" placement="right">
+          {navbarItems.map((item, index) => (
+            <Tooltip key={item.label} label={item.label} placement="right">
+              <IconButton
+                icon={item.icon}
+                aria-label={item.ariaLabel}
+                onClick={() => setActiveNavbarItemIndex(index)}
+              />
+            </Tooltip>
+          ))}
+          {/*<Tooltip label="Party" placement="right">
             <IconButton icon={<FaUsers />} aria-label={"party"} />
-          </Tooltip>
+          </Tooltip> */}
         </VStack>
       </Box>
       <Box></Box>
+
+      {activeNavbarItemIndex !== null && navbarItems[activeNavbarItemIndex] && (
+        <Drawer
+          isOpen={activeNavbarItemIndex !== null}
+          placement="left"
+          size="md"
+          onClose={() => setActiveNavbarItemIndex(null)}
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>
+              {navbarItems[activeNavbarItemIndex].label}
+            </DrawerHeader>
+
+            <DrawerBody>
+              {navbarItems[activeNavbarItemIndex].component}
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      )}
     </Flex>
   );
 }
