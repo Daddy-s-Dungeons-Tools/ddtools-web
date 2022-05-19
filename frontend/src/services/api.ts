@@ -78,7 +78,20 @@ export function addUsersToCampaigns(
   });
 }
 
-/** Remove the desired players (by their user IDs) from a campaign. */
+/** Add the desired user invites (by their user IDs) from a campaign. */
+export function addUserCampaignInvites(
+  campaignId: Campaign["id"],
+  as: "player" | "dm",
+  userEmails: string[]
+) {
+  return updateDoc(doc(campaignCollection, campaignId), {
+    [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayUnion(
+      ...userEmails
+    ),
+  });
+}
+
+/** Remove the desired user invites (by their emails) from a campaign. */
 export function removeUserCampaignInvites(
   campaignId: Campaign["id"],
   as: "player" | "dm",
