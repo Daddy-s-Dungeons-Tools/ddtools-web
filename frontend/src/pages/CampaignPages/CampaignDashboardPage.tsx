@@ -1,6 +1,7 @@
 import { Box, Center, Container, Spinner, useToast } from "@chakra-ui/react";
+import { Campaign } from "ddtools-types";
 import { collection, doc } from "firebase/firestore";
-import { useEffect } from "react";
+import { createContext, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,6 +10,8 @@ import { campaignConverter } from "../../services/converter";
 import { auth, firestore } from "../../services/firebase";
 
 import { Sidebar } from "./dashboards/components/Sidebar";
+
+export const CampaignContext = createContext<Campaign>(undefined!);
 
 export default function CampaignDashboardPage() {
   useProtectedRoute();
@@ -65,10 +68,12 @@ export default function CampaignDashboardPage() {
     );
   } else {
     return (
-      <Container maxW="100%" p="0">
-        <Sidebar />
-        <Box p="8"></Box>
-      </Container>
+      <CampaignContext.Provider value={campaignDoc}>
+        <Container maxW="100%" p="0">
+          <Sidebar />
+          <Box p="8"></Box>
+        </Container>
+      </CampaignContext.Provider>
     );
   }
 }
