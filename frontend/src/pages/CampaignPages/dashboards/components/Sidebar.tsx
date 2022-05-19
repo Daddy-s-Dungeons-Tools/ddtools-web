@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { FaUsers } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
+import Party from "./Party";
 
 type NavbarItem = {
   label: string;
@@ -43,6 +44,12 @@ export function Sidebar() {
       icon: <GiScrollUnfurled />,
       component: <p>stuff</p>,
     },
+    {
+      label: "Adventuring Party",
+      ariaLabel: "party",
+      icon: <FaUsers />,
+      component: <Party as="dm" />
+    }
   ];
 
   return (
