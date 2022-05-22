@@ -8,7 +8,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
 
 import { Link as ReactRouterLink } from "react-router-dom";
@@ -16,6 +16,7 @@ import { Logo } from "../Logo";
 
 export default function TopNavbar() {
   const [user, isUserLoading, userError] = useAuthState(auth);
+  const location = useLocation();
   const navigate = useNavigate();
 
   return (
@@ -59,14 +60,16 @@ export default function TopNavbar() {
           </Button>
         </>
       ) : (
-        <>
-          <Text display={"block"} mx="2">
-            Not signed in
-          </Text>
-          <Button colorScheme="teal" onClick={() => navigate("/")}>
-            Sign in
-          </Button>
-        </>
+        location.pathname !== "/" && (
+          <>
+            <Text display={"block"} mx="2">
+              Not signed in
+            </Text>
+            <Button colorScheme="teal" onClick={() => navigate("/")}>
+              Sign in
+            </Button>
+          </>
+        )
       )}
     </Flex>
   );
