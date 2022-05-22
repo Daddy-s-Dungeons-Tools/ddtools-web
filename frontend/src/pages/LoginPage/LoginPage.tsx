@@ -28,7 +28,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const [signInLinkStatus, setSignInLinkStatus] = useState<SignInLinkStatus>(
-    SignInLinkStatus.NOT_SENT
+    SignInLinkStatus.NOT_SENT,
   );
 
   // Checks if URL is a sign in url (user clicked on sign in link from email and ended up here)
@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   /** Login handler that sends sign-in email with Firebase */
   const handleLoginFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event
+    event,
   ) => {
     // Prevent form from submitting and refreshing page
     event.preventDefault();

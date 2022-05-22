@@ -10,7 +10,7 @@ export default function UserNameAlert({ close }: UserNameAlertPropTypes) {
 
   /** Attempt to update the user's displayName and show a success or error toast. */
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event
+    event,
   ) => {
     event.preventDefault();
 

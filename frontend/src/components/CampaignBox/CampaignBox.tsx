@@ -49,14 +49,14 @@ export function CampaignBox({
         addUsersToCampaigns(
           campaign.id,
           as,
-          auth.currentUser ? [auth.currentUser.uid] : []
+          auth.currentUser ? [auth.currentUser.uid] : [],
         ),
         removeUserCampaignInvites(
           campaign.id,
           as,
           auth.currentUser && auth.currentUser.email
             ? [auth.currentUser.email]
-            : []
+            : [],
         ),
       ]);
 
@@ -103,7 +103,7 @@ export function CampaignBox({
         as,
         auth.currentUser && auth.currentUser.email
           ? [auth.currentUser.email]
-          : []
+          : [],
       );
 
       toast({

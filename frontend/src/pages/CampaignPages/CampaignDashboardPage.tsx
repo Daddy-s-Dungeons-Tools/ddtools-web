@@ -21,8 +21,8 @@ export default function CampaignDashboardPage() {
   const [user, isUserLoading, userError] = useAuthState(auth);
   const [campaignDoc, isCampaignDocLoading, campaignDocError] = useDocumentData(
     doc(collection(firestore, "campaigns"), campaignId).withConverter(
-      campaignConverter
-    )
+      campaignConverter,
+    ),
   );
 
   useEffect(() => {

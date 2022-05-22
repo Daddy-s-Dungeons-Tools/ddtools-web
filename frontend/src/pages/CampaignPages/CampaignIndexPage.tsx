@@ -35,8 +35,8 @@ export default function CampaignIndexPage() {
     useCollectionData(
       query(
         collection(firestore, "campaigns"),
-        where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null)
-      ).withConverter(campaignConverter)
+        where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null),
+      ).withConverter(campaignConverter),
     );
   const [
     playerCampaignInvites,
@@ -48,9 +48,9 @@ export default function CampaignIndexPage() {
       where(
         "playerInviteEmails",
         "array-contains",
-        auth.currentUser?.email ?? null
-      )
-    ).withConverter(campaignConverter)
+        auth.currentUser?.email ?? null,
+      ),
+    ).withConverter(campaignConverter),
   );
 
   // DM data
@@ -58,8 +58,8 @@ export default function CampaignIndexPage() {
     useCollectionData(
       query(
         collection(firestore, "campaigns"),
-        where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null)
-      ).withConverter(campaignConverter)
+        where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null),
+      ).withConverter(campaignConverter),
     );
 
   const [
@@ -69,8 +69,12 @@ export default function CampaignIndexPage() {
   ] = useCollectionData(
     query(
       collection(firestore, "campaigns"),
-      where("dmInviteEmails", "array-contains", auth.currentUser?.email ?? null)
-    ).withConverter(campaignConverter)
+      where(
+        "dmInviteEmails",
+        "array-contains",
+        auth.currentUser?.email ?? null,
+      ),
+    ).withConverter(campaignConverter),
   );
 
   return (

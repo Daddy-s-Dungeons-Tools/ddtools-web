@@ -60,7 +60,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
             You have created a new campaign
             {campaignDMInviteEmails.length
               ? ` and have invited ${campaignDMInviteEmails.join(
-                  ", "
+                  ", ",
                 )} to co-DM.`
               : "."}
           </p>

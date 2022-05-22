@@ -48,8 +48,8 @@ export function Sidebar() {
       label: "Adventuring Party",
       ariaLabel: "party",
       icon: <FaUsers />,
-      component: <Party as="dm" />
-    }
+      component: <Party as="dm" />,
+    },
   ];
 
   return (

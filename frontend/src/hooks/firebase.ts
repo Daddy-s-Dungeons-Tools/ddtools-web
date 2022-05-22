@@ -32,7 +32,7 @@ export function useSignInWithEmailLink() {
             navigate(
               redirectAfterLogin
                 ? redirectAfterLogin
-                : { pathname: "/campaigns", search: "" }
+                : { pathname: "/campaigns", search: "" },
             );
             window.localStorage.removeItem("redirectAfterLogin");
           })

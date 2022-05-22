@@ -16,7 +16,7 @@ export const campaignConverter: FirestoreDataConverter<Campaign> = {
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions
+    options: SnapshotOptions,
   ): Campaign {
     const data = snapshot.data(options) as Campaign;
     return {
@@ -36,7 +36,7 @@ export const noteConverter: FirestoreDataConverter<Note> = {
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions
+    options: SnapshotOptions,
   ): Note {
     const data = snapshot.data(options) as Note;
     return {

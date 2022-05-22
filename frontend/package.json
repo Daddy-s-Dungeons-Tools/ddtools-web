@@ -24,11 +24,13 @@
     "start": "react-scripts start",
     "build": "BUILD_PATH=../build react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier --write src/"
   },
   "eslintConfig": {
     "extends": [
-      "react-app"
+      "react-app",
+      "prettier"
     ]
   },
   "browserslist": {
@@ -42,5 +44,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.6.2"
   }
 }

@@ -14,7 +14,7 @@ import { campaignConverter, noteConverter } from "./converter";
 import { auth, firestore } from "./firebase";
 
 const campaignCollection = collection(firestore, "campaigns").withConverter(
-  campaignConverter
+  campaignConverter,
 );
 
 /** Add a new campaign with the desired name and DM invitations. */
@@ -71,7 +71,7 @@ export async function addCampaign({
 export function addUsersToCampaigns(
   campaignId: Campaign["id"],
   as: "player" | "dm",
-  userIds: string[]
+  userIds: string[],
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
     [as === "player" ? "playerUserIds" : "dmUserIds"]: arrayUnion(...userIds),
@@ -82,11 +82,11 @@ export function addUsersToCampaigns(
 export function addUserCampaignInvites(
   campaignId: Campaign["id"],
   as: "player" | "dm",
-  userEmails: string[]
+  userEmails: string[],
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
     [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayUnion(
-      ...userEmails
+      ...userEmails,
     ),
   });
 }
@@ -95,11 +95,11 @@ export function addUserCampaignInvites(
 export function removeUserCampaignInvites(
   campaignId: Campaign["id"],
   as: "player" | "dm",
-  userEmails: string[]
+  userEmails: string[],
 ) {
   return updateDoc(doc(campaignCollection, campaignId), {
     [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayRemove(
-      ...userEmails
+      ...userEmails,
     ),
   });
 }
@@ -108,13 +108,13 @@ export function removeUserCampaignInvites(
 export function addNote(
   userId: string,
   campaignId: Campaign["id"],
-  note?: Partial<Omit<Note, "timestamp" | "authorUserId">>
+  note?: Partial<Omit<Note, "timestamp" | "authorUserId">>,
 ) {
   const notesCollection = collection(
     firestore,
     "campaigns",
     campaignId,
-    "notes"
+    "notes",
   ).withConverter(noteConverter);
   return addDoc(notesCollection, {
     ownerUserId: userId,
