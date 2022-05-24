@@ -4,7 +4,7 @@ The Firebase project and web interface for Daddy's Dungeon Tools.
 
 ## Stack
 
-ddtools-web is a [Google Firebase](https://firebase.google.com/) project and a React single-page application. It uses Typescript both fro Firebase Functions and for the React application. It uses the following Firebase services:
+ddtools-web is a [Google Firebase](https://firebase.google.com/) project and a React single-page application. It uses Typescript both for Firebase Functions and for the React application. It uses the following Firebase services:
 
 - Authentication
 - Firestore Database
