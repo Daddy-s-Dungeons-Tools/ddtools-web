@@ -103,7 +103,7 @@ export default function LoginPage() {
           borderRadius={10}
         />
 
-        <Heading>Daddy's Dungeon Tools</Heading>
+        <Heading textAlign="center">Daddy's Dungeon Tools</Heading>
 
         <form id="login-form" onSubmit={handleLoginFormSubmit}>
           <FormControl>
