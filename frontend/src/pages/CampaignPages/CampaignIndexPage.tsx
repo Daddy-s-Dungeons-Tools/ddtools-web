@@ -6,6 +6,8 @@ import {
   Button,
   Skeleton,
   Stack,
+  Text,
+  Box,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -17,6 +19,7 @@ import { Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
+import { FaPlus } from "react-icons/fa";
 
 export default function CampaignIndexPage() {
   useProtectedRoute();
@@ -96,7 +99,7 @@ export default function CampaignIndexPage() {
         campaignInvites={dmCampaignInvites ?? []}
       />
 
-      <Flex w="100%">
+      <Flex w="100%" flexDirection={{ base: "column", md: "row" }}>
         {/* Player listing */}
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your Player Campaigns</Heading>
@@ -177,6 +180,7 @@ export default function CampaignIndexPage() {
               </Button>
             )}
             <Button
+              leftIcon={<FaPlus />}
               ml={"2"}
               onClick={() => setIsNewCampaignModalOpen(true)}
               flex={"1"}
