@@ -43,7 +43,10 @@ export default function UserNameAlert({ close }: UserNameAlertPropTypes) {
         });
       }
     }
-    close();
+
+    if (close) {
+      close();
+    }
   };
 
   return (
