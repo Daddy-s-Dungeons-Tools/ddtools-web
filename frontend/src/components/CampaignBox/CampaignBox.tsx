@@ -19,6 +19,7 @@ import {
   removeUserCampaignInvites,
 } from "../../services/api";
 import { auth } from "../../services/firebase";
+import { characterRaceAndClasses } from "../../utils/characters";
 
 type CampaignBoxPropTypes = {
   campaign: Campaign;
@@ -156,19 +157,24 @@ export function CampaignBox({
             as={ReactRouterLink}
             to={isLink ? "/campaigns/" + campaign.id : ""}
           >
-            <Heading size={as === "dm" || isInvite ? "md" : "sm"}>
+            <Heading size={as === "dm" || isInvite ? "lg" : "sm"}>
               {campaign.name}
             </Heading>
 
             {as === "player" && character && (
-              <Heading size="lg">Characetr Stuff Here</Heading>
+              <>
+                <Heading size="lg">{character.name}</Heading>
+                <Heading size="md">
+                  {characterRaceAndClasses(character)}
+                </Heading>
+              </>
             )}
 
             {as === "player" && !character && !isInvite && (
               <Heading size="md">No Character Created</Heading>
             )}
 
-            {campaign.description && (
+            {as === "dm" && campaign.description && (
               <Text color="gray.500" noOfLines={1} fontStyle="italic">
                 {campaign.description}
               </Text>
