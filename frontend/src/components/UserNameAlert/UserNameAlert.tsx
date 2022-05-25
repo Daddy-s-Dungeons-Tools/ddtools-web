@@ -3,6 +3,7 @@ import { updateProfile } from "firebase/auth";
 import { auth } from "../../services/firebase";
 
 type UserNameAlertPropTypes = {
+  /** Close handler */
   close: () => void;
 };
 export default function UserNameAlert({ close }: UserNameAlertPropTypes) {
@@ -46,7 +47,14 @@ export default function UserNameAlert({ close }: UserNameAlertPropTypes) {
   };
 
   return (
-    <Alert status="warning">
+    <Alert
+      status="warning"
+      textAlign="center"
+      flexDirection={{
+        base: "column",
+        md: "row",
+      }}
+    >
       <AlertIcon />
       <Text mr="3">
         <strong>We need your name!</strong> Please enter it now.
