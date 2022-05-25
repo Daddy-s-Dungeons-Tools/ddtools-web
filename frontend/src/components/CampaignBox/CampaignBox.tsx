@@ -4,6 +4,7 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  Hide,
   Image,
   LinkBox,
   LinkOverlay,
@@ -146,12 +147,19 @@ export function CampaignBox({
       borderRightWidth="thick"
       borderRightColor={campaign.color}
     >
-      <Flex>
-        <Image
-          w={"32"}
-          src="https://cdn.vox-cdn.com/thumbor/ShgZ3-pi6BnxczAG1ycmmk3l8uE=/0x23:1513x1032/1400x1400/filters:focal(0x23:1513x1032):format(jpeg)/cdn.vox-cdn.com/uploads/chorus_image/image/33511669/905825_10152396043776071_8883312392855826763_o.0.jpg"
-          alt=""
-        />
+      <Flex
+        flexDirection={{
+          base: "column",
+          md: "row",
+        }}
+      >
+        <Hide below="sm">
+          <Image
+            w={{ base: "32" }}
+            src="https://cdn.vox-cdn.com/thumbor/ShgZ3-pi6BnxczAG1ycmmk3l8uE=/0x23:1513x1032/1400x1400/filters:focal(0x23:1513x1032):format(jpeg)/cdn.vox-cdn.com/uploads/chorus_image/image/33511669/905825_10152396043776071_8883312392855826763_o.0.jpg"
+            alt=""
+          />
+        </Hide>
         <Box p={6}>
           <LinkOverlay
             as={ReactRouterLink}
