@@ -1,10 +1,19 @@
-import { Box, Button, ButtonGroup, Skeleton, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Skeleton,
+  Stack,
+  Text,
+  Badge,
+} from "@chakra-ui/react";
 import { Audio } from "ddtools-types";
 import { collection, updateDoc } from "firebase/firestore";
 import { ref } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDownloadURL } from "react-firebase-hooks/storage";
+import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
 import { addCampaignAudioFiles } from "../../../../services/api";
 import { audioConverter } from "../../../../services/converter";
 import { firestore, storage } from "../../../../services/firebase";
@@ -47,32 +56,55 @@ function AudioBox({ audioDoc }: { audioDoc: Audio }) {
 
   return (
     <Box>
-      <p>{audioDoc.name}</p>
+      <Text>
+        {audioDoc.name}{" "}
+        {audioDoc.isPlaying && <Badge colorScheme="pink">LIVE</Badge>}
+      </Text>
       <audio ref={audioRef} src={downloadURL} loop={audioDoc.isLooped} />
       {isDownloadURLLoading ? (
         <Skeleton height="50px" />
       ) : (
         <ButtonGroup isAttached size="sm" variant="outline">
           {isPreviewing ? (
-            <Button onClick={stopPreview} disabled={audioDoc.isPlaying}>
+            <Button
+              leftIcon={<FaPlay />}
+              onClick={stopPreview}
+              disabled={audioDoc.isPlaying}
+            >
               Stop preview
             </Button>
           ) : (
-            <Button onClick={startPreview} disabled={audioDoc.isPlaying}>
+            <Button
+              leftIcon={<FaPlay />}
+              onClick={startPreview}
+              disabled={audioDoc.isPlaying}
+            >
               Preview
             </Button>
           )}
 
           {audioDoc.isPlaying ? (
-            <Button onClick={stopBroadcast}>Stop broadcast</Button>
+            <Button
+              leftIcon={<FaBroadcastTower />}
+              colorScheme="red"
+              onClick={stopBroadcast}
+            >
+              Stop broadcast
+            </Button>
           ) : (
-            <Button onClick={startBroadcast}>Broadcast</Button>
+            <Button
+              colorScheme="red"
+              leftIcon={<FaBroadcastTower />}
+              onClick={startBroadcast}
+            >
+              Broadcast
+            </Button>
           )}
 
           {audioDoc.isLooped ? (
-            <Button>Don't Loop</Button>
+            <Button leftIcon={<FaRedo />}>Looping</Button>
           ) : (
-            <Button>Loop</Button>
+            <Button>No Loop</Button>
           )}
         </ButtonGroup>
       )}

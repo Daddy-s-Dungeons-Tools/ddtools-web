@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { FaUsers } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
+import { AudioManager } from "./AudioManager";
 import Party from "./Party";
 
 type NavbarItem = {
@@ -49,6 +50,12 @@ export function Sidebar() {
       ariaLabel: "party",
       icon: <FaUsers />,
       component: <Party as="dm" />,
+    },
+    {
+      label: "Audio Manager",
+      ariaLabel: "audio manager",
+      icon: <FaUsers />,
+      component: <AudioManager />,
     },
   ];
 
