@@ -10,7 +10,7 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 import { converterFactory } from "./converter";
 import { auth, firestore, storage } from "./firebase";
 

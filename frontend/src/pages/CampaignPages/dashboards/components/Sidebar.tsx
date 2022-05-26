@@ -4,18 +4,15 @@ import {
   VStack,
   Tooltip,
   IconButton,
-  Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { FaUsers } from "react-icons/fa";
+import { FaUsers, FaVolumeUp } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import Party from "./Party";
@@ -54,7 +51,7 @@ export function Sidebar() {
     {
       label: "Audio Manager",
       ariaLabel: "audio manager",
-      icon: <FaUsers />,
+      icon: <FaVolumeUp />,
       component: <AudioManager />,
     },
   ];
