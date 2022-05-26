@@ -1,4 +1,4 @@
-import { Campaign, Note } from "ddtools-types";
+import { Audio, Campaign, FirestoreDoc, Note } from "ddtools-types";
 import {
   DocumentData,
   FirestoreDataConverter,
@@ -7,42 +7,45 @@ import {
   WithFieldValue,
 } from "firebase/firestore";
 
+function customToFirestore<T extends FirestoreDoc>(
+  obj: WithFieldValue<T>,
+): DocumentData {
+  const o = { ...obj };
+  delete o.ref;
+  delete o.id;
+  return o;
+}
+
+function customFromFirestore<T extends FirestoreDoc>(
+  snapshot: QueryDocumentSnapshot,
+  options: SnapshotOptions,
+): T {
+  const data = snapshot.data(options) as T;
+  return {
+    ...data,
+    id: snapshot.id,
+    ref: snapshot.ref,
+  };
+}
+
 export const campaignConverter: FirestoreDataConverter<Campaign> = {
-  toFirestore(campaign: WithFieldValue<Campaign>): DocumentData {
-    const c = { ...campaign };
-    delete c.ref;
-    delete c.id;
-    return c;
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions,
-  ): Campaign {
-    const data = snapshot.data(options) as Campaign;
-    return {
-      ...data,
-      id: snapshot.id,
-      ref: snapshot.ref,
-    };
-  },
+  toFirestore: customToFirestore,
+  fromFirestore: customFromFirestore,
 };
 
 export const noteConverter: FirestoreDataConverter<Note> = {
-  toFirestore(note: WithFieldValue<Note>): DocumentData {
-    const n = { ...note };
-    delete n.ref;
-    delete n.id;
-    return n;
-  },
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions,
-  ): Note {
-    const data = snapshot.data(options) as Note;
-    return {
-      ...data,
-      id: snapshot.id,
-      ref: snapshot.ref,
-    };
-  },
+  toFirestore: customToFirestore,
+  fromFirestore: customFromFirestore,
 };
+
+export const audioConverter: FirestoreDataConverter<Audio> = {
+  toFirestore: customToFirestore,
+  fromFirestore: customFromFirestore,
+};
+
+export function converterFactory<T>(): FirestoreDataConverter<T> {
+  return {
+    toFirestore: customToFirestore,
+    fromFirestore: customFromFirestore,
+  };
+}
