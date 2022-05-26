@@ -3,9 +3,14 @@ import {
   Button,
   ButtonGroup,
   Skeleton,
-  Stack,
   Text,
-  Badge,
+  Heading,
+  Divider,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  VStack,
+  Flex,
 } from "@chakra-ui/react";
 import { Audio } from "ddtools-types";
 import { collection, updateDoc } from "firebase/firestore";
@@ -55,60 +60,76 @@ function AudioBox({ audioDoc }: { audioDoc: Audio }) {
   }, [audioDoc.isPlaying]);
 
   return (
-    <Box>
-      <Text>
-        {audioDoc.name}{" "}
-        {audioDoc.isPlaying && <Badge colorScheme="pink">LIVE</Badge>}
-      </Text>
-      <audio ref={audioRef} src={downloadURL} loop={audioDoc.isLooped} />
-      {isDownloadURLLoading ? (
-        <Skeleton height="50px" />
-      ) : (
-        <ButtonGroup isAttached size="sm" variant="outline">
-          {isPreviewing ? (
-            <Button
-              leftIcon={<FaPlay />}
-              onClick={stopPreview}
-              disabled={audioDoc.isPlaying}
-            >
-              Stop preview
-            </Button>
-          ) : (
-            <Button
-              leftIcon={<FaPlay />}
-              onClick={startPreview}
-              disabled={audioDoc.isPlaying}
-            >
-              Preview
-            </Button>
-          )}
+    <Box
+      minW="100%"
+      borderWidth="1px"
+      borderRadius="lg"
+      p="3"
+      mb="3"
+      borderColor={audioDoc.isPlaying ? "pink" : undefined}
+    >
+      <VStack>
+        <Editable defaultValue={audioDoc.name}>
+          <EditablePreview />
+          <EditableInput />
+        </Editable>
 
-          {audioDoc.isPlaying ? (
-            <Button
-              leftIcon={<FaBroadcastTower />}
-              colorScheme="red"
-              onClick={stopBroadcast}
-            >
-              Stop broadcast
-            </Button>
-          ) : (
-            <Button
-              colorScheme="red"
-              leftIcon={<FaBroadcastTower />}
-              onClick={startBroadcast}
-            >
-              Broadcast
-            </Button>
-          )}
+        <audio ref={audioRef} src={downloadURL} loop={audioDoc.isLooped} />
+        {isDownloadURLLoading ? (
+          <Skeleton height="50px" />
+        ) : (
+          <ButtonGroup minW="100%" isAttached size="sm" variant="outline">
+            {isPreviewing ? (
+              <Button
+                flex="0.6"
+                leftIcon={<FaPlay />}
+                onClick={stopPreview}
+                disabled={audioDoc.isPlaying}
+              >
+                Stop preview
+              </Button>
+            ) : (
+              <Button
+                flex="0.6"
+                leftIcon={<FaPlay />}
+                onClick={startPreview}
+                disabled={audioDoc.isPlaying}
+              >
+                Preview
+              </Button>
+            )}
 
-          {audioDoc.isLooped ? (
-            <Button leftIcon={<FaRedo />}>Looping</Button>
-          ) : (
-            <Button>No Loop</Button>
-          )}
-        </ButtonGroup>
-      )}
-      <p>{downloadURLError?.message}</p>
+            {audioDoc.isPlaying ? (
+              <Button
+                flex="1"
+                leftIcon={<FaBroadcastTower />}
+                colorScheme="red"
+                onClick={stopBroadcast}
+              >
+                Stop broadcast
+              </Button>
+            ) : (
+              <Button
+                flex="1"
+                colorScheme="red"
+                leftIcon={<FaBroadcastTower />}
+                onClick={startBroadcast}
+              >
+                Broadcast
+              </Button>
+            )}
+
+            {audioDoc.isLooped ? (
+              <Button flex="0.6" leftIcon={<FaRedo />}>
+                Looping
+              </Button>
+            ) : (
+              <Button flex="0.6">No Loop</Button>
+            )}
+          </ButtonGroup>
+        )}
+        <p>{downloadURLError?.message}</p>
+      </VStack>
     </Box>
   );
 }
@@ -135,19 +156,34 @@ export function AudioManager() {
 
   return (
     <Box>
-      <Stack>
-        {!isAudioDocsLoading &&
-          audioDocs &&
-          audioDocs.map((audioDoc) => (
-            <AudioBox key={audioDoc.id} audioDoc={audioDoc} />
-          ))}
-      </Stack>
-      <input
-        type="file"
-        accept=".mp3,.ogg,.m4a"
-        onChange={handleFileChange}
-        multiple
-      />
+      <Text mb="5">
+        Play audio for the whole adventuring party with the click of a button!
+        Previewing will just play the audio for you, while broadcasting will
+        play it for everybody currently online.
+      </Text>
+
+      <VStack alignItems="flex-start">
+        <Heading size="sm">Campaign Audio</Heading>
+        <Flex flexDirection="column" minW="100%">
+          {!isAudioDocsLoading &&
+            audioDocs &&
+            audioDocs.map((audioDoc) => (
+              <AudioBox key={audioDoc.id} audioDoc={audioDoc} />
+            ))}
+        </Flex>
+      </VStack>
+      <Divider my="6" />
+      <Box>
+        <VStack alignItems="flex-start">
+          <Heading size="sm">Upload Audio</Heading>
+          <input
+            type="file"
+            accept=".mp3,.ogg,.m4a"
+            onChange={handleFileChange}
+            multiple
+          />
+        </VStack>
+      </Box>
     </Box>
   );
 }
