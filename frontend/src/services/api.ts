@@ -1,4 +1,4 @@
-import { Campaign, Note } from "ddtools-types";
+import { Campaign, Note, Audio } from "ddtools-types";
 import {
   collection,
   doc,
@@ -10,11 +10,12 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { campaignConverter, noteConverter } from "./converter";
-import { auth, firestore } from "./firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { converterFactory } from "./converter";
+import { auth, firestore, storage } from "./firebase";
 
 const campaignCollection = collection(firestore, "campaigns").withConverter(
-  campaignConverter,
+  converterFactory<Campaign>(),
 );
 
 /** Add a new campaign with the desired name and DM invitations. */
@@ -115,11 +116,37 @@ export function addNote(
     "campaigns",
     campaignId,
     "notes",
-  ).withConverter(noteConverter);
+  ).withConverter(converterFactory<Note>());
   return addDoc(notesCollection, {
     ownerUserId: userId,
     createdAt: serverTimestamp(),
     sharedWith: [],
     ...note,
   });
+}
+
+export async function addCampaignAudioFiles(
+  campaignId: Campaign["id"],
+  files: File[],
+) {
+  const audioCollection = collection(
+    firestore,
+    "campaigns",
+    campaignId,
+    "audio",
+  ).withConverter(converterFactory<Audio>());
+
+  for (const file of files) {
+    const fileRef = ref(storage, "campaigns/" + campaignId + "/" + file.name);
+    const uploadResult = await uploadBytes(fileRef, file);
+
+    await addDoc(audioCollection, {
+      createdAt: new Date().getTime(),
+      filePath: fileRef.fullPath,
+      name: file.name,
+      ownerUserId: "",
+      sharedWith: [],
+      defaultVolume: 100,
+    });
+  }
 }
