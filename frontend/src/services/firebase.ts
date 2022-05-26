@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 
 const config = {
   apiKey: "AIzaSyBB8lNoP6fYltMVOeDw3AQpOW9sRulLqW0",
@@ -20,9 +21,12 @@ export const auth = getAuth(firebaseApp);
 
 export const functions = getFunctions(firebaseApp);
 
+export const storage = getStorage(firebaseApp);
+
 // Use local emulators
 if (process.env.NODE_ENV === "development") {
   connectFirestoreEmulator(firestore, "localhost", 8080);
   connectAuthEmulator(auth, "http://localhost:9099/");
   connectFunctionsEmulator(functions, "localhost", 5001);
+  connectStorageEmulator(storage, "localhost", 9199);
 }
