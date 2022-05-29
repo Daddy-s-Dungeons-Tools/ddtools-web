@@ -11,9 +11,13 @@ import {
   EditablePreview,
   VStack,
   Flex,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { Audio } from "ddtools-types";
-import { collection, updateDoc } from "firebase/firestore";
+import { collection, orderBy, query, updateDoc } from "firebase/firestore";
 import { ref } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -138,8 +142,11 @@ export function AudioManager() {
   const { campaign } = useContext(CampaignUserContext);
 
   const [audioDocs, isAudioDocsLoading, audioDocsError] = useCollectionData(
-    collection(firestore, "campaigns", campaign.id, "audio").withConverter(
-      audioConverter,
+    query(
+      collection(firestore, "campaigns", campaign.id, "audio").withConverter(
+        audioConverter,
+      ),
+      orderBy("createdAt", "desc"),
     ),
   );
 
@@ -164,6 +171,17 @@ export function AudioManager() {
 
       <VStack alignItems="flex-start">
         <Heading size="sm">Campaign Audio</Heading>
+
+        {audioDocsError && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle>Yikes!</AlertTitle>
+            <AlertDescription>
+              Something went wrong when loading the audio files for this
+              campaign...
+            </AlertDescription>
+          </Alert>
+        )}
         <Flex flexDirection="column" minW="100%">
           {!isAudioDocsLoading &&
             audioDocs &&

@@ -67,7 +67,7 @@ export function EventLog() {
       collection(firestore, "campaigns", campaign.id, "eventLog").withConverter(
         converter,
       ),
-      orderBy("createdAt"),
+      orderBy("createdAt", "desc"),
     ),
   );
 

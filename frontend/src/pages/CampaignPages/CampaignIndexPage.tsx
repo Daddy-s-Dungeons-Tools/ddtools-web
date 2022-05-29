@@ -13,7 +13,7 @@ import { useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
 import { useProtectedRoute } from "../../hooks/routes";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { collection, query, where } from "firebase/firestore";
+import { collection, orderBy, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
@@ -39,6 +39,7 @@ export default function CampaignIndexPage() {
       query(
         collection(firestore, "campaigns"),
         where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null),
+        orderBy("createdAt", "desc"),
       ).withConverter(campaignConverter),
     );
   const [
@@ -53,6 +54,7 @@ export default function CampaignIndexPage() {
         "array-contains",
         auth.currentUser?.email ?? null,
       ),
+      orderBy("createdAt", "desc"),
     ).withConverter(campaignConverter),
   );
 
@@ -62,6 +64,7 @@ export default function CampaignIndexPage() {
       query(
         collection(firestore, "campaigns"),
         where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null),
+        orderBy("createdAt", "desc"),
       ).withConverter(campaignConverter),
     );
 
@@ -77,6 +80,7 @@ export default function CampaignIndexPage() {
         "array-contains",
         auth.currentUser?.email ?? null,
       ),
+      orderBy("createdAt", "desc"),
     ).withConverter(campaignConverter),
   );
 
