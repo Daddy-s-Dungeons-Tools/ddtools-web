@@ -45,7 +45,7 @@ export function CampaignPlayerBox({
             />
           </Tooltip>
         </Hide>
-        <Box p="6">
+        <Box flex="1" p="6">
           <VStack align="flex-start">
             <Tooltip placement="right" label={`Played by ${userDisplayName}`}>
               <Heading size="lg">
@@ -57,7 +57,7 @@ export function CampaignPlayerBox({
 
             <StatGroup minW="100%">
               {ABILITIES.map((ability) => (
-                <Stat>
+                <Stat key={ability}>
                   <StatLabel
                     fontWeight="semibold"
                     textTransform="uppercase"
