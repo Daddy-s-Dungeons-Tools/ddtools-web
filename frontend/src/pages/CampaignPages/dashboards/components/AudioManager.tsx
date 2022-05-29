@@ -22,7 +22,7 @@ import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
 import { addCampaignAudioFiles } from "../../../../services/api";
 import { audioConverter } from "../../../../services/converter";
 import { firestore, storage } from "../../../../services/firebase";
-import { CampaignContext } from "../../CampaignDashboardPage";
+import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 function AudioBox({ audioDoc }: { audioDoc: Audio }) {
   const [downloadURL, isDownloadURLLoading, downloadURLError] = useDownloadURL(
@@ -135,7 +135,7 @@ function AudioBox({ audioDoc }: { audioDoc: Audio }) {
 }
 
 export function AudioManager() {
-  const campaign = useContext(CampaignContext);
+  const { campaign } = useContext(CampaignUserContext);
 
   const [audioDocs, isAudioDocsLoading, audioDocsError] = useCollectionData(
     collection(firestore, "campaigns", campaign.id, "audio").withConverter(

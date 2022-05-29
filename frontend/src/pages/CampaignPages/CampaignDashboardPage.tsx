@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
 import { collection, doc } from "firebase/firestore";
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,7 +18,13 @@ import { auth, firestore } from "../../services/firebase";
 
 import { Sidebar } from "./dashboards/components/Sidebar";
 
-export const CampaignContext = createContext<Campaign>(undefined!);
+type CampaignUserContextType = {
+  userRole: "dm" | "player";
+  campaign: Campaign;
+};
+export const CampaignUserContext = createContext<CampaignUserContextType>(
+  undefined!,
+);
 
 export default function CampaignDashboardPage() {
   useProtectedRoute();
@@ -31,6 +37,16 @@ export default function CampaignDashboardPage() {
       campaignConverter,
     ),
   );
+
+  const campaignUserContextValue = useMemo<CampaignUserContextType>(() => {
+    if (!user || !campaignDoc) return undefined!;
+    return {
+      userRole: campaignDoc?.playerUserIds?.includes(user?.uid)
+        ? "player"
+        : "dm",
+      campaign: campaignDoc!,
+    };
+  }, [user, campaignDoc]);
 
   useEffect(() => {
     if (isCampaignDocLoading || isUserLoading) {
@@ -75,14 +91,14 @@ export default function CampaignDashboardPage() {
     );
   } else {
     return (
-      <CampaignContext.Provider value={campaignDoc}>
+      <CampaignUserContext.Provider value={campaignUserContextValue}>
         <Container maxW="100%" p="0">
           <Flex>
             <Sidebar />
             <Box id="main-dashboard" flex="1" p="8"></Box>
           </Flex>
         </Container>
-      </CampaignContext.Provider>
+      </CampaignUserContext.Provider>
     );
   }
 }

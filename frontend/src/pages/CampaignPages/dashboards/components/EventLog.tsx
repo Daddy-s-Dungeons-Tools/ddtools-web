@@ -14,7 +14,7 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { EventLogItem } from "ddtools-types";
+import { Campaign, EventLogItem } from "ddtools-types";
 import { collection, orderBy, query } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -22,12 +22,16 @@ import { FaSearch } from "react-icons/fa";
 import { UserAvatarFromSummary } from "../../../../components/UserAvatar";
 import { converterFactory } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
-import { CampaignContext } from "../../CampaignDashboardPage";
+import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 /** Single event log item display. Shows all present information except for the payload. */
-function LogItem({ item }: { item: EventLogItem }) {
-  const campaign = useContext(CampaignContext);
-
+function LogItem({
+  campaign,
+  item,
+}: {
+  campaign: Campaign;
+  item: EventLogItem;
+}) {
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       {item.message && <Text>{item.message}</Text>}
@@ -57,7 +61,7 @@ function LogItem({ item }: { item: EventLogItem }) {
 const converter = converterFactory<EventLogItem>();
 
 export function EventLog() {
-  const campaign = useContext(CampaignContext);
+  const { campaign } = useContext(CampaignUserContext);
   const [eventLog, isEventLogLoading, eventLogError] = useCollectionData(
     query(
       collection(firestore, "campaigns", campaign.id, "eventLog").withConverter(
@@ -93,7 +97,9 @@ export function EventLog() {
           [...Array(4)].map((_, i) => <Skeleton key={i} height="100px" />)}
         {!isEventLogLoading &&
           eventLog &&
-          eventLog.map((item) => <LogItem key={item.id} item={item} />)}
+          eventLog.map((item) => (
+            <LogItem key={item.id} campaign={campaign} item={item} />
+          ))}
       </VStack>
     </Box>
   );
