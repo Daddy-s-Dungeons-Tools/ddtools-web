@@ -1,10 +1,13 @@
-import { Campaign } from "ddtools-types";
+import { Campaign, EventLogItem } from "ddtools-types";
 import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 /** Firebase admin app with full permissions */
 const app = initializeApp();
+
+const db = getFirestore(app);
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -16,6 +19,16 @@ const app = initializeApp();
 
 const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
   JSON.stringify(arr1) === JSON.stringify(arr2);
+
+/**
+ * ASdasd
+ * @param {string} campaignId
+ * @param {EventLogItem} item
+ * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
+ */
+function logEvent(campaignId: Campaign["id"], item: EventLogItem) {
+  return db.collection(`campaigns/${campaignId}/eventLog`).add(item);
+}
 
 /**
  * Updates the player user summaries for a campaign document.
@@ -84,6 +97,15 @@ export const modifyCampaign = functions.firestore
 
     if (!campaign) {
       return;
+    }
+
+    if (!change.before.exists) {
+      await logEvent(change.after.id, {
+        type: "campaign-created",
+        message: `Campaign ${campaign.name} was created`,
+        createdAt: new Date().getTime(),
+        sourceUserIds: campaign.dmUserIds,
+      });
     }
 
     const previousDMUserIds = change.before.exists
