@@ -6,6 +6,7 @@ import {
   Spacer,
   Link,
   HStack,
+  Avatar,
 } from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -52,6 +53,7 @@ export default function TopNavbar() {
 
       {user ? (
         <>
+          <Avatar size="sm" name={user.displayName ?? undefined} />
           <Text display="block" mx="2">
             Logged in as <strong>{user.displayName ?? user.email}</strong>
           </Text>
