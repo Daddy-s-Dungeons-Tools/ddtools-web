@@ -15,6 +15,7 @@ import { useState } from "react";
 import { FaUsers, FaVolumeUp } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
+import { EventLog } from "./EventLog";
 import Party from "./Party";
 
 type NavbarItem = {
@@ -40,7 +41,7 @@ export function Sidebar() {
       label: "Event Log",
       ariaLabel: "event log",
       icon: <GiScrollUnfurled />,
-      component: <p>stuff</p>,
+      component: <EventLog />,
     },
     {
       label: "Adventuring Party",
