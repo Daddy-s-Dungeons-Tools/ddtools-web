@@ -43,7 +43,7 @@ export default function TopNavbar() {
           </Text>
         </HStack>
       </Box>
-      {!isUserLoading && user && (
+      {!isUserLoading && user && !location.pathname.startsWith("/campaigns/") && (
         <HStack>
           <Link as={ReactRouterLink} to="/profile">
             Profile
