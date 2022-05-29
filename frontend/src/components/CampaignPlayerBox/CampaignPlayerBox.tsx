@@ -1,3 +1,5 @@
+import { Character } from "ddtools-types";
+
 import {
   Box,
   Flex,
@@ -13,12 +15,14 @@ import {
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
-import { ABILITIES, Character } from "ddtools-types";
 import {
   characterHealthStatus,
   characterPhysicalDescription,
   characterRaceAndClasses,
 } from "../../utils/characters";
+
+/** Very odd... webpack freaks out when I try to import this from ddtools-types */
+const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
 
 type CampaignPlayerBoxPropTypes = {
   userDisplayName: string;
