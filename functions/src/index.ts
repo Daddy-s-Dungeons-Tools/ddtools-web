@@ -31,19 +31,36 @@ export const modifyCampaign = functions.firestore
       return;
     }
 
-    // Calculate DM user names
-    let dmUserNames: string[] = [];
+    // Calculate DM user summaries
+    const dmUserSummaries: Campaign["dmUserSummaries"] = {};
     if (campaign.dmUserIds) {
-      const dmUsers = await getAuth(app).getUsers(
+      const dmUsersResult = await getAuth(app).getUsers(
         campaign.dmUserIds?.map((uid) => ({ uid })),
       );
 
-      dmUserNames = dmUsers.users.map(
-        (user) => user.displayName?.split(" ")[0] || user.email!,
+      for (const dmUser of dmUsersResult.users) {
+        dmUserSummaries[dmUser.uid] = {
+          displayName: dmUser.displayName ?? null,
+        };
+      }
+    }
+
+    // Calculate player user summaries
+    const playerUserSummaries: Campaign["playerUserSummaries"] = {};
+    if (campaign.playerUserIds) {
+      const playerUsersResult = await getAuth(app).getUsers(
+        campaign.playerUserIds?.map((uid) => ({ uid })),
       );
+
+      for (const dmUser of playerUsersResult.users) {
+        playerUserSummaries[dmUser.uid] = {
+          displayName: dmUser.displayName ?? null,
+        };
+      }
     }
 
     return change.after.ref.update({
-      dmUserNames,
+      dmUserSummaries,
+      playerUserSummaries,
     });
   });
