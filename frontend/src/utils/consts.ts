@@ -1,5 +1,7 @@
 import { Campaign, Character } from "ddtools-types";
 
+export const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
+
 export const testCampaign: Campaign = {
   name: "Test Campaign",
   mode: "out-of-combat",
@@ -57,7 +59,7 @@ export const testCharacter: Character = {
     silver: 0,
     copper: 0,
   },
-  name: "Johhny Appleseed",
+  name: "Nil Agosto",
   size: "small",
   speed: {
     walking: 0,
@@ -67,15 +69,15 @@ export const testCharacter: Character = {
     burrowing: 0,
   },
   abilityScores: {
-    cha: 10,
-    con: 10,
-    dex: 10,
-    int: 10,
-    str: 10,
-    wis: 10,
+    cha: 12,
+    con: 16,
+    dex: 14,
+    int: 11,
+    str: 20,
+    wis: 12,
   },
   hitPoints: {
-    current: 30,
+    current: 26,
     temporary: 0,
     max: 30,
   },
