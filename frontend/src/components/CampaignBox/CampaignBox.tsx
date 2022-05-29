@@ -193,30 +193,30 @@ export function CampaignBox({
 
             <HStack mt="3">
               <AvatarGroup size="sm">
-                {campaign.dmUserSummaries &&
-                  Object.entries(campaign.dmUserSummaries).map(
-                    ([userId, summary]) => (
+                {campaign.userSummaries &&
+                  Object.entries(campaign.userSummaries)
+                    .filter(([userId, summary]) => summary.as === "dm")
+                    .map(([userId, summary]) => (
                       <UserAvatar
                         key={userId}
                         userAs="dm"
                         userId={userId}
                         userDisplayName={summary.displayName}
                       />
-                    ),
-                  )}
+                    ))}
               </AvatarGroup>
               <AvatarGroup size="sm">
-                {campaign.playerUserSummaries &&
-                  Object.entries(campaign.playerUserSummaries).map(
-                    ([userId, summary]) => (
+                {campaign.userSummaries &&
+                  Object.entries(campaign.userSummaries)
+                    .filter(([userId, summary]) => summary.as === "player")
+                    .map(([userId, summary]) => (
                       <UserAvatar
                         userAs="player"
                         key={userId}
                         userId={userId}
                         userDisplayName={summary.displayName}
                       />
-                    ),
-                  )}
+                    ))}
               </AvatarGroup>
             </HStack>
             <Box
