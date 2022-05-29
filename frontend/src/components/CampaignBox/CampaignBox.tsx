@@ -1,10 +1,12 @@
 import {
+  AvatarGroup,
   Box,
   Button,
   ButtonGroup,
   Flex,
   Heading,
   Hide,
+  HStack,
   Image,
   LinkBox,
   LinkOverlay,
@@ -21,6 +23,7 @@ import {
 } from "../../services/api";
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
+import { UserAvatar } from "../UserAvatar";
 
 type CampaignBoxPropTypes = {
   campaign: Campaign;
@@ -188,6 +191,34 @@ export function CampaignBox({
               </Text>
             )}
 
+            <HStack mt="3">
+              <AvatarGroup size="sm">
+                {campaign.dmUserSummaries &&
+                  Object.entries(campaign.dmUserSummaries).map(
+                    ([userId, summary]) => (
+                      <UserAvatar
+                        key={userId}
+                        userAs="dm"
+                        userId={userId}
+                        userDisplayName={summary.displayName}
+                      />
+                    ),
+                  )}
+              </AvatarGroup>
+              <AvatarGroup size="sm">
+                {campaign.playerUserSummaries &&
+                  Object.entries(campaign.playerUserSummaries).map(
+                    ([userId, summary]) => (
+                      <UserAvatar
+                        userAs="player"
+                        key={userId}
+                        userId={userId}
+                        userDisplayName={summary.displayName}
+                      />
+                    ),
+                  )}
+              </AvatarGroup>
+            </HStack>
             <Box
               color="gray.500"
               fontWeight="semibold"
@@ -195,9 +226,7 @@ export function CampaignBox({
               textTransform="uppercase"
               mt="3"
             >
-              {campaign.playerUserIds?.length ?? 0} players | started{" "}
-              {new Date(campaign.createdAt).toLocaleDateString()} | DMed by{" "}
-              {campaign.dmUserNames?.join("/")}
+              started {new Date(campaign.createdAt).toLocaleDateString()}
             </Box>
           </LinkOverlay>
           {isInvite && (
