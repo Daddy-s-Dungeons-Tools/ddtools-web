@@ -11,19 +11,21 @@ import {
   DrawerHeader,
   DrawerOverlay,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaSignOutAlt, FaUsers, FaVolumeUp } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
 import Party from "./Party";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 type NavbarItem = {
   label: string;
   ariaLabel: string;
   icon: JSX.Element;
   component: JSX.Element;
+  shownToUserRoles: ("dm" | "player")[];
 };
 
 export function Sidebar() {
@@ -31,30 +33,36 @@ export function Sidebar() {
     number | null
   >(null);
 
+  const { userRole } = useContext(CampaignUserContext);
+
   const navbarItems: NavbarItem[] = [
     {
       label: "Notes",
       ariaLabel: "notes",
       icon: <GiScrollQuill />,
       component: <p>Notes</p>,
+      shownToUserRoles: ["dm", "player"],
     },
     {
       label: "Event Log",
       ariaLabel: "event log",
       icon: <GiScrollUnfurled />,
       component: <EventLog />,
+      shownToUserRoles: ["dm", "player"],
     },
     {
       label: "Adventuring Party",
       ariaLabel: "party",
       icon: <FaUsers />,
-      component: <Party as="dm" />,
+      component: <Party />,
+      shownToUserRoles: ["dm", "player"],
     },
     {
       label: "Audio Manager",
       ariaLabel: "audio manager",
       icon: <FaVolumeUp />,
       component: <AudioManager />,
+      shownToUserRoles: ["dm"],
     },
   ];
 
@@ -68,15 +76,17 @@ export function Sidebar() {
         borderBottomRightRadius="base"
       >
         <VStack>
-          {navbarItems.map((item, index) => (
-            <Tooltip key={item.label} label={item.label} placement="right">
-              <IconButton
-                icon={item.icon}
-                aria-label={item.ariaLabel}
-                onClick={() => setActiveNavbarItemIndex(index)}
-              />
-            </Tooltip>
-          ))}
+          {navbarItems
+            .filter((item) => item.shownToUserRoles.includes(userRole))
+            .map((item, index) => (
+              <Tooltip key={item.label} label={item.label} placement="right">
+                <IconButton
+                  icon={item.icon}
+                  aria-label={item.ariaLabel}
+                  onClick={() => setActiveNavbarItemIndex(index)}
+                />
+              </Tooltip>
+            ))}
           <Tooltip label="Exit to home" placement="right">
             <IconButton
               as={ReactRouterLink}
@@ -101,7 +111,7 @@ export function Sidebar() {
           <DrawerOverlay />
           <DrawerContent>
             <DrawerCloseButton />
-            <DrawerHeader>
+            <DrawerHeader fontSize="3xl">
               {navbarItems[activeNavbarItemIndex].label}
             </DrawerHeader>
 
