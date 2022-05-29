@@ -12,11 +12,12 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { FaUsers, FaVolumeUp } from "react-icons/fa";
+import { FaSignOutAlt, FaUsers, FaVolumeUp } from "react-icons/fa";
 import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
 import Party from "./Party";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 type NavbarItem = {
   label: string;
@@ -76,9 +77,16 @@ export function Sidebar() {
               />
             </Tooltip>
           ))}
-          {/*<Tooltip label="Party" placement="right">
-            <IconButton icon={<FaUsers />} aria-label={"party"} />
-          </Tooltip> */}
+          <Tooltip label="Exit to home" placement="right">
+            <IconButton
+              as={ReactRouterLink}
+              icon={<FaSignOutAlt />}
+              aria-label="exit"
+              colorScheme="pink"
+              variant="ghost"
+              to={"/"}
+            />
+          </Tooltip>
         </VStack>
       </Box>
       <Box></Box>
