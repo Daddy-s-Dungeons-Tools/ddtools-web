@@ -1,4 +1,5 @@
 import { Avatar, AvatarProps, Tooltip } from "@chakra-ui/react";
+import { CampaignUserSummaries, CampaignUserSummary } from "ddtools-types";
 import { User } from "firebase/auth";
 import { ref } from "firebase/storage";
 import { useDownloadURL } from "react-firebase-hooks/storage";
@@ -34,5 +35,33 @@ export function UserAvatar({
         {...props}
       />
     </Tooltip>
+  );
+}
+
+/** Wrapper around UserAvatar that determines the display name and role from a user summaries object. */
+export function UserAvatarFromSummary({
+  userId,
+  userSummaries,
+  ...props
+}: { userSummaries?: CampaignUserSummaries } & Omit<
+  UserAvatarPropTypes,
+  "userDisplayName"
+>) {
+  let displayName = "Unknown User";
+  let userAs: CampaignUserSummary["as"] = "player";
+
+  if (userSummaries && userId in userSummaries) {
+    const userSummary = userSummaries[userId];
+    displayName = userSummary.displayName;
+    userAs = userSummary.as;
+  }
+
+  return (
+    <UserAvatar
+      userId={userId}
+      userDisplayName={displayName}
+      userAs={userAs}
+      {...props}
+    />
   );
 }
