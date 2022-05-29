@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
 import { campaignConverter, converterFactory } from "../../services/converter";
 import { auth, firestore } from "../../services/firebase";
+import { CharacterCreator } from "./dashboards/components/CharacterCreator";
 
 import { Sidebar } from "./dashboards/components/Sidebar";
 
@@ -115,7 +116,11 @@ export default function CampaignDashboardPage() {
         <Container maxW="100%" p="0">
           <Flex>
             <Sidebar />
-            <Box id="main-dashboard" flex="1" p="8"></Box>
+            <Box id="main-dashboard" flex="1" px="8">
+              {!campaignUserContextValue.playerCharacter && (
+                <CharacterCreator />
+              )}
+            </Box>
           </Flex>
         </Container>
       </CampaignUserContext.Provider>
