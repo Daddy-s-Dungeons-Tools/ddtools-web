@@ -221,8 +221,8 @@ export function CampaignBox({
             </HStack>
             <Box
               color="gray.500"
-              fontWeight="semibold"
               fontSize="xs"
+              fontWeight="semibold"
               textTransform="uppercase"
               mt="3"
             >
