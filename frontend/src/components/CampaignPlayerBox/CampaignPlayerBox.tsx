@@ -13,13 +13,12 @@ import {
   StatLabel,
   StatNumber,
 } from "@chakra-ui/react";
-import { Character } from "ddtools-types";
+import { ABILITIES, Character } from "ddtools-types";
 import {
   characterHealthStatus,
   characterPhysicalDescription,
   characterRaceAndClasses,
 } from "../../utils/characters";
-import { ABILITIES } from "../../utils/consts";
 
 type CampaignPlayerBoxPropTypes = {
   userDisplayName: string;

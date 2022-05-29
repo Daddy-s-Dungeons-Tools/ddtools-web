@@ -1,7 +1,5 @@
 import { Campaign, Character } from "ddtools-types";
 
-export const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
-
 export const testCampaign: Campaign = {
   name: "Test Campaign",
   mode: "out-of-combat",
