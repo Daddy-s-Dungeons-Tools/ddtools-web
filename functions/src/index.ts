@@ -17,6 +17,62 @@ const app = initializeApp();
 const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
   JSON.stringify(arr1) === JSON.stringify(arr2);
 
+/**
+ * Updates the player user summaries for a campaign document.
+ *
+ * @param {functions.firestore.DocumentSnapshot} campaignSnap
+ */
+async function updateCampaignUserSummaries(
+  campaignSnap: functions.firestore.DocumentSnapshot,
+) {
+  const campaign = campaignSnap.data() as Campaign;
+  const userIds = campaign.playerUserIds ?? [];
+
+  // Construct player user summaries for all players
+  const playerUserSummaries: Campaign["playerUserSummaries"] = {};
+  const playerUsersResult = await getAuth(app).getUsers(
+    userIds.map((uid) => ({ uid })),
+  );
+  for (const user of playerUsersResult.users) {
+    playerUserSummaries[user.uid] = {
+      displayName: user.displayName || user.email!,
+    };
+  }
+
+  // Update campaign
+  await campaignSnap.ref.update({
+    playerUserSummaries,
+  });
+}
+
+/**
+ * Updates the DM user summaries for a campaign document.
+ *
+ * @param {functions.firestore.DocumentSnapshot} campaignSnap
+ */
+async function updateCampaignDMSummaries(
+  campaignSnap: functions.firestore.DocumentSnapshot,
+) {
+  const campaign = campaignSnap.data() as Campaign;
+  const userIds = campaign.dmUserIds ?? [];
+
+  // Construct DM user summaries for all players
+  const dmUserSummaries: Campaign["dmUserSummaries"] = {};
+  const dmUsersResult = await getAuth(app).getUsers(
+    userIds.map((uid) => ({ uid })),
+  );
+  for (const user of dmUsersResult.users) {
+    dmUserSummaries[user.uid] = {
+      displayName: user.displayName || user.email!,
+    };
+  }
+
+  // Update campaign
+  await campaignSnap.ref.update({
+    dmUserSummaries,
+  });
+}
+
 export const modifyCampaign = functions.firestore
   .document("campaigns/{campaignId}")
   .onWrite(async (change, context) => {
@@ -35,23 +91,7 @@ export const modifyCampaign = functions.firestore
       : undefined;
     if (!arrayEqual(previousDMUserIds, campaign.dmUserIds)) {
       functions.logger.info("DMs have changed");
-      // Calculate DM user summaries
-      const dmUserSummaries: Campaign["dmUserSummaries"] = {};
-      if (campaign.dmUserIds) {
-        const dmUsersResult = await getAuth(app).getUsers(
-          campaign.dmUserIds?.map((uid) => ({ uid })),
-        );
-
-        for (const dmUser of dmUsersResult.users) {
-          dmUserSummaries[dmUser.uid] = {
-            displayName: dmUser.displayName ?? null,
-          };
-        }
-      }
-
-      await change.after.ref.update({
-        dmUserSummaries,
-      });
+      await updateCampaignDMSummaries(change.after);
     }
 
     const previousPlayerUserIds = change.before.exists
@@ -60,20 +100,6 @@ export const modifyCampaign = functions.firestore
     if (!arrayEqual(previousPlayerUserIds, campaign.playerUserIds)) {
       functions.logger.info("Players have changed");
       // Calculate player user summaries
-      const playerUserSummaries: Campaign["playerUserSummaries"] = {};
-      if (campaign.playerUserIds) {
-        const playerUsersResult = await getAuth(app).getUsers(
-          campaign.playerUserIds?.map((uid) => ({ uid })),
-        );
-
-        for (const dmUser of playerUsersResult.users) {
-          playerUserSummaries[dmUser.uid] = {
-            displayName: dmUser.displayName ?? null,
-          };
-        }
-      }
-      await change.after.ref.update({
-        playerUserSummaries,
-      });
+      await updateCampaignUserSummaries(change.after);
     }
   });
