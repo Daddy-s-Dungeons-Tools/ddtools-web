@@ -9,23 +9,21 @@ import {
   Flex,
   Button,
   useToast,
+  Badge,
+  Divider,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
+import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox/CampaignPlayerBox";
 import {
   addUserCampaignInvites,
   removeUserCampaignInvites,
 } from "../../../../services/api";
-import { CampaignContext } from "../../CampaignDashboardPage";
+import { testCharacter } from "../../../../utils/consts";
+import { CampaignUserContext } from "../../CampaignDashboardPage";
 
-function PartyList() {
-  const campaign = useContext(CampaignContext);
-
-  return <Box>party list</Box>;
-}
-
-function CampaignUsers() {
+function CampaignUsersManager() {
   const toast = useToast();
-  const campaign = useContext(CampaignContext);
+  const { campaign } = useContext(CampaignUserContext);
 
   const handleSubmitNewUserInvite: React.FormEventHandler<
     HTMLFormElement
@@ -66,7 +64,7 @@ function CampaignUsers() {
   return (
     <Box minW="100%">
       <Heading size="md" mb="1">
-        Invited Users
+        Manage Users
       </Heading>
       <UnorderedList spacing={1} mb="3">
         {campaign.playerInviteEmails ? (
@@ -77,7 +75,7 @@ function CampaignUsers() {
               }
               key={playerEmail}
             >
-              {playerEmail}
+              {playerEmail} <Badge colorScheme="cyan">invited</Badge>
             </ListItem>
           ))
         ) : (
@@ -91,13 +89,13 @@ function CampaignUsers() {
             name="emails"
             flex="1"
             type="text"
-            placeholder="New user email"
+            placeholder="Email address(es)"
             mr="3"
             required
           />
 
           <Button colorScheme="teal" type="submit">
-            Invite
+            Invite to Play
           </Button>
         </Flex>
       </form>
@@ -105,25 +103,28 @@ function CampaignUsers() {
   );
 }
 
-type PartyPropTypes = {
-  as: "player" | "dm";
-};
-export default function Party(props: PartyPropTypes) {
-  const campaign = useContext(CampaignContext);
-
-  if (props.as === "dm") {
-    // DM party listing
-    return (
-      <Box>
-        <VStack align="flex-start" spacing="8">
-          <PartyList />
-
-          <CampaignUsers />
+export default function Party() {
+  const { userRole, campaign } = useContext(CampaignUserContext);
+  return (
+    <Box>
+      <VStack align="flex-start" spacing="8">
+        <VStack minW="100%">
+          {campaign.playerUserIds?.map((userId) => (
+            <CampaignPlayerBox
+              key={userId}
+              userDisplayName="User"
+              character={testCharacter}
+            />
+          ))}
         </VStack>
-      </Box>
-    );
-  } else {
-    // Player party listing
-    return <p>hi nick</p>;
-  }
+
+        {userRole === "dm" && (
+          <>
+            <Divider />
+            <CampaignUsersManager />
+          </>
+        )}
+      </VStack>
+    </Box>
+  );
 }
