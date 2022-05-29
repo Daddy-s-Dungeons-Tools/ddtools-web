@@ -1,4 +1,9 @@
-import { Campaign, EventLogItem } from "ddtools-types";
+import {
+  Campaign,
+  CampaignUserSummaries,
+  EventLogItem,
+  UserID,
+} from "ddtools-types";
 import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
@@ -31,59 +36,40 @@ function logEvent(campaignId: Campaign["id"], item: EventLogItem) {
 }
 
 /**
- * Updates the player user summaries for a campaign document.
  *
  * @param {functions.firestore.DocumentSnapshot} campaignSnap
+ * @param {UserID[]} userIds
+ * @return {Promise<CampaignUserSummaries>}
  */
-async function updateCampaignUserSummaries(
+async function generateCampaignUserSummaries(
   campaignSnap: functions.firestore.DocumentSnapshot,
-) {
+  userIds: UserID[],
+): Promise<CampaignUserSummaries> {
   const campaign = campaignSnap.data() as Campaign;
-  const userIds = campaign.playerUserIds ?? [];
 
-  // Construct player user summaries for all players
-  const playerUserSummaries: Campaign["playerUserSummaries"] = {};
-  const playerUsersResult = await getAuth(app).getUsers(
+  // Construct user summaries for desired players
+  const userSummaries: CampaignUserSummaries = {};
+  const usersResult = await getAuth(app).getUsers(
     userIds.map((uid) => ({ uid })),
   );
-  for (const user of playerUsersResult.users) {
-    playerUserSummaries[user.uid] = {
-      displayName: user.displayName || user.email!,
-    };
+  for (const user of usersResult.users) {
+    const displayName = user.displayName || user.email!;
+
+    if (campaign.dmUserIds?.includes(user.uid)) {
+      userSummaries[user.uid] = {
+        as: "dm",
+        displayName,
+      };
+    } else if (campaign.playerUserIds?.includes(user.uid)) {
+      userSummaries[user.uid] = {
+        as: "player",
+        displayName,
+        // TODO: currentCharacterName
+      };
+    }
   }
 
-  // Update campaign
-  await campaignSnap.ref.update({
-    playerUserSummaries,
-  });
-}
-
-/**
- * Updates the DM user summaries for a campaign document.
- *
- * @param {functions.firestore.DocumentSnapshot} campaignSnap
- */
-async function updateCampaignDMSummaries(
-  campaignSnap: functions.firestore.DocumentSnapshot,
-) {
-  const campaign = campaignSnap.data() as Campaign;
-  const userIds = campaign.dmUserIds ?? [];
-
-  // Construct DM user summaries for all players
-  const dmUserSummaries: Campaign["dmUserSummaries"] = {};
-  const dmUsersResult = await getAuth(app).getUsers(
-    userIds.map((uid) => ({ uid })),
-  );
-  for (const user of dmUsersResult.users) {
-    dmUserSummaries[user.uid] = {
-      displayName: user.displayName || user.email!,
-    };
-  }
-
-  // Update campaign
-  await campaignSnap.ref.update({
-    dmUserSummaries,
-  });
+  return userSummaries;
 }
 
 export const modifyCampaign = functions.firestore
@@ -111,17 +97,25 @@ export const modifyCampaign = functions.firestore
     const previousDMUserIds = change.before.exists
       ? change.before.data()!.dmUserIds
       : undefined;
-    if (!arrayEqual(previousDMUserIds, campaign.dmUserIds)) {
-      functions.logger.info("DMs have changed");
-      await updateCampaignDMSummaries(change.after);
-    }
-
     const previousPlayerUserIds = change.before.exists
       ? change.before.data()!.playerUserIds
       : undefined;
-    if (!arrayEqual(previousPlayerUserIds, campaign.playerUserIds)) {
-      functions.logger.info("Players have changed");
-      // Calculate player user summaries
-      await updateCampaignUserSummaries(change.after);
+    if (
+      !arrayEqual(previousDMUserIds, campaign.dmUserIds) ||
+      !arrayEqual(previousPlayerUserIds, campaign.playerUserIds)
+    ) {
+      functions.logger.info("Campaign users have changed");
+      // Calculate user summaries
+      const userIds = [
+        ...(campaign.dmUserIds ?? []),
+        ...(campaign.playerUserIds ?? []),
+      ];
+      const userSummaries = await generateCampaignUserSummaries(
+        change.after,
+        userIds,
+      );
+      await change.after.ref.update({
+        userSummaries: userSummaries,
+      });
     }
   });
