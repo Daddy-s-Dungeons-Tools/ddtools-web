@@ -6,14 +6,14 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Campaign } from "ddtools-types";
+import { Campaign, Character } from "ddtools-types";
 import { collection, doc } from "firebase/firestore";
 import { createContext, useEffect, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
-import { campaignConverter } from "../../services/converter";
+import { campaignConverter, converterFactory } from "../../services/converter";
 import { auth, firestore } from "../../services/firebase";
 
 import { Sidebar } from "./dashboards/components/Sidebar";
@@ -21,10 +21,13 @@ import { Sidebar } from "./dashboards/components/Sidebar";
 type CampaignUserContextType = {
   userRole: "dm" | "player";
   campaign: Campaign;
+  playerCharacter?: Character;
 };
 export const CampaignUserContext = createContext<CampaignUserContextType>(
   undefined!,
 );
+
+const characterConverter = converterFactory<Character>();
 
 export default function CampaignDashboardPage() {
   useProtectedRoute();
@@ -38,6 +41,22 @@ export default function CampaignDashboardPage() {
     ),
   );
 
+  // Attempt to find the user's character only if they are a player and not a DM
+  const [playerCharacter, isPlayerCharacterLoading, playerCharacterError] =
+    useDocumentData(
+      user && campaignDoc && campaignDoc.playerUserIds?.includes(user.uid!)
+        ? doc(
+            firestore,
+            "campaigns",
+            campaignId!,
+            "characters",
+            user.uid,
+          ).withConverter(characterConverter)
+        : null,
+    );
+
+  // We memoize this value since otherwise it would change every time this parent component rerenders,
+  // and trigger way too many renders in child components that use it
   const campaignUserContextValue = useMemo<CampaignUserContextType>(() => {
     if (!user || !campaignDoc) return undefined!;
     return {
@@ -45,8 +64,9 @@ export default function CampaignDashboardPage() {
         ? "player"
         : "dm",
       campaign: campaignDoc!,
+      playerCharacter: playerCharacter,
     };
-  }, [user, campaignDoc]);
+  }, [user, campaignDoc, playerCharacter]);
 
   useEffect(() => {
     if (isCampaignDocLoading || isUserLoading) {
