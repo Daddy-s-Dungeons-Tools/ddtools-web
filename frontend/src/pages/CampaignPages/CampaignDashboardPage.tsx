@@ -1,4 +1,11 @@
-import { Box, Center, Container, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Container,
+  Flex,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
 import { collection, doc } from "firebase/firestore";
 import { createContext, useEffect } from "react";
@@ -70,8 +77,10 @@ export default function CampaignDashboardPage() {
     return (
       <CampaignContext.Provider value={campaignDoc}>
         <Container maxW="100%" p="0">
-          <Sidebar />
-          <Box p="8"></Box>
+          <Flex>
+            <Sidebar />
+            <Box id="main-dashboard" flex="1" p="8"></Box>
+          </Flex>
         </Container>
       </CampaignContext.Provider>
     );
