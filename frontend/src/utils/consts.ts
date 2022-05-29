@@ -6,7 +6,6 @@ export const testCampaign: Campaign = {
   createdAt: new Date().getTime(),
   color: "green",
   dmUserIds: ["123123124123123"],
-  dmUserNames: ["Frank"],
   description: "lorem ipsum dolor sit amet",
 };
 
