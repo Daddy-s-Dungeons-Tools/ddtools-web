@@ -7,7 +7,7 @@ import {
   Skeleton,
   Stack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
 import { useProtectedRoute } from "../../hooks/routes";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -82,6 +82,27 @@ export default function CampaignIndexPage() {
       orderBy("createdAt", "desc"),
     ).withConverter(campaignConverter),
   );
+
+  // Log errors to console
+  useEffect(() => {
+    if (dmCampaignsError) {
+      console.warn(dmCampaignInvitesError);
+    }
+    if (playerCampaignsError) {
+      console.warn(playerCampaignInvitesError);
+    }
+    if (dmCampaignInvitesError) {
+      console.warn(dmCampaignInvitesError);
+    }
+    if (playerCampaignInvitesError) {
+      console.warn(playerCampaignInvitesError);
+    }
+  }, [
+    dmCampaignsError,
+    playerCampaignsError,
+    dmCampaignInvitesError,
+    playerCampaignInvitesError,
+  ]);
 
   return (
     <Container maxW="container.lg">

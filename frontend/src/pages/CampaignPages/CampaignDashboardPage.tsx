@@ -22,6 +22,7 @@ import { Sidebar } from "./dashboards/components/Sidebar";
 type CampaignUserContextType = {
   userRole: "dm" | "player";
   campaign: Campaign;
+  isPlayerCharacterLoading: boolean;
   playerCharacter?: Character;
 };
 export const CampaignUserContext = createContext<CampaignUserContextType>(
@@ -65,9 +66,23 @@ export default function CampaignDashboardPage() {
         ? "player"
         : "dm",
       campaign: campaignDoc!,
+      isPlayerCharacterLoading,
       playerCharacter: playerCharacter,
     };
-  }, [user, campaignDoc, playerCharacter]);
+  }, [user, campaignDoc, isPlayerCharacterLoading, playerCharacter]);
+
+  // Log errors to console
+  useEffect(() => {
+    if (userError) {
+      console.warn(userError);
+    }
+    if (campaignDocError) {
+      console.warn(campaignDocError);
+    }
+    if (playerCharacterError) {
+      console.warn(playerCharacterError);
+    }
+  }, [userError, campaignDocError, playerCharacterError]);
 
   useEffect(() => {
     if (isCampaignDocLoading || isUserLoading) {
