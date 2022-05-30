@@ -7,6 +7,7 @@ import {
   Heading,
   Hide,
   HStack,
+  Icon,
   Image,
   LinkBox,
   LinkOverlay,
@@ -24,6 +25,7 @@ import {
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
 import { UserAvatar } from "../UserAvatar";
+import { FaUserSlash } from "react-icons/fa";
 
 type CampaignBoxPropTypes = {
   campaign: Campaign;
@@ -182,7 +184,11 @@ export function CampaignBox({
             )}
 
             {as === "player" && !character && !isInvite && (
-              <Heading size="md">No Character Created</Heading>
+              <HStack>
+                <Heading size="md">No Character Created</Heading>
+
+                <Icon as={FaUserSlash} />
+              </HStack>
             )}
 
             {as === "dm" && campaign.description && (
