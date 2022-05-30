@@ -26,8 +26,25 @@
     -->
     <title>DDTools</title>
   </head>
+  <style>
+    #dice-box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+    }
+
+    #dice-box canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="dice-box"></div>
     <div id="root"></div>
     <!--
       This HTML file is a template.
