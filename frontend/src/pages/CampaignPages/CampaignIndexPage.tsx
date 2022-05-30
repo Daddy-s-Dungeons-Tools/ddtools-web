@@ -6,6 +6,7 @@ import {
   Button,
   Skeleton,
   Stack,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -125,14 +126,18 @@ export default function CampaignIndexPage() {
 
       <Flex w="100%" flexDirection={{ base: "column", md: "row" }}>
         {/* Player listing */}
-        <VStack flex={"1"} align="flex-start" p={3}>
-          <Heading mb="8">Your Player Campaigns</Heading>
+        <VStack flex={"1"} align="flex-start" p={3} spacing="5">
+          <Heading>Your Player Campaigns</Heading>
 
           {playerCampaignsError && (
             <ErrorAlert
               title="Yikes!"
               description="There was an error fetching your player campaigns..."
             />
+          )}
+
+          {playerCampaigns && playerCampaigns.length === 0 && (
+            <Text color="gray.500">You are not playing in any campaigns.</Text>
           )}
 
           {isPlayerCampaignsLoading ? (
@@ -167,20 +172,25 @@ export default function CampaignIndexPage() {
               loadingText="Loading invites..."
               disabled
             >
-              No Pending Invites
+              No Player Invites
             </Button>
           )}
         </VStack>
 
         {/* DM listing */}
-        <VStack flex={"1"} align="flex-start" p={3}>
-          <Heading mb="8">Your DM Campaigns</Heading>
+        <VStack flex={"1"} align="flex-start" p={3} spacing="5">
+          <Heading>Your DM Campaigns</Heading>
           {dmCampaignsError && (
             <ErrorAlert
               title="Yikes!"
               description="There was an error fetching your DM campaigns..."
             />
           )}
+
+          {dmCampaigns && dmCampaigns.length === 0 && (
+            <Text color="gray.500">You are not DM any campaigns.</Text>
+          )}
+
           {isDMCampaignsLoading ? (
             <Stack w="100%">
               <Skeleton height="130px" />
@@ -213,7 +223,7 @@ export default function CampaignIndexPage() {
                 isLoading={isDMCampaignInvitesLoading}
                 loadingText="Loading invites..."
               >
-                No Pending DM Invites
+                No DM Invites
               </Button>
             )}
             <Button
