@@ -2,7 +2,7 @@ import { addDecorator } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { theme } from "../src/services/theme"
+import { theme } from "../src/services/theme";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -12,12 +12,11 @@ export const parameters = {
       date: /Date$/,
     },
   },
-}
+  chakra: {
+    theme,
+  },
+};
 
 addDecorator((story) => (
-  <MemoryRouter initialEntries={["/"]}>
-    <ChakraProvider theme={theme}>
-      {story()}
-    </ChakraProvider>
-    </MemoryRouter>
+  <MemoryRouter initialEntries={["/"]}>{story()}</MemoryRouter>
 ));
