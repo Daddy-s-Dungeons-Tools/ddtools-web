@@ -1,4 +1,4 @@
-import { Box, Center, Spinner, Container } from "@chakra-ui/react";
+import { Box, Center, Spinner, Container, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Outlet } from "react-router-dom";
@@ -22,14 +22,14 @@ function App() {
   }, [user]);
 
   return (
-    <div className="App">
+    <Box className="App">
       <header>
         <TopNavbar />
       </header>
       <Box as="main" mb="20">
         {isUserLoading ? (
-          <Center pos={"fixed"} top={0} left={0} w={"100%"} h="100vh">
-            <Spinner size={"xl"} />
+          <Center pos="fixed" top={0} left={0} w={"100%"} h="100vh">
+            <Spinner size="xl" />
           </Center>
         ) : (
           <>
@@ -43,7 +43,7 @@ function App() {
         )}
       </Box>
       {/* <BottomFooter /> */}
-    </div>
+    </Box>
   );
 }
 

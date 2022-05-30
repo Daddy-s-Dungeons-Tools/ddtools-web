@@ -132,7 +132,12 @@ export default function CampaignDashboardPage() {
         <Container maxW="100%" p="0">
           <Flex>
             <Sidebar />
-            <Box id="main-dashboard" flex="1" px="8">
+            <Box
+              id="main-dashboard"
+              flex="1"
+              px="8"
+              height="calc(100vh - 200px)"
+            >
               {campaignUserContextValue.userRole === "dm" ? (
                 <DMDashboard />
               ) : campaignUserContextValue.isPlayerCharacterLoading ? (
