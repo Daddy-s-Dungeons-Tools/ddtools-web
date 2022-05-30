@@ -6,8 +6,6 @@ import {
   Button,
   Skeleton,
   Stack,
-  Text,
-  Box,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -20,6 +18,7 @@ import { campaignConverter } from "../../services/converter";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
 import { FaPlus } from "react-icons/fa";
+import { ErrorAlert } from "../../components/ErrorAlert";
 
 export default function CampaignIndexPage() {
   useProtectedRoute();
@@ -108,6 +107,13 @@ export default function CampaignIndexPage() {
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your Player Campaigns</Heading>
 
+          {playerCampaignsError && (
+            <ErrorAlert
+              title="Yikes!"
+              description="There was an error fetching your player campaigns..."
+            />
+          )}
+
           {isPlayerCampaignsLoading ? (
             <Stack w="100%">
               <Skeleton height="130px" />
@@ -148,6 +154,12 @@ export default function CampaignIndexPage() {
         {/* DM listing */}
         <VStack flex={"1"} align="flex-start" p={3}>
           <Heading mb="8">Your DM Campaigns</Heading>
+          {dmCampaignsError && (
+            <ErrorAlert
+              title="Yikes!"
+              description="There was an error fetching your DM campaigns..."
+            />
+          )}
           {isDMCampaignsLoading ? (
             <Stack w="100%">
               <Skeleton height="130px" />
