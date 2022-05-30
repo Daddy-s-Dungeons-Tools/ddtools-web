@@ -15,9 +15,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
 import { campaignConverter, converterFactory } from "../../services/converter";
 import { auth, firestore } from "../../services/firebase";
-import { CharacterCreator } from "./dashboards/components/CharacterCreator";
 
 import { Sidebar } from "./dashboards/components/Sidebar";
+import { DMDashboard } from "./dashboards/DMDashboard";
+import { PlayerDashboard } from "./dashboards/PlayerDashboard";
 
 type CampaignUserContextType = {
   userRole: "dm" | "player";
@@ -132,8 +133,14 @@ export default function CampaignDashboardPage() {
           <Flex>
             <Sidebar />
             <Box id="main-dashboard" flex="1" px="8">
-              {!campaignUserContextValue.playerCharacter && (
-                <CharacterCreator />
+              {campaignUserContextValue.userRole === "dm" ? (
+                <DMDashboard />
+              ) : campaignUserContextValue.isPlayerCharacterLoading ? (
+                <Center>
+                  <Spinner size="xl" />
+                </Center>
+              ) : (
+                <PlayerDashboard />
               )}
             </Box>
           </Flex>
