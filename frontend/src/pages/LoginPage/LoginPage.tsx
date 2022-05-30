@@ -15,6 +15,7 @@ import { auth } from "../../services/firebase";
 import { useSignInWithEmailLink } from "../../hooks/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { ErrorAlert } from "../../components/ErrorAlert";
 
 enum SignInLinkStatus {
   SENT,
@@ -23,7 +24,7 @@ enum SignInLinkStatus {
 }
 
 export default function LoginPage() {
-  const [user, isUserLoading, userError] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -104,6 +105,13 @@ export default function LoginPage() {
         />
 
         <Heading textAlign="center">Daddy's Dungeon Tools</Heading>
+
+        {signInError && (
+          <ErrorAlert
+            title="Login Failed"
+            description="An error occurred while logging you in... Please try again later."
+          />
+        )}
 
         <form id="login-form" onSubmit={handleLoginFormSubmit}>
           <FormControl>

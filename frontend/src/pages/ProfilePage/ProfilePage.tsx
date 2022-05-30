@@ -18,7 +18,7 @@ import { auth } from "../../services/firebase";
 export function ProfilePage() {
   useProtectedRoute();
 
-  const [user, isUserLoading, userError] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const toast = useToast();

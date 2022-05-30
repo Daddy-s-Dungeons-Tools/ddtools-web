@@ -142,7 +142,7 @@ export async function addCampaignAudioFiles(
 
     await addDoc(audioCollection, {
       createdAt: new Date().getTime(),
-      filePath: fileRef.fullPath,
+      filePath: uploadResult.ref.fullPath,
       name: file.name,
       ownerUserId: "",
       sharedWith: [],

@@ -1,8 +1,7 @@
-import { Box, Center, Spinner, Container, Flex } from "@chakra-ui/react";
+import { Box, Center, Spinner, Container } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Outlet } from "react-router-dom";
-import { BottomFooter } from "./components/BottomFooter/BottomFooter";
 import TopNavbar from "./components/TopNavbar/TopNavbar";
 import UserNameAlert from "./components/UserNameAlert/UserNameAlert";
 import { auth } from "./services/firebase";

@@ -6,6 +6,7 @@ import App from "./App";
 
 // Initializes Firebase and emulators
 import "./services/firebase";
+import "./services/dice";
 
 import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
