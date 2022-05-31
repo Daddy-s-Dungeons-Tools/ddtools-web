@@ -1,8 +1,8 @@
 import {
   Box,
+  Button,
   Center,
   Container,
-  Flex,
   Spinner,
   useToast,
 } from "@chakra-ui/react";
@@ -11,12 +11,13 @@ import { collection, doc } from "firebase/firestore";
 import { createContext, useEffect, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
 import { campaignConverter, converterFactory } from "../../services/converter";
+import { diceBox } from "../../services/dice";
 import { auth, firestore } from "../../services/firebase";
 
-import { Sidebar } from "./dashboards/components/Sidebar";
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
 
@@ -126,34 +127,39 @@ export default function CampaignDashboardPage() {
   // If anything is missing or loading, render a loading spinner
   if (isCampaignDocLoading || isUserLoading || !user || !campaignDoc) {
     return (
-      <Center pos="fixed" top={0} left={0} w="100%" h="100vh">
+      <Center pos="fixed" top={0} left={0} w="100%" minH="100vh">
         <Spinner size="xl" />
       </Center>
     );
   } else {
     return (
       <CampaignUserContext.Provider value={campaignUserContextValue}>
-        <Container maxW="100%" p="0">
-          <Flex>
-            <Sidebar />
-            <Box
-              id="main-dashboard"
-              flex="1"
-              px="3"
-              height="calc(100vh - 150px)"
-            >
-              {campaignUserContextValue.userRole === "dm" ? (
-                <DMDashboard />
-              ) : campaignUserContextValue.isPlayerCharacterLoading ? (
-                <Center>
-                  <Spinner size="xl" />
-                </Center>
-              ) : (
-                <PlayerDashboard />
-              )}
-            </Box>
-          </Flex>
+        <Container
+          maxW="100%"
+          px="3"
+          id="main-dashboard"
+          height="calc(100vh - 150px)"
+        >
+          {campaignUserContextValue.userRole === "dm" ? (
+            <DMDashboard />
+          ) : campaignUserContextValue.isPlayerCharacterLoading ? (
+            <Center>
+              <Spinner size="xl" />
+            </Center>
+          ) : (
+            <PlayerDashboard />
+          )}
         </Container>
+
+        <Box position="fixed" right="50px" bottom="50px">
+          <Button
+            leftIcon={<GiDiceTwentyFacesTwenty />}
+            size="lg"
+            onClick={() => diceBox.roll("1d20")}
+          >
+            Roll
+          </Button>
+        </Box>
       </CampaignUserContext.Provider>
     );
   }
