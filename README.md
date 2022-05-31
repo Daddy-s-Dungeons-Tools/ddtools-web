@@ -12,6 +12,31 @@ ddtools-web is a [Google Firebase](https://firebase.google.com/) project and a R
 - Hosting
 - Functions
 
+## Planned Features Master List
+
+- [x] Login with sign-in link
+- [ ] Login with Google Account
+- [ ] Users
+  - [x] Change display name
+  - [ ] Upload user avatar
+  - [ ] Delete user account
+- [ ] Campaigns
+  - [ ] DMs
+    - [x] Accept/decline campaign invites
+    - [x] Invite players
+    - [ ] Manage players
+  - [ ] Players
+    - [x] Accept/decline campaign invites
+    - [ ] Create character
+  - [ ] Campaign Dashboards
+    - [ ] World map widget
+    - [ ] Notes widget
+    - [x] Adventuring Party widget
+    - [ ] Event log/chat widget
+    - [ ] Clock widget
+    - [x] 3D dice roller
+- [ ] List in progress
+
 ## Local Setup
 
 > You must be added to the Firebase project as a contributor. Contact Frank for access to this.
@@ -25,14 +50,14 @@ ddtools-web is a [Google Firebase](https://firebase.google.com/) project and a R
 ### Run Firebase Emulators
 
 ```bash
-$ firebase emulators:start
+firebase emulators:start
 ```
 
 ### Run React SPA
 
 ```bash
-$ cd frontend/
-$ npm start
+cd frontend/
+npm start
 ```
 
 ## Inspiration

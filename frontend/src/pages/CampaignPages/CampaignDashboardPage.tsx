@@ -34,10 +34,14 @@ const characterConverter = converterFactory<Character>();
 
 export default function CampaignDashboardPage() {
   useProtectedRoute();
+
   const navigate = useNavigate();
   const toast = useToast();
   let { campaignId } = useParams();
+
   const [user, isUserLoading, userError] = useAuthState(auth);
+
+  // Firestore data
   const [campaignDoc, isCampaignDocLoading, campaignDocError] = useDocumentData(
     doc(collection(firestore, "campaigns"), campaignId).withConverter(
       campaignConverter,
@@ -122,8 +126,8 @@ export default function CampaignDashboardPage() {
   // If anything is missing or loading, render a loading spinner
   if (isCampaignDocLoading || isUserLoading || !user || !campaignDoc) {
     return (
-      <Center pos={"fixed"} top={0} left={0} w={"100%"} h="100vh">
-        <Spinner size={"xl"} />
+      <Center pos="fixed" top={0} left={0} w="100%" h="100vh">
+        <Spinner size="xl" />
       </Center>
     );
   } else {
