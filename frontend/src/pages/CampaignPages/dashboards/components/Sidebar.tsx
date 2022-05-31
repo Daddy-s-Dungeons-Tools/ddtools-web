@@ -1,73 +1,125 @@
 import {
-  Flex,
-  Box,
-  VStack,
   Tooltip,
-  IconButton,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
+  Tabs,
+  TabList,
+  Tab,
+  Icon,
+  TabPanel,
+  TabPanels,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { FaSignOutAlt, FaUsers, FaVolumeUp } from "react-icons/fa";
-import { GiScrollQuill, GiScrollUnfurled } from "react-icons/gi";
+import {
+  GiPerson,
+  GiScrollQuill,
+  GiScrollUnfurled,
+  GiSettingsKnobs,
+} from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
 import Party from "./Party";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { IconType } from "react-icons";
+import { Campaign } from "ddtools-types";
 
 type NavbarItem = {
   label: string;
   ariaLabel: string;
-  icon: JSX.Element;
+  icon: IconType;
   component: JSX.Element;
   shownToUserRoles: ("dm" | "player")[];
+  shownDuringCampaignMode: Campaign["mode"][];
 };
 
+const navbarItems: NavbarItem[] = [
+  {
+    label: "Notes",
+    ariaLabel: "notes",
+    icon: GiScrollQuill,
+    component: <p>Notes</p>,
+    shownToUserRoles: ["dm", "player"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+  {
+    label: "Event Log",
+    ariaLabel: "event log",
+    icon: GiScrollUnfurled,
+    component: <EventLog />,
+    shownToUserRoles: ["dm", "player"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+  {
+    label: "NPCs and Creatures",
+    ariaLabel: "npcs and creatures",
+    icon: GiPerson,
+    component: <p>Coming soon...</p>,
+    shownToUserRoles: ["dm"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+  {
+    label: "Adventuring Party",
+    ariaLabel: "party",
+    icon: FaUsers,
+    component: <Party />,
+    shownToUserRoles: ["dm", "player"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+  {
+    label: "Audio Manager",
+    ariaLabel: "audio manager",
+    icon: FaVolumeUp,
+    component: <AudioManager />,
+    shownToUserRoles: ["dm"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+  {
+    label: "Campaign Settings",
+    ariaLabel: "campaign settings",
+    icon: GiSettingsKnobs,
+    component: <p>In progress...</p>,
+    shownToUserRoles: ["dm"],
+    shownDuringCampaignMode: ["combat", "out-of-combat"],
+  },
+];
+
 export function Sidebar() {
-  const [activeNavbarItemIndex, setActiveNavbarItemIndex] = useState<
-    number | null
-  >(null);
+  // const [activeNavbarItemIndex, setActiveNavbarItemIndex] = useState<
+  //   number | null
+  // >(null);
 
-  const { userRole } = useContext(CampaignUserContext);
+  const { campaign, userRole } = useContext(CampaignUserContext);
 
-  const navbarItems: NavbarItem[] = [
-    {
-      label: "Notes",
-      ariaLabel: "notes",
-      icon: <GiScrollQuill />,
-      component: <p>Notes</p>,
-      shownToUserRoles: ["dm", "player"],
-    },
-    {
-      label: "Event Log",
-      ariaLabel: "event log",
-      icon: <GiScrollUnfurled />,
-      component: <EventLog />,
-      shownToUserRoles: ["dm", "player"],
-    },
-    {
-      label: "Adventuring Party",
-      ariaLabel: "party",
-      icon: <FaUsers />,
-      component: <Party />,
-      shownToUserRoles: ["dm", "player"],
-    },
-    {
-      label: "Audio Manager",
-      ariaLabel: "audio manager",
-      icon: <FaVolumeUp />,
-      component: <AudioManager />,
-      shownToUserRoles: ["dm"],
-    },
-  ];
+  const userNavbarItems = navbarItems.filter(
+    (navbarItem) =>
+      navbarItem.shownToUserRoles.includes(userRole) &&
+      navbarItem.shownDuringCampaignMode.includes(campaign.mode),
+  );
 
   return (
-    <Flex align="center">
+    <Tabs orientation="vertical" variant="solid-rounded">
+      <TabList>
+        {userNavbarItems.map((navbarItem) => (
+          <Tooltip
+            key={navbarItem.label}
+            label={navbarItem.label}
+            placement="right"
+          >
+            <Tab>
+              <Icon aria-label={navbarItem.ariaLabel} as={navbarItem.icon} />
+            </Tab>
+          </Tooltip>
+        ))}
+      </TabList>
+      <TabPanels>
+        {userNavbarItems.map((navbarItem) => (
+          <TabPanel key={navbarItem.label}>{navbarItem.component}</TabPanel>
+        ))}
+      </TabPanels>
+    </Tabs>
+  );
+
+  /*<Flex align="center">
       <Box
         as="nav"
         p="3"
@@ -101,7 +153,7 @@ export function Sidebar() {
       </Box>
       <Box></Box>
 
-      {activeNavbarItemIndex !== null && navbarItems[activeNavbarItemIndex] && (
+       {activeNavbarItemIndex !== null && navbarItems[activeNavbarItemIndex] && (
         <Drawer
           isOpen={activeNavbarItemIndex !== null}
           placement="left"
@@ -120,7 +172,6 @@ export function Sidebar() {
             </DrawerBody>
           </DrawerContent>
         </Drawer>
-      )}
-    </Flex>
-  );
+      )} 
+    </Flex>*/
 }
