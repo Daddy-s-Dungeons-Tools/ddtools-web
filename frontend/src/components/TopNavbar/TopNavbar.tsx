@@ -12,8 +12,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
 
 import { Link as ReactRouterLink } from "react-router-dom";
-import { Logo } from "../Logo";
-import { UserAvatar } from "../UserAvatar";
+import { Logo } from "../Logo/Logo";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
 import { useState } from "react";
 import { UserAvatarModal } from "../UserAvatarModal/UserAvatarModal";
 

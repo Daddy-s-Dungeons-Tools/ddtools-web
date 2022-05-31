@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../services/firebase";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
 
 type UserAvatarModalPropTypes = {
   isOpen: boolean;

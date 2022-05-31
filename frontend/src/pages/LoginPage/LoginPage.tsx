@@ -15,7 +15,7 @@ import { auth } from "../../services/firebase";
 import { useSignInWithEmailLink } from "../../hooks/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { ErrorAlert } from "../../components/ErrorAlert";
+import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
 
 enum SignInLinkStatus {
   SENT,

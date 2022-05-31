@@ -19,7 +19,7 @@ import { campaignConverter } from "../../services/converter";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
 import { FaPlus } from "react-icons/fa";
-import { ErrorAlert } from "../../components/ErrorAlert";
+import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
 
 export default function CampaignIndexPage() {
   useProtectedRoute();

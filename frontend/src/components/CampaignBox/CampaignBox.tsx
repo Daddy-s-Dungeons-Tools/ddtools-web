@@ -24,7 +24,7 @@ import {
 } from "../../services/api";
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
-import { UserAvatar } from "../UserAvatar";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
 import { FaUserSlash } from "react-icons/fa";
 
 type CampaignBoxPropTypes = {

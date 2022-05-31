@@ -19,7 +19,7 @@ import { collection, orderBy, query } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
-import { UserAvatarFromSummary } from "../../../../components/UserAvatar";
+import { UserAvatarFromSummary } from "../../../../components/UserAvatar/UserAvatar";
 import { converterFactory } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
