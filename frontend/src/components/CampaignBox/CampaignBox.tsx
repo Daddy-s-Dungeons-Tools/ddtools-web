@@ -28,12 +28,23 @@ import { UserAvatar } from "../UserAvatar";
 import { FaUserSlash } from "react-icons/fa";
 
 type CampaignBoxPropTypes = {
+  /** The campaign to display info for */
   campaign: Campaign;
+  /** The role of the user viewing the campaign */
   as: "player" | "dm";
+  /** The character of the player to display a summary of (only used when player) */
   character?: Character;
+  /** Whether or not to display accept/decline buttons */
   isInvite?: boolean;
+  /** Whether or not to make the entire box a link to the campaign page */
   isLink?: boolean;
 };
+
+/**
+ * Box that displays a summary of a campaign. Depending on player or DM, displays different information.
+ * If player, attempts to display a character summary if one is given. Can be a link to the campaign page,
+ * or a invite with buttons to accept/decline.
+ */
 export function CampaignBox({
   campaign,
   as,
@@ -45,6 +56,10 @@ export function CampaignBox({
   const [isDeclining, setIsDeclining] = useState<boolean>(false);
   const toast = useToast();
 
+  /**
+   * Add the user to the campaign with the desired role from `props.as`.
+   * Displays a toast on success or failure. Also removes the invite.
+   **/
   const handleAcceptInvite = async () => {
     if (isAccepting) {
       return;
@@ -98,6 +113,10 @@ export function CampaignBox({
     }
   };
 
+  /**
+   * Remove the invite of user from the campaign with the desired role from `props.as`.
+   * Displays a toast on success or failure.
+   **/
   const handleDeclineInvite = async () => {
     if (isDeclining) {
       return;
