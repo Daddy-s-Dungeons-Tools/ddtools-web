@@ -7,7 +7,7 @@ import UserNameAlert from "./components/UserNameAlert/UserNameAlert";
 import { auth } from "./services/firebase";
 
 function App() {
-  const [user, isUserLoading, userError] = useAuthState(auth);
+  const [user, isUserLoading] = useAuthState(auth);
   const [isUserNameAlertShown, setIsUserNameAlertShown] =
     useState<boolean>(false);
 
@@ -25,7 +25,7 @@ function App() {
       <header>
         <TopNavbar />
       </header>
-      <Box as="main" mb="20">
+      <Box as="main">
         {isUserLoading ? (
           <Center pos="fixed" top={0} left={0} w={"100%"} h="100vh">
             <Spinner size="xl" />

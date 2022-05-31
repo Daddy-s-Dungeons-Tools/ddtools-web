@@ -135,8 +135,8 @@ export default function CampaignDashboardPage() {
             <Box
               id="main-dashboard"
               flex="1"
-              px="8"
-              height="calc(100vh - 200px)"
+              px="3"
+              height="calc(100vh - 150px)"
             >
               {campaignUserContextValue.userRole === "dm" ? (
                 <DMDashboard />
