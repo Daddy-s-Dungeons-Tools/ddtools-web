@@ -13,17 +13,11 @@ import { auth } from "../../services/firebase";
 
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Logo } from "../Logo/Logo";
-import { UserAvatar } from "../UserAvatar/UserAvatar";
-import { useState } from "react";
-import { UserAvatarModal } from "../UserAvatarModal/UserAvatarModal";
 
 export default function TopNavbar() {
   const [user, isUserLoading] = useAuthState(auth);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [isUserAvatarModalOpen, setIsUserAvatarModalOpen] =
-    useState<boolean>(false);
 
   return (
     <Flex
@@ -57,17 +51,6 @@ export default function TopNavbar() {
 
       {user ? (
         <>
-          <UserAvatarModal
-            isOpen={isUserAvatarModalOpen}
-            onClose={() => setIsUserAvatarModalOpen(false)}
-          />
-          <UserAvatar
-            as="button"
-            onClick={() => setIsUserAvatarModalOpen(true)}
-            size="sm"
-            userId={user.uid}
-            userDisplayName={user.displayName}
-          />
           <Text display="block" mx="2">
             Logged in as <strong>{user.displayName ?? user.email}</strong>
           </Text>

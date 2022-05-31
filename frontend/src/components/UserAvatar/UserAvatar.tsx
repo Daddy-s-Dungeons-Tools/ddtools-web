@@ -9,6 +9,7 @@ type UserAvatarPropTypes = {
   userAs?: "player" | "dm";
   userId: User["uid"];
   userDisplayName: User["displayName"];
+  playerCharacterName?: string;
 } & AvatarProps;
 
 /** Wrapper around Chakra UI's Avatar that attempts to load a user's uploaded avatar. */
@@ -16,14 +17,17 @@ export function UserAvatar({
   userAs,
   userId,
   userDisplayName,
+  playerCharacterName,
   ...props
 }: UserAvatarPropTypes) {
   const [downloadURL] = useDownloadURL(
-    ref(storage, "/users/avatars/" + userId + ".png"),
+    ref(storage, "/characters/avatars/" + userId + ".png"),
   );
   let tooltipLabel = userDisplayName;
   if (userAs === "player") {
-    tooltipLabel = "Player " + userDisplayName;
+    tooltipLabel = playerCharacterName
+      ? `${playerCharacterName} (${userDisplayName})`
+      : "Player " + userDisplayName;
   } else if (userAs === "dm") {
     tooltipLabel = "DM " + userDisplayName;
   }
@@ -49,11 +53,15 @@ export function UserAvatarFromSummary({
 >) {
   let displayName = "Unknown User";
   let userAs: CampaignUserSummary["as"] = "player";
+  let playerCharacterName;
 
   if (userSummaries && userId in userSummaries) {
     const userSummary = userSummaries[userId];
     displayName = userSummary.displayName;
     userAs = userSummary.as;
+    if (userSummary.as === "player") {
+      playerCharacterName = userSummary.currentCharacterName;
+    }
   }
 
   return (
@@ -61,6 +69,7 @@ export function UserAvatarFromSummary({
       userId={userId}
       userDisplayName={displayName}
       userAs={userAs}
+      playerCharacterName={playerCharacterName}
       {...props}
     />
   );

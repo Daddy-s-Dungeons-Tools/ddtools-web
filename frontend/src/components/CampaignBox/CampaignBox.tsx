@@ -24,7 +24,7 @@ import {
 } from "../../services/api";
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
-import { UserAvatar } from "../UserAvatar/UserAvatar";
+import { UserAvatarFromSummary } from "../UserAvatar/UserAvatar";
 import { FaUserSlash } from "react-icons/fa";
 
 type CampaignBoxPropTypes = {
@@ -222,11 +222,10 @@ export function CampaignBox({
                   Object.entries(campaign.userSummaries)
                     .filter(([userId, summary]) => summary.as === "dm")
                     .map(([userId, summary]) => (
-                      <UserAvatar
+                      <UserAvatarFromSummary
                         key={userId}
-                        userAs="dm"
                         userId={userId}
-                        userDisplayName={summary.displayName}
+                        userSummaries={campaign.userSummaries}
                       />
                     ))}
               </AvatarGroup>
@@ -235,11 +234,10 @@ export function CampaignBox({
                   Object.entries(campaign.userSummaries)
                     .filter(([userId, summary]) => summary.as === "player")
                     .map(([userId, summary]) => (
-                      <UserAvatar
-                        userAs="player"
+                      <UserAvatarFromSummary
                         key={userId}
                         userId={userId}
-                        userDisplayName={summary.displayName}
+                        userSummaries={campaign.userSummaries}
                       />
                     ))}
               </AvatarGroup>
