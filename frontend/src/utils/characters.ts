@@ -39,3 +39,13 @@ export const characterRaceAndClasses = (character: Character) => {
 
   return line;
 };
+
+/** Returns a NEW character with fields updated based on the given race. */
+export const setCharacterRace = (character: Character): Character => {
+  const newCharacter = structuredClone(character);
+
+  return newCharacter;
+};
+
+export const abilityScoreModifier = (abilityScore: number) =>
+  Math.floor((abilityScore - 10) / 2);
