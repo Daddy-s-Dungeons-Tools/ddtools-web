@@ -6,10 +6,12 @@ import {
   GiScrollUnfurled,
   GiPerson,
   GiSettingsKnobs,
+  GiGlobe,
 } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
 import Party from "./Party";
+import { WorldMaps } from "./WorldMaps";
 
 export type Widget = {
   label: string;
@@ -69,5 +71,13 @@ export const campaignSettingsWidget: Widget = {
   icon: GiSettingsKnobs,
   component: <p>In progress...</p>,
   shownToUserRoles: ["dm"],
+  shownDuringCampaignMode: ["combat", "out-of-combat"],
+};
+export const mapWidget: Widget = {
+  label: "Maps",
+  ariaLabel: "maps",
+  icon: GiGlobe,
+  component: <WorldMaps/>,
+  shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
