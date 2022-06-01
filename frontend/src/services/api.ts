@@ -1,4 +1,11 @@
-import { Campaign, Note, Audio, LogItem } from "ddtools-types";
+import {
+  Campaign,
+  Note,
+  Audio,
+  LogItem,
+  UserID,
+  Character,
+} from "ddtools-types";
 import {
   collection,
   doc,
@@ -172,4 +179,19 @@ export async function fetchData<T>(filename: string): Promise<T[]> {
   const response = await fetch(DATA_URL_PREFIX + filename);
   const data = await response.json();
   return data;
+}
+
+export function setCampaignPlayerCharacter(
+  campaignId: Campaign["id"],
+  userId: UserID,
+  character: Character,
+) {
+  const campaignCharacterCollection = collection(
+    firestore,
+    "campaigns",
+    campaignId,
+    "characters",
+  ).withConverter(converterFactory<Character>());
+
+  return setDoc(doc(campaignCharacterCollection, userId), character);
 }
