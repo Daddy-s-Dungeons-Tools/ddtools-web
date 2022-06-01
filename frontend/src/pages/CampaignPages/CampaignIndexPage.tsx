@@ -188,7 +188,7 @@ export default function CampaignIndexPage() {
           )}
 
           {dmCampaigns && dmCampaigns.length === 0 && (
-            <Text color="gray.500">You are not DM any campaigns.</Text>
+            <Text color="gray.500">You are not DMing any campaigns.</Text>
           )}
 
           {isDMCampaignsLoading ? (
