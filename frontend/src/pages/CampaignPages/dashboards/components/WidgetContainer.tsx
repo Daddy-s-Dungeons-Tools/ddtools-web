@@ -38,7 +38,6 @@ export function WidgetContainer({
       p={props.padding ?? "3"}
       borderRadius={props.borderRadius ?? "lg"}
       variant={props.variant ?? "solid-rounded"}
-      flex="1"
       bgColor="gray.700"
       {...props}
     >
@@ -55,7 +54,7 @@ export function WidgetContainer({
           </Tooltip>
         ))}
       </TabList>
-      <TabPanels>
+      <TabPanels h="90%" overflow="auto">
         {userWidgets.map((widget) => (
           <TabPanel key={widget.label}>{widget.component}</TabPanel>
         ))}
