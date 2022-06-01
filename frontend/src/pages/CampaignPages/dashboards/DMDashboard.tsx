@@ -18,12 +18,7 @@ export function DMDashboard() {
     >
       <GridItem rowSpan={2} colSpan={{ base: 6, lg: 2 }}>
         <WidgetContainer
-          widgets={[
-            notesWidget,
-            charactersWidget,
-            notesWidget,
-            npcCreatureWidget,
-          ]}
+          widgets={[notesWidget, charactersWidget, npcCreatureWidget]}
         />
       </GridItem>
       <GridItem rowSpan={2} colSpan={{ base: 6, lg: 4 }}>

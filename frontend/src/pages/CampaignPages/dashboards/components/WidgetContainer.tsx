@@ -39,7 +39,7 @@ export function WidgetContainer({
       borderRadius={props.borderRadius ?? "lg"}
       variant={props.variant ?? "solid-rounded"}
       flex="1"
-      bgColor="Window"
+      bgColor="gray.700"
       {...props}
     >
       <TabList>
