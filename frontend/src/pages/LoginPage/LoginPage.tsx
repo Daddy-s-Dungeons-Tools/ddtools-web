@@ -1,39 +1,23 @@
-import {
-  Container,
-  FormControl,
-  Heading,
-  Input,
-  Image,
-  useToast,
-  VStack,
-  Button,
-} from "@chakra-ui/react";
+import { Container, Heading, useToast, VStack, Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { sendSignInLinkToEmail } from "firebase/auth";
 import { auth } from "../../services/firebase";
-import { useSignInWithEmailLink } from "../../hooks/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { FaGoogle } from "react-icons/fa";
+import { Logo } from "../../components/Logo/Logo";
 
-enum SignInLinkStatus {
-  SENT,
-  NOT_SENT,
-  LOADING,
-}
+import "./LoginPage.css";
+
+const provider = new GoogleAuthProvider();
 
 export default function LoginPage() {
   const [user] = useAuthState(auth);
   const toast = useToast();
   const navigate = useNavigate();
 
-  const [signInLinkStatus, setSignInLinkStatus] = useState<SignInLinkStatus>(
-    SignInLinkStatus.NOT_SENT,
-  );
-
-  // Checks if URL is a sign in url (user clicked on sign in link from email and ended up here)
-  const signInError = useSignInWithEmailLink();
+  const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -42,100 +26,55 @@ export default function LoginPage() {
   }, [navigate, user]);
 
   /** Login handler that sends sign-in email with Firebase */
-  const handleLoginFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event,
-  ) => {
-    // Prevent form from submitting and refreshing page
-    event.preventDefault();
-
-    if (signInLinkStatus !== SignInLinkStatus.NOT_SENT) {
+  const handleSignIn = async () => {
+    if (isSigningIn) {
       return;
     }
 
-    // Grab the email and trim whitespace
-    const enteredEmail: string = event.currentTarget.email.value.trim();
-
-    setSignInLinkStatus(SignInLinkStatus.LOADING);
+    setIsSigningIn(true);
 
     try {
-      await sendSignInLinkToEmail(auth, enteredEmail, {
-        url: window.location.href,
-        handleCodeInApp: true,
-      });
-
-      // Store email in localStorage in case we lose it
-      window.localStorage.setItem("emailForSignIn", enteredEmail);
-      setSignInLinkStatus(SignInLinkStatus.SENT);
+      await signInWithPopup(auth, provider);
 
       // Show success message
       toast({
-        title: "Check your email!",
-        description: (
-          <p>
-            Your sign-in link has been sent to <strong>{enteredEmail}</strong>.
-            You can close this tab.
-          </p>
-        ),
+        title: "Signed in!",
+        description: <p>Welcome</p>,
         status: "success",
-        duration: null,
-        isClosable: false,
+        duration: 2000,
+        isClosable: true,
       });
     } catch (error) {
-      setSignInLinkStatus(SignInLinkStatus.NOT_SENT);
       console.error(error);
 
       // Show error message
       toast({
         title: "Yikes!",
-        description:
-          "Your sign-in link failed to send. Please try again later.",
+        description: "Something went wrong. Try signing in again.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
   return (
-    <Container maxW="container.md">
+    <Container maxW="container.md" className="login-page">
       <VStack spacing="5">
-        <Image
-          src="https://images.squarespace-cdn.com/content/v1/5f8a7f6ce7e6c83bd00002f4/1604782480312-TOREECY0FP29FKHWA9R4/hero_dmgscreen_0.jpg"
-          borderRadius={10}
-        />
+        <Logo width="300px" />
 
         <Heading textAlign="center">Daddy's Dungeon Tools</Heading>
 
-        {signInError && (
-          <ErrorAlert
-            title="Login Failed"
-            description="An error occurred while logging you in... Please try again later."
-          />
-        )}
-
-        <form id="login-form" onSubmit={handleLoginFormSubmit}>
-          <FormControl>
-            <Input
-              name="email"
-              type="email"
-              id="email"
-              placeholder="Please enter your email for a sign-in link"
-              required
-              isReadOnly={signInLinkStatus !== SignInLinkStatus.NOT_SENT}
-            />
-          </FormControl>
-          <Button
-            minW="100%"
-            type="submit"
-            isLoading={signInLinkStatus === SignInLinkStatus.LOADING}
-            loadingText="Sending..."
-            disabled={signInLinkStatus === SignInLinkStatus.SENT}
-          >
-            {signInLinkStatus === SignInLinkStatus.SENT
-              ? "Check Your Email"
-              : "Send Sign-in Email"}
-          </Button>
-        </form>
+        <Button
+          colorScheme="purple"
+          onClick={handleSignIn}
+          leftIcon={<FaGoogle />}
+          isLoading={isSigningIn}
+        >
+          Sign in with Google
+        </Button>
       </VStack>
     </Container>
   );
