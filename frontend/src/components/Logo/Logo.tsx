@@ -1,10 +1,38 @@
-import { Image, ImageProps } from "@chakra-ui/react";
-import logo from "../../assets/img/ddtools-logo.svg";
+import { SVGAttributes } from "react";
+
+import "./Logo.css";
 
 type LogoPropTypes = {
-  width?: ImageProps["width"];
+  isOpen?: boolean;
+  width?: SVGAttributes<SVGSVGElement>["width"];
+  onTransitionEnd?: () => void;
 };
 /** DDTools logo image */
-export function Logo(props: LogoPropTypes) {
-  return <Image src={logo} w={props.width ?? "30px"} />;
+export function Logo({
+  isOpen = false,
+  width = 30,
+  onTransitionEnd,
+}: LogoPropTypes) {
+  return (
+    <svg
+      width={width}
+      className={isOpen ? "open" : ""}
+      viewBox="0 0 375 375"
+      height={width}
+      version="1.0"
+      xmlns="http://www.w3.org/2000/svg"
+      onTransitionEnd={onTransitionEnd}
+    >
+      <g id="door">
+        <path
+          style={{ fill: "white" }}
+          d="M187.5 102.273c-5.797 0-11.59.504-17.047 1.696V340.91h34.094V103.97c-5.457-1.192-11.25-1.696-17.047-1.696zm-51.137 17.043c-20.625 15.512-34.09 40.399-34.09 68.184v153.41h34.09zm102.274 0V340.91h34.09V187.5c0-27.785-13.465-52.672-34.09-68.184z"
+        />
+      </g>
+      <path
+        style={{ fill: "white" }}
+        d="M187.5 0c-17.691 0-34.773 2.637-51.035 7.29l24.566 63.956c8.524-1.945 17.367-3.062 26.469-3.062s17.945 1.117 26.469 3.062L238.535 7.29C222.273 2.656 205.191 0 187.5 0Zm-82.832 19.64C79.102 32.36 56.82 50.696 39.449 73.075l57.696 36.723c1.632-1.89 3.386-3.672 5.128-5.461v.168a6.99 6.99 0 0 1 2.23-2.23h-.3c7.457-7.305 15.836-13.657 25.004-18.813zm165.664 0-24.539 63.856c9.125 5.137 17.402 11.52 24.836 18.777h-.133a6.99 6.99 0 0 1 2.23 2.23v-.265c2.84 2.907 5.555 5.934 8.09 9.121l59.063-34.457C321.96 53.88 298.098 33.45 270.332 19.641ZM21.039 101.774C7.695 127.527 0 156.63 0 187.5h68.184c0-17.453 3.867-33.992 10.617-48.938zm336.05 6.524-59.062 34.457c5.61 13.844 8.79 28.93 8.79 44.746H375c0-28.297-6.559-55.082-17.91-79.203zM0 221.59v68.183h68.184V221.59zm306.816 0v68.183H375V221.59zM0 323.863V375h68.184v-51.137zm306.816 0V375H375v-51.137z"
+      />
+    </svg>
+  );
 }

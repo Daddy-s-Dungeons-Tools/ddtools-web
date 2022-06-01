@@ -30,7 +30,7 @@ export default function TopNavbar() {
     >
       <Box mr="5">
         <HStack>
-          <Logo />
+          <Logo isOpen={isUserLoading} />
           <Text fontSize={"lg"} fontWeight="bold">
             DDTools
           </Text>

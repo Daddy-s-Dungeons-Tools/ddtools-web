@@ -63,7 +63,7 @@ export default function LoginPage() {
   return (
     <Container maxW="container.md" className="login-page">
       <VStack spacing="5">
-        <Logo width="300px" />
+        <Logo width="300px" isOpen={isSigningIn} />
 
         <Heading textAlign="center">Daddy's Dungeon Tools</Heading>
 

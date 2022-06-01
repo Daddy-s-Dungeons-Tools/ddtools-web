@@ -1,0 +1,9 @@
+svg #door {
+  transition: all 3s ease;
+  transform-origin: 20%;
+}
+
+/* Swings door open */
+svg.open #door {
+  transform: perspective(100px) rotateY(90deg);
+}
