@@ -1,7 +1,8 @@
 import {
+  ABILITIES,
   Campaign,
   CampaignUserSummaries,
-  EventLogItem,
+  LogItem,
   UserID,
 } from "ddtools-types";
 import * as functions from "firebase-functions";
@@ -28,11 +29,11 @@ const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
 /**
  * ASdasd
  * @param {string} campaignId
- * @param {EventLogItem} item
+ * @param {LogItem} item
  * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
  */
-function logEvent(campaignId: Campaign["id"], item: EventLogItem) {
-  return db.collection(`campaigns/${campaignId}/eventLog`).add(item);
+function logEvent(campaignId: Campaign["id"], item: LogItem) {
+  return db.collection(`campaigns/${campaignId}/log`).add(item);
 }
 
 /**
@@ -54,7 +55,7 @@ async function generateCampaignUserSummaries(
   );
   for (const user of usersResult.users) {
     const displayName = user.displayName || user.email!;
-
+    ABILITIES;
     if (campaign.dmUserIds?.includes(user.uid)) {
       userSummaries[user.uid] = {
         as: "dm",

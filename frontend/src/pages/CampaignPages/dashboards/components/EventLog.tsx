@@ -14,7 +14,7 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { Campaign, EventLogItem } from "ddtools-types";
+import { Campaign, LogItem } from "ddtools-types";
 import { collection, orderBy, query } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -24,14 +24,8 @@ import { converterFactory } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
-/** Single event log item display. Shows all present information except for the payload. */
-function LogItem({
-  campaign,
-  item,
-}: {
-  campaign: Campaign;
-  item: EventLogItem;
-}) {
+/** Single log item display. Shows all present information except for the payload. */
+function LogItemBox({ campaign, item }: { campaign: Campaign; item: LogItem }) {
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       {item.message && <Text>{item.message}</Text>}
@@ -58,7 +52,7 @@ function LogItem({
   );
 }
 
-const converter = converterFactory<EventLogItem>();
+const converter = converterFactory<LogItem>();
 
 export function EventLog() {
   const { campaign } = useContext(CampaignUserContext);
@@ -98,7 +92,7 @@ export function EventLog() {
         {!isEventLogLoading &&
           eventLog &&
           eventLog.map((item) => (
-            <LogItem key={item.id} campaign={campaign} item={item} />
+            <LogItemBox key={item.id} campaign={campaign} item={item} />
           ))}
       </VStack>
     </Box>

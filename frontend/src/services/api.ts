@@ -1,4 +1,4 @@
-import { Campaign, Note, Audio, EventLogItem } from "ddtools-types";
+import { Campaign, Note, Audio, LogItem } from "ddtools-types";
 import {
   collection,
   doc,
@@ -153,13 +153,13 @@ export async function addCampaignAudioFiles(
 
 export async function logCampaignEvent(
   campaignId: Campaign["id"],
-  item: EventLogItem,
+  item: LogItem,
 ) {
   const logCollection = collection(
     firestore,
     "campaigns",
     campaignId,
     "eventLog",
-  ).withConverter(converterFactory<EventLogItem>());
+  ).withConverter(converterFactory<LogItem>());
   return addDoc(logCollection, item);
 }
