@@ -188,7 +188,7 @@ export const emptyCharacter: Character = {
   name: "",
   size: "tiny",
   speed: {
-    walking: 0,
+    walking: 30,
     climbing: 0,
     swimming: 0,
     flying: 0,

@@ -37,6 +37,7 @@ import {
   Character,
   Class,
   Race,
+  SIZES,
   SKILLS,
   SKILLS_TO_ABILITIES,
 } from "ddtools-types";
@@ -62,6 +63,15 @@ export function CharacterCreator() {
   const [races, isRacesLoading, racesError] = useDataSource<Race>("races");
   const [classes, isClassesLoading, classesError] =
     useDataSource<Class>("classes");
+
+  // useEffect(() => {
+  //   const keySet = new Set();
+
+  //   for (const race of races) {
+  //     Object.keys(race).forEach((key) => keySet.add(key));
+  //   }
+  //   console.log(keySet);
+  // }, [races]);
 
   const handleSubmit = async (
     character: Character,
@@ -132,17 +142,97 @@ export function CharacterCreator() {
                 />
               </FormControl>
 
+              <HStack>
+                <FormControl>
+                  <FormLabel htmlFor="armorClass">Armor Class</FormLabel>
+                  <NumberInput
+                    id="armorClass"
+                    step={1}
+                    name="armorClass"
+                    defaultValue={values.armorClass}
+                    onChange={(str, num) => setFieldValue("armorClass", num)}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel htmlFor="maxHP">Max HP</FormLabel>
+                  <NumberInput
+                    step={1}
+                    id="maxHP"
+                    name="hitPoints.max"
+                    defaultValue={values.armorClass}
+                    onChange={(str, num) => {
+                      setFieldValue("hitPoints.max", num);
+                      setFieldValue("hitPoints.current", num);
+                    }}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel htmlFor="walkingSpeed">Walking Speed</FormLabel>
+                  <NumberInput
+                    step={1}
+                    id="walkingSpeed"
+                    name="speed.walking"
+                    defaultValue={values.speed.walking}
+                    onChange={(str, num) => {
+                      setFieldValue("speed.walking", num);
+                    }}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel htmlFor="size">Size</FormLabel>
+                  <Select
+                    placeholder="Select size"
+                    onChange={(ev) =>
+                      setFieldValue("size", races[+ev.currentTarget.value])
+                    }
+                    required
+                  >
+                    {(values.race && values.race.size
+                      ? values.race.size
+                      : SIZES
+                    ).map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              </HStack>
+
               <HStack w="100%">
                 <FormControl flex="1">
                   <FormLabel htmlFor="characterRace">Race</FormLabel>
                   <Select
                     placeholder="Select race"
-                    onChange={(ev) => setFieldValue("race", undefined!)}
+                    onChange={(ev) =>
+                      setFieldValue("race", races[+ev.currentTarget.value])
+                    }
                     required
                   >
                     {races.map((race, raceIndex) => (
                       <option key={raceIndex} value={raceIndex}>
-                        {race.name}
+                        {race.name} ({race.source})
                       </option>
                     ))}
                   </Select>
@@ -242,7 +332,13 @@ export function CharacterCreator() {
                           >
                             Proficient
                           </Checkbox>
-                          <Checkbox>Expertise</Checkbox>
+                          <Checkbox
+                            disabled={!values.skills[skill].isProficient}
+                            name={`skills['${skill}'].isExpertise`}
+                            onChange={handleChange}
+                          >
+                            Expertise
+                          </Checkbox>
                         </HStack>
                         <NumberInput
                           size="xs"

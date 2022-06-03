@@ -71,6 +71,10 @@ export const skillTotalModifier = (
     totalModifier += character.proficiencyBonus;
   }
 
+  if (skillProperties.isProficient && skillProperties.isExpertise) {
+    totalModifier += character.proficiencyBonus;
+  }
+
   if (skillProperties.miscModifier) {
     totalModifier += skillProperties.miscModifier;
   }
