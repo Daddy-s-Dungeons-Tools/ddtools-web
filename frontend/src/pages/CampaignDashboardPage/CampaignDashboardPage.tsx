@@ -24,7 +24,6 @@ import { PlayerDashboard } from "./dashboards/PlayerDashboard";
 type CampaignUserContextType = {
   userRole: "dm" | "player";
   campaign: Campaign;
-  isPlayerCharacterLoading: boolean;
   playerCharacter?: Character;
 };
 export const CampaignUserContext = createContext<CampaignUserContextType>(
@@ -36,7 +35,7 @@ const characterConverter = converterFactory<Character>();
 export default function CampaignDashboardPage() {
   useProtectedRoute();
 
-  console.log("render here");
+  // console.log("render here");
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -54,30 +53,25 @@ export default function CampaignDashboardPage() {
   // Attempt to find the user's character only if they are a player and not a DM
   const [playerCharacter, isPlayerCharacterLoading, playerCharacterError] =
     useDocumentData(
-      user && campaignDoc && campaignDoc.playerUserIds?.includes(user.uid!)
-        ? doc(
-            firestore,
-            "campaigns",
-            campaignId!,
-            "characters",
-            user.uid,
-          ).withConverter(characterConverter)
-        : null,
+      doc(
+        firestore,
+        "campaigns",
+        campaignId!,
+        "characters",
+        user!.uid,
+      ).withConverter(characterConverter),
     );
 
   // We memoize this value since otherwise it would change every time this parent component rerenders,
   // and trigger way too many renders in child components that use it
   const campaignUserContextValue = useMemo<CampaignUserContextType>(() => {
-    console.log("calc context");
-
-    if (!user || !campaignDoc) return undefined!;
+    if (!user || !campaignDoc || isPlayerCharacterLoading) return null!;
     return {
-      userRole: campaignDoc?.playerUserIds?.includes(user?.uid)
+      userRole: campaignDoc.playerUserIds?.includes(user?.uid)
         ? "player"
         : "dm",
-      campaign: campaignDoc!,
-      isPlayerCharacterLoading,
-      playerCharacter: playerCharacter,
+      campaign: campaignDoc,
+      playerCharacter,
     };
   }, [user, campaignDoc, isPlayerCharacterLoading, playerCharacter]);
 
@@ -95,13 +89,6 @@ export default function CampaignDashboardPage() {
   }, [userError, campaignDocError, playerCharacterError]);
 
   useEffect(() => {
-    console.log({
-      user,
-      isCampaignDocLoading,
-      campaignDoc,
-      isUserLoading,
-    });
-
     if (isCampaignDocLoading || isUserLoading) {
       return;
     }
@@ -136,7 +123,7 @@ export default function CampaignDashboardPage() {
   }, [user, isCampaignDocLoading, campaignDoc, navigate, toast, isUserLoading]);
 
   // If anything is missing or loading, render a loading spinner
-  if (isCampaignDocLoading || isUserLoading || !user || !campaignDoc) {
+  if (!campaignUserContextValue) {
     return (
       <Center pos="fixed" top={0} left={0} w="100%" minH="100vh">
         <Spinner size="xl" />
@@ -153,10 +140,6 @@ export default function CampaignDashboardPage() {
         >
           {campaignUserContextValue.userRole === "dm" ? (
             <DMDashboard />
-          ) : campaignUserContextValue.isPlayerCharacterLoading ? (
-            <Center>
-              <Spinner size="xl" />
-            </Center>
           ) : (
             <PlayerDashboard />
           )}
