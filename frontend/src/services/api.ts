@@ -193,5 +193,9 @@ export function setCampaignPlayerCharacter(
     "characters",
   ).withConverter(converterFactory<Character>());
 
-  return setDoc(doc(campaignCharacterCollection, userId), character);
+  return setDoc(doc(campaignCharacterCollection, userId), {
+    ...character,
+    createdAt: new Date().getTime(),
+    ownerUserId: userId,
+  });
 }

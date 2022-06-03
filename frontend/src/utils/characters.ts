@@ -1,4 +1,9 @@
-import { Character } from "ddtools-types";
+import {
+  ABILITIES,
+  Character,
+  SKILLS,
+  SKILLS_TO_ABILITIES,
+} from "ddtools-types";
 
 export const characterPhysicalDescription = (character: Character) => {
   return `${character.physical.age} y/o, ${character.physical.eyes} eyes, ${character.physical.hair} hair, ${character.physical.skin} skin`;
@@ -47,5 +52,50 @@ export const setCharacterRace = (character: Character): Character => {
   return newCharacter;
 };
 
-export const abilityScoreModifier = (abilityScore: number) =>
+export const abilityScoreBaseModifier = (abilityScore: number) =>
   Math.floor((abilityScore - 10) / 2);
+
+export const skillTotalModifier = (
+  character: Character,
+  skill: typeof SKILLS[number],
+) => {
+  const associatedAbility = SKILLS_TO_ABILITIES[skill];
+  const baseModifier = abilityScoreBaseModifier(
+    character.abilityScores[associatedAbility],
+  );
+  const skillProperties = character.skills[skill];
+
+  let totalModifier = baseModifier;
+
+  if (skillProperties.isProficient) {
+    totalModifier += character.proficiencyBonus;
+  }
+
+  if (skillProperties.miscModifier) {
+    totalModifier += skillProperties.miscModifier;
+  }
+
+  return totalModifier;
+};
+
+export const savingThrowTotalModifier = (
+  character: Character,
+  ability: typeof ABILITIES[number],
+) => {
+  const baseModifier = abilityScoreBaseModifier(
+    character.abilityScores[ability],
+  );
+  const savingThrowProperties = character.savingThrows[ability];
+
+  let totalModifier = baseModifier;
+
+  if (savingThrowProperties.isProficient) {
+    totalModifier += character.proficiencyBonus;
+  }
+
+  if (savingThrowProperties.miscModifier) {
+    totalModifier += savingThrowProperties.miscModifier;
+  }
+
+  return totalModifier;
+};

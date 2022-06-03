@@ -43,12 +43,16 @@ import {
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useDataSource } from "../../../../hooks/useDataSource";
-import { setCampaignPlayerCharacter } from "../../../../services/api";
-import { auth } from "../../../../services/firebase";
-import { abilityScoreModifier } from "../../../../utils/characters";
-import { emptyCharacter } from "../../../../utils/consts";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { useDataSource } from "../../../../../hooks/useDataSource";
+import { setCampaignPlayerCharacter } from "../../../../../services/api";
+import { auth } from "../../../../../services/firebase";
+import {
+  abilityScoreBaseModifier,
+  savingThrowTotalModifier,
+  skillTotalModifier,
+} from "../../../../../utils/characters";
+import { emptyCharacter } from "../../../../../utils/consts";
+import { CampaignUserContext } from "../../../CampaignDashboardPage";
 
 export function CharacterCreator() {
   const toast = useToast();
@@ -64,6 +68,7 @@ export function CharacterCreator() {
     formikHelpers: FormikHelpers<Character>,
   ): Promise<void> => {
     formikHelpers.setSubmitting(true);
+
     try {
       await setCampaignPlayerCharacter(campaign.id, user!.uid, character);
       toast({
@@ -201,13 +206,14 @@ export function CharacterCreator() {
                     <StatHelpText>
                       <StatArrow
                         type={
-                          abilityScoreModifier(values.abilityScores[ability]) >=
-                          0
+                          abilityScoreBaseModifier(
+                            values.abilityScores[ability],
+                          ) >= 0
                             ? "increase"
                             : "decrease"
                         }
                       />
-                      {abilityScoreModifier(values.abilityScores[ability])}
+                      {abilityScoreBaseModifier(values.abilityScores[ability])}
                     </StatHelpText>
                   </Stat>
                 ))}
@@ -230,16 +236,26 @@ export function CharacterCreator() {
                           </Text>
                         </Heading>
                         <HStack>
-                          <Checkbox>Proficient</Checkbox>
+                          <Checkbox
+                            name={`skills['${skill}'].isProficient`}
+                            onChange={handleChange}
+                          >
+                            Proficient
+                          </Checkbox>
                           <Checkbox>Expertise</Checkbox>
                         </HStack>
                         <NumberInput
                           size="xs"
-                          placeholder="Misc. modifier"
-                          defaultValue={0}
                           step={1}
+                          name={`skills['${skill}'].miscModifier`}
+                          onChange={(str, num) =>
+                            setFieldValue(
+                              `skills['${skill}'].miscModifier`,
+                              num,
+                            )
+                          }
                         >
-                          <NumberInputField />
+                          <NumberInputField placeholder="Optional misc. modifier" />
                           <NumberInputStepper>
                             <NumberIncrementStepper />
                             <NumberDecrementStepper />
@@ -247,7 +263,10 @@ export function CharacterCreator() {
                         </NumberInput>
 
                         <Text>
-                          Overall modifier = <Tag colorScheme="purple">+3</Tag>
+                          Total modifier ={" "}
+                          <Tag colorScheme="purple">
+                            {skillTotalModifier(values, skill)}
+                          </Tag>
                         </Text>
                       </VStack>
                     </Box>
@@ -265,14 +284,24 @@ export function CharacterCreator() {
                           {ability}
                         </Heading>
                         <HStack>
-                          <Checkbox>Proficient</Checkbox>
+                          <Checkbox
+                            name={`savingThrows.${ability}.isProficient`}
+                            onChange={handleChange}
+                          >
+                            Proficient
+                          </Checkbox>
                           <NumberInput
                             size="xs"
-                            placeholder="Misc. modifier"
-                            defaultValue={0}
                             step={1}
+                            name={`savingThrows.${ability}.miscModifier`}
+                            onChange={(str, num) =>
+                              setFieldValue(
+                                `savingThrows.${ability}.miscModifier`,
+                                num,
+                              )
+                            }
                           >
-                            <NumberInputField />
+                            <NumberInputField placeholder="Misc. modifier" />
                             <NumberInputStepper>
                               <NumberIncrementStepper />
                               <NumberDecrementStepper />
@@ -281,7 +310,10 @@ export function CharacterCreator() {
                         </HStack>
 
                         <Text>
-                          Overall modifier = <Tag colorScheme="purple">+3</Tag>
+                          Total modifier ={" "}
+                          <Tag colorScheme="purple">
+                            {savingThrowTotalModifier(values, ability)}
+                          </Tag>
                         </Text>
                       </VStack>
                     </Box>
