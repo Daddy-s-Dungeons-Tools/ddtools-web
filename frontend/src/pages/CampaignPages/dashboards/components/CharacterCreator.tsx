@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  Checkbox,
   Container,
   Editable,
   EditableInput,
@@ -9,6 +11,11 @@ import {
   Heading,
   HStack,
   Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Select,
   Stat,
   StatArrow,
@@ -16,12 +23,23 @@ import {
   StatHelpText,
   StatLabel,
   StatNumber,
+  Tag,
   Text,
   Tooltip,
   useToast,
   VStack,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
-import { ABILITIES, ALIGNMENTS, Character, Class, Race } from "ddtools-types";
+import {
+  ABILITIES,
+  ALIGNMENTS,
+  Character,
+  Class,
+  Race,
+  SKILLS,
+  SKILLS_TO_ABILITIES,
+} from "ddtools-types";
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -151,6 +169,7 @@ export function CharacterCreator() {
                 </FormControl>
               </HStack>
 
+              <Heading size="lg">Abilities</Heading>
               <StatGroup w="100%">
                 {ABILITIES.map((ability) => (
                   <Stat key={ability}>
@@ -193,6 +212,82 @@ export function CharacterCreator() {
                   </Stat>
                 ))}
               </StatGroup>
+
+              <Heading size="lg">Skills</Heading>
+              <Wrap>
+                {SKILLS.map((skill) => (
+                  <WrapItem key={skill}>
+                    <Box borderWidth="1px" borderRadius="lg" p="3">
+                      <VStack>
+                        <Heading size="md" textTransform="capitalize">
+                          {skill}{" "}
+                          <Text
+                            as="span"
+                            color="gray.500"
+                            textTransform="uppercase"
+                          >
+                            {SKILLS_TO_ABILITIES[skill]}
+                          </Text>
+                        </Heading>
+                        <HStack>
+                          <Checkbox>Proficient</Checkbox>
+                          <Checkbox>Expertise</Checkbox>
+                        </HStack>
+                        <NumberInput
+                          size="xs"
+                          placeholder="Misc. modifier"
+                          defaultValue={0}
+                          step={1}
+                        >
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+
+                        <Text>
+                          Overall modifier = <Tag colorScheme="purple">+3</Tag>
+                        </Text>
+                      </VStack>
+                    </Box>
+                  </WrapItem>
+                ))}
+              </Wrap>
+
+              <Heading size="lg">Saving Throws</Heading>
+              <Wrap>
+                {ABILITIES.map((ability) => (
+                  <WrapItem key={ability}>
+                    <Box borderWidth="1px" borderRadius="lg" p="3">
+                      <VStack>
+                        <Heading size="md" textTransform="capitalize">
+                          {ability}
+                        </Heading>
+                        <HStack>
+                          <Checkbox>Proficient</Checkbox>
+                          <NumberInput
+                            size="xs"
+                            placeholder="Misc. modifier"
+                            defaultValue={0}
+                            step={1}
+                          >
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </HStack>
+
+                        <Text>
+                          Overall modifier = <Tag colorScheme="purple">+3</Tag>
+                        </Text>
+                      </VStack>
+                    </Box>
+                  </WrapItem>
+                ))}
+              </Wrap>
 
               <Button
                 type="submit"
