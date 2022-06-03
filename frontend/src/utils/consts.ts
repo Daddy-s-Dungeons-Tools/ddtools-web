@@ -11,7 +11,7 @@ export const testCampaign: Campaign = {
 
 export const testCharacter: Character = {
   xp: 0,
-  race: { name: "Human" },
+  race: { name: "Human", entries: [] },
   classes: [
     {
       name: "Fighter",

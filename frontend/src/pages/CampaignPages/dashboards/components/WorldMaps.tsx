@@ -3,31 +3,29 @@ import { useContext, useState } from "react";
 import { FaFlag } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { MapPin, Map } from "ddtools-types"
+import { firestore } from "../../../../services/firebase";
+import { query, collection, orderBy } from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { converterFactory } from "../../../../services/converter";
 
-interface Point {
-  x: number;y: number};
-
-/** individual locations on the map */
-interface Pin {
-  location: Point;
-  name?: string;
-  description?: string;
-  // imageURL?: string; 
-  targetMapID?: string;
-};
-
-/**  */
-interface Map {
-  name?: string;            
-  pins?: Pin[];                 
-  thumbnailImageID?: string;    
-  
-};
+const mapConverter = converterFactory<Map>();
 
 export function WorldMaps() {
     const { campaign } = useContext(CampaignUserContext);
-    const [pins, setPins] = useState<Pin[]>([]);
+
+    const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
+    query(
+      collection(firestore, "campaigns", campaign.id, "maps").withConverter(
+        mapConverter,
+      ),
+      orderBy("name"),
+    ),
+  );
+
+    const [pins, setPins] = useState<MapPin[]>([]);
     const [isPinning, setIsPinning] = useState<boolean>(false);
+    const [currentMapID, setCurrentMapID] = useState<string|null>(null);
 
     function placePin(e: React.MouseEvent<HTMLDivElement, MouseEvent>){
       if (isPinning){
@@ -39,9 +37,9 @@ export function WorldMaps() {
 
         // console.log("Left: " + x + " Top: " + y);
         
-        const newPin: Pin = {
+        const newPin: MapPin = {
           // name: "New Pin",
-          location: {x: +x, y: +y}
+          location: {xPercentage: +x, yPercentage: +y}
         };
         const newPins = [...pins, newPin];
         setPins(newPins);
@@ -50,9 +48,11 @@ export function WorldMaps() {
     } 
     
     
-    function PinPopover(props: { pin: Pin, pinKey: number }) {
-      const xPercentage = 100*props.pin.location.x;
-      const yPercentage = 100*props.pin.location.y;
+    console.log(mapDocs);
+
+    function PinPopover(props: { pin: MapPin, pinKey: number }) {
+      const xPercentage = 100*props.pin.location.xPercentage;
+      const yPercentage = 100*props.pin.location.yPercentage;
 
       return (
         <Popover>
@@ -98,8 +98,8 @@ export function WorldMaps() {
           />
 
           <IconButton
-              aria-label='Add Landmark'
-              onClick={() => {}}
+              aria-label='Maps Menu'
+              onClick={() => {setCurrentMapID(null)}}
               icon={<GiTreasureMap color={"#63b3ed"}  size={30} />}
               backgroundColor="#1a202c"
               
@@ -110,6 +110,18 @@ export function WorldMaps() {
 
         </VStack>
 
+        {currentMapID === null?
+        (
+          <Box>
+
+          </Box>
+        
+        ) :
+        
+        
+        
+        
+        
         <Box position='relative'>
           { pins.map((tempPin, index)=> <PinPopover key={index} pin={tempPin} pinKey={index}/>)}
           <Image 
@@ -123,7 +135,14 @@ export function WorldMaps() {
             alt="Your image could not be displayed."
           />
 
+
+
+
         </Box>
+      }
       </Box>
     );
+
+
+
   }
