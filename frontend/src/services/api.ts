@@ -14,6 +14,9 @@ import { ref, uploadBytes } from "firebase/storage";
 import { converterFactory } from "./converter";
 import { auth, firestore, storage } from "./firebase";
 
+const DATA_URL_PREFIX =
+  "https://raw.githubusercontent.com/Daddy-s-Dungeons-Tools/ddtools-data/main/";
+
 const campaignCollection = collection(firestore, "campaigns").withConverter(
   converterFactory<Campaign>(),
 );
@@ -162,4 +165,11 @@ export async function logCampaignEvent(
     "eventLog",
   ).withConverter(converterFactory<LogItem>());
   return addDoc(logCollection, item);
+}
+
+/** Fetch a data source from the GitHub ddtools-data repository. */
+export async function fetchData<T>(filename: string): Promise<T[]> {
+  const response = await fetch(DATA_URL_PREFIX + filename);
+  const data = await response.json();
+  return data;
 }
