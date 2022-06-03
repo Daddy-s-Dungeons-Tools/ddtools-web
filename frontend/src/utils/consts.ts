@@ -1,140 +1,4 @@
-import { Campaign, Character } from "ddtools-types";
-
-export const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
-
-export const SKILLS = [
-  "acrobatics",
-  "animal handling",
-  "arcana",
-  "athletics",
-  "deception",
-  "history",
-  "insight",
-  "intimidation",
-  "investigation",
-  "medicine",
-  "nature",
-  "perception",
-  "performance",
-  "persuasion",
-  "religion",
-  "sleight of Hand",
-  "stealth",
-  "survival",
-] as const;
-
-export const SIZES = [
-  "tiny",
-  "small",
-  "medium",
-  "large",
-  "huge",
-  "gargantuan",
-] as const;
-
-export const ALIGNMENTS = [
-  "lawful good",
-  "neutral good",
-  "chaotic good",
-  "lawful neutral",
-  "true neutral",
-  "chaotic neutral",
-  "lawful evil",
-  "neutral evil",
-  "chaotic evil",
-] as const;
-
-export const DAMAGE_TYPES = [
-  "piercing",
-  "slashing",
-  "bludgeoning",
-  "acid",
-  "cold",
-  "fire",
-  "force",
-  "lightning",
-  "necrotic",
-  "posion",
-  "psychic",
-  "radiant",
-  "thunder",
-] as const;
-
-export const CONDITIONS = [
-  "blinded",
-  "charmed",
-  "deafened",
-  "exhaustion",
-  "frightened",
-  "grappled",
-  "incapacitated",
-  "invisible",
-  "necrotic",
-  "paralyzed",
-  "petrified",
-  "poisoned",
-  "prone",
-  "restrained",
-  "stunned",
-  "unconscious",
-] as const;
-
-export const SENSES = [
-  "blindsight",
-  "darkvision",
-  "tremorsense",
-  "truesight",
-] as const;
-
-export const ITEM_TYPES = [
-  "$",
-  "A",
-  "AF",
-  "AIR",
-  "AT",
-  "EM",
-  "EXP",
-  "FD",
-  "G",
-  "GS",
-  "GV",
-  "HA",
-  "INS",
-  "LA",
-  "M",
-  "MA",
-  "MNT",
-  "MR",
-  "OTH",
-  "P",
-  "R",
-  "RD",
-  "RG",
-  "S",
-  "SC",
-  "SCF",
-  "SHP",
-  "T",
-  "TAH",
-  "TG",
-  "VEH",
-  "WD",
-] as const;
-
-export const SPELL_COMPONENTS = ["v", "s", "m"] as const;
-
-export const RARITIES = [
-  "rare",
-  "uncommon",
-  "very rare",
-  "legendary",
-  "artifact",
-  "common",
-  "none",
-  "unknown",
-  "unknown (magic)",
-  "varies",
-] as const;
+import { Campaign, Character, SKILLS } from "ddtools-types";
 
 export const testCampaign: Campaign = {
   name: "Test Campaign",
@@ -152,17 +16,16 @@ export const testCharacter: Character = {
     {
       name: "Fighter",
       level: 3,
+      hitDice: {
+        current: 3,
+        sides: 6,
+      },
     },
   ],
   alignment: "lawful good",
   proficiencyBonus: 2,
   hasInspiration: false,
-  hitDice: [
-    {
-      count: 3,
-      sides: 8,
-    },
-  ],
+
   deathSaves: {
     successes: 0,
     failures: 0,
@@ -264,6 +127,7 @@ export const testCharacter: Character = {
   sharedWith: [],
   createdAt: new Date().getTime(),
   isActive: true,
+  isJackOfAllTrades: false,
 };
 
 const defaultSkills = SKILLS.reduce(
@@ -289,7 +153,6 @@ export const emptyCharacter: Character = {
   alignment: "true neutral",
   proficiencyBonus: 0,
   hasInspiration: false,
-  hitDice: [],
   deathSaves: {
     successes: 0,
     failures: 0,
@@ -365,4 +228,5 @@ export const emptyCharacter: Character = {
   sharedWith: [],
   createdAt: 0,
   isActive: true,
+  isJackOfAllTrades: false,
 };

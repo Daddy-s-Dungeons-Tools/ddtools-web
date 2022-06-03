@@ -1,7 +1,8 @@
 import {
+  ABILITIES,
   Campaign,
   CampaignUserSummaries,
-  EventLogItem,
+  LogItem,
   UserID,
 } from "ddtools-types";
 import * as functions from "firebase-functions";
@@ -26,13 +27,14 @@ const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
   JSON.stringify(arr1) === JSON.stringify(arr2);
 
 /**
- * ASdasd
+ * Add a new log item to a campaign.
+ *
  * @param {string} campaignId
- * @param {EventLogItem} item
+ * @param {LogItem} item
  * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
  */
-function logEvent(campaignId: Campaign["id"], item: EventLogItem) {
-  return db.collection(`campaigns/${campaignId}/eventLog`).add(item);
+function logToCampaign(campaignId: Campaign["id"], item: LogItem) {
+  return db.collection(`campaigns/${campaignId}/log`).add(item);
 }
 
 /**
@@ -54,7 +56,7 @@ async function generateCampaignUserSummaries(
   );
   for (const user of usersResult.users) {
     const displayName = user.displayName || user.email!;
-
+    ABILITIES;
     if (campaign.dmUserIds?.includes(user.uid)) {
       userSummaries[user.uid] = {
         as: "dm",
@@ -86,7 +88,7 @@ export const modifyCampaign = functions.firestore
     }
 
     if (!change.before.exists) {
-      await logEvent(change.after.id, {
+      await logToCampaign(change.after.id, {
         type: "campaign-created",
         message: `Campaign ${campaign.name} was created`,
         createdAt: new Date().getTime(),

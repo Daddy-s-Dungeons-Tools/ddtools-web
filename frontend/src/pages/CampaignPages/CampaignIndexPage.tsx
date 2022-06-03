@@ -7,6 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  Alert,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
@@ -14,7 +15,7 @@ import { useProtectedRoute } from "../../hooks/routes";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, orderBy, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
-import { Campaign } from "ddtools-types";
+import { ABILITIES, Campaign } from "ddtools-types";
 import { campaignConverter } from "../../services/converter";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";

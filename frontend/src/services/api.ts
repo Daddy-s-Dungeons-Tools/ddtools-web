@@ -1,4 +1,4 @@
-import { Campaign, Note, Audio, EventLogItem } from "ddtools-types";
+import { Campaign, Note, Audio, LogItem } from "ddtools-types";
 import {
   collection,
   doc,
@@ -13,6 +13,9 @@ import {
 import { ref, uploadBytes } from "firebase/storage";
 import { converterFactory } from "./converter";
 import { auth, firestore, storage } from "./firebase";
+
+const DATA_URL_PREFIX =
+  "https://raw.githubusercontent.com/Daddy-s-Dungeons-Tools/ddtools-data/main/";
 
 const campaignCollection = collection(firestore, "campaigns").withConverter(
   converterFactory<Campaign>(),
@@ -153,13 +156,20 @@ export async function addCampaignAudioFiles(
 
 export async function logCampaignEvent(
   campaignId: Campaign["id"],
-  item: EventLogItem,
+  item: LogItem,
 ) {
   const logCollection = collection(
     firestore,
     "campaigns",
     campaignId,
     "eventLog",
-  ).withConverter(converterFactory<EventLogItem>());
+  ).withConverter(converterFactory<LogItem>());
   return addDoc(logCollection, item);
+}
+
+/** Fetch a data source from the GitHub ddtools-data repository. */
+export async function fetchData<T>(filename: string): Promise<T[]> {
+  const response = await fetch(DATA_URL_PREFIX + filename);
+  const data = await response.json();
+  return data;
 }
