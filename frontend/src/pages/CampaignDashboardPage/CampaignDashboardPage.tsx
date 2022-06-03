@@ -36,6 +36,8 @@ const characterConverter = converterFactory<Character>();
 export default function CampaignDashboardPage() {
   useProtectedRoute();
 
+  console.log("render here");
+
   const navigate = useNavigate();
   const toast = useToast();
   let { campaignId } = useParams();
@@ -66,6 +68,8 @@ export default function CampaignDashboardPage() {
   // We memoize this value since otherwise it would change every time this parent component rerenders,
   // and trigger way too many renders in child components that use it
   const campaignUserContextValue = useMemo<CampaignUserContextType>(() => {
+    console.log("calc context");
+
     if (!user || !campaignDoc) return undefined!;
     return {
       userRole: campaignDoc?.playerUserIds?.includes(user?.uid)
@@ -91,6 +95,13 @@ export default function CampaignDashboardPage() {
   }, [userError, campaignDocError, playerCharacterError]);
 
   useEffect(() => {
+    console.log({
+      user,
+      isCampaignDocLoading,
+      campaignDoc,
+      isUserLoading,
+    });
+
     if (isCampaignDocLoading || isUserLoading) {
       return;
     }
