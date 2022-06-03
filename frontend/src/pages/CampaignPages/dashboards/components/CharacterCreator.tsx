@@ -21,24 +21,25 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { Character } from "ddtools-types";
+import { ABILITIES, ALIGNMENTS, Character, Class, Race } from "ddtools-types";
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useDataSource } from "../../../../hooks/useDataSource";
 import { setCampaignPlayerCharacter } from "../../../../services/api";
 import { auth } from "../../../../services/firebase";
 import { abilityScoreModifier } from "../../../../utils/characters";
-import {
-  ABILITIES,
-  ALIGNMENTS,
-  emptyCharacter,
-} from "../../../../utils/consts";
+import { emptyCharacter } from "../../../../utils/consts";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 export function CharacterCreator() {
   const toast = useToast();
   const { campaign } = useContext(CampaignUserContext);
   const [user] = useAuthState(auth);
+
+  const [races, isRacesLoading, racesError] = useDataSource<Race>("races");
+  const [classes, isClassesLoading, classesError] =
+    useDataSource<Class>("classes");
 
   const handleSubmit = async (
     character: Character,
@@ -115,12 +116,22 @@ export function CharacterCreator() {
                     placeholder="Select race"
                     onChange={(ev) => setFieldValue("race", undefined!)}
                     required
-                  ></Select>
+                  >
+                    {races.map((race, raceIndex) => (
+                      <option key={raceIndex} value={raceIndex}>
+                        {race.name}
+                      </option>
+                    ))}
+                  </Select>
                 </FormControl>
                 <FormControl flex="1">
                   <FormLabel htmlFor="characterClass">Class</FormLabel>
                   <Select placeholder="Select class" required>
-                    <option value="human">Fighter</option>
+                    {classes.map((cls, clsIndex) => (
+                      <option key={clsIndex} value={clsIndex}>
+                        {cls.name}
+                      </option>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl flex="1">
