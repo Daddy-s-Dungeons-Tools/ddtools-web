@@ -1,6 +1,8 @@
 import {
   ABILITIES,
   Character,
+  Class,
+  Race,
   SKILLS,
   SKILLS_TO_ABILITIES,
 } from "ddtools-types";
@@ -46,10 +48,28 @@ export const characterRaceAndClasses = (character: Character) => {
 };
 
 /** Returns a NEW character with fields updated based on the given race. */
-export const setCharacterRace = (character: Character): Character => {
-  const newCharacter = structuredClone(character);
+export const filterRace = (race: any): Race => {
+  const filteredRace: Race = {
+    name: race.name,
+    entries: race.entries,
+    subtype: race.subtype,
+  };
 
-  return newCharacter;
+  return filteredRace;
+};
+
+/** Returns a NEW character with fields updated based on the given race. */
+export const filterClass = (cls: any): Class => {
+  const filteredClass: Class = {
+    name: cls.name,
+    hitDice: {
+      current: cls.hd.faces,
+      sides: cls.hd.faces,
+    },
+    level: 1,
+  };
+
+  return filteredClass;
 };
 
 export const abilityScoreBaseModifier = (abilityScore: number) =>
