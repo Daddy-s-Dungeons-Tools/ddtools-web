@@ -49,6 +49,8 @@ import { setCampaignPlayerCharacter } from "../../../../../services/api";
 import { auth } from "../../../../../services/firebase";
 import {
   abilityScoreBaseModifier,
+  filterClass,
+  filterRace,
   savingThrowTotalModifier,
   skillTotalModifier,
 } from "../../../../../utils/characters";
@@ -202,6 +204,7 @@ export function CharacterCreator() {
                 <FormControl>
                   <FormLabel htmlFor="size">Size</FormLabel>
                   <Select
+                    id="size"
                     placeholder="Select size"
                     onChange={(ev) =>
                       setFieldValue("size", races[+ev.currentTarget.value])
@@ -226,7 +229,10 @@ export function CharacterCreator() {
                   <Select
                     placeholder="Select race"
                     onChange={(ev) =>
-                      setFieldValue("race", races[+ev.currentTarget.value])
+                      setFieldValue(
+                        "race",
+                        filterRace(races[+ev.currentTarget.value]),
+                      )
                     }
                     required
                   >
@@ -239,7 +245,16 @@ export function CharacterCreator() {
                 </FormControl>
                 <FormControl flex="1">
                   <FormLabel htmlFor="characterClass">Class</FormLabel>
-                  <Select placeholder="Select class" required>
+                  <Select
+                    placeholder="Select class"
+                    onChange={(ev) =>
+                      setFieldValue(
+                        "class",
+                        filterClass(classes[+ev.currentTarget.value]),
+                      )
+                    }
+                    required
+                  >
                     {classes.map((cls, clsIndex) => (
                       <option key={clsIndex} value={clsIndex}>
                         {cls.name}
