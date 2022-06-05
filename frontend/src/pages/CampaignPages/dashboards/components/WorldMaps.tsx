@@ -5,7 +5,7 @@ import { GiPin, GiTreasureMap } from "react-icons/gi";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 import { MapPin, Map } from "ddtools-types"
 import { firestore } from "../../../../services/firebase";
-import { query, collection, orderBy } from "firebase/firestore";
+import { query, collection, orderBy, updateDoc, doc } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { converterFactory } from "../../../../services/converter";
 
@@ -13,7 +13,6 @@ const mapConverter = converterFactory<Map>();
 
 type MapUpdated = Map & {
   imageURL?: string;
-  pins?: MapPin[];
 };
 
 export function WorldMaps() {
@@ -28,12 +27,13 @@ export function WorldMaps() {
     ),
   );
 
-    const [pins, setPins] = useState<MapPin[]>([]);
+    // const [pins, setPins] = useState<MapPin[]>([]);
     const [isPinning, setIsPinning] = useState<boolean>(false);
-    const [currentMapID, setCurrentMapID] = useState<Map|null>(null);
+    const [currentMapID, setCurrentMapID] = useState<Map["id"]|null>(null);
+    const currentMap = mapDocs?.find(map=>map.id === currentMapID);
 
     function placePin(e: React.MouseEvent<HTMLDivElement, MouseEvent>){
-      if (isPinning){
+      if (isPinning && currentMap){
         const map = document.getElementById('map');
         if (!map) return;
         var rect = map.getBoundingClientRect();
@@ -44,11 +44,20 @@ export function WorldMaps() {
           // name: "New Pin",
           location: {xPercentage: +x, yPercentage: +y}
         };
-        const newPins = [...pins, newPin];
-        setPins(newPins);
+        
+        const newPins = [...currentMap.pins ?? [], newPin];
+        // setPins(newPins);
+        // (currentMap as MapUpdated).pins = newPins;
+        updateMap(currentMap.id, {pins:newPins});
+        // currentMap.pins?.push(newPin);
+        // console.log(currentMap?.pins);
         setIsPinning(false);
       }
     } 
+
+    function updateMap(mapID: string, mapUpdates: Partial<Map>){
+      updateDoc(doc(collection(firestore, "campaigns", campaign.id, "maps"), mapID), mapUpdates);
+    }
     
     function PinPopover(props: { pin: MapPin, pinKey: number }) {
       const xPercentage = 100*props.pin.location.xPercentage;
@@ -81,14 +90,16 @@ export function WorldMaps() {
 
     return (
       <Box>
-        <VStack
+        
+        {currentMap && 
+          <VStack
           zIndex={5}
           position={'absolute'}
           spacing={"0"}
         >
           <IconButton
               aria-label='Add Landmark'
-              onClick={currentMapID !== null? () => setIsPinning(!isPinning): undefined}
+              onClick={currentMap !== null? () => setIsPinning(!isPinning): undefined}
               icon={<GiPin color={isPinning ? "red": "#63b3ed"}  size={30} />}
               backgroundColor="#1a202c"
               
@@ -96,7 +107,7 @@ export function WorldMaps() {
               size="lg"
               margin='2'
           />
-
+          
           <IconButton
               aria-label='Maps Menu'
               onClick={() => {setCurrentMapID(null)}}
@@ -107,48 +118,40 @@ export function WorldMaps() {
               size="lg"
               margin='2'
           />
+          </VStack>
+        }
+        
 
-        </VStack>
-
-        {currentMapID === null?
+        {!currentMap?
         (
           <Box>
-            <Heading onClick={() => console.log(mapDocs)} >Your Maps</Heading>
+            <Heading>Your Maps</Heading>
             {mapDocs?.map((curMap) => (
-              <Box onClick={() => setCurrentMapID(curMap)} >
+              <Box onClick={() => setCurrentMapID(curMap.id)} >
                 <Heading>{curMap.name}</Heading>
                 <Image src={(curMap as MapUpdated).imageURL}/>
                 {/* <Text>{curMap.description}</Text> */}
               </Box>
 
             ))}
-            
           </Box>
         
         ) :
         
-        
-        
-        
-        
           <Box position='relative'>
-            { pins.map((tempPin, index)=> <PinPopover key={index} pin={tempPin} pinKey={index}/>)}
+            {currentMap.pins ? currentMap.pins.map((tempPin, index)=> <PinPopover key={index} pin={tempPin} pinKey={index}/>): null}
             <Image 
               id="map"
               onClick={placePin} 
               // src="https://preview.redd.it/6qoafiw0nnvz.png?width=640&crop=smart&auto=webp&s=923f5f6d1ee646f7c5f7f20e7f61cfcf51973bf2"   // Horizontal Map
               // src="https://usercontent.one/wp/www.wistedt.net/wp-content/uploads/2019/12/underdark_concept_web-812x1024.png"             // Vertical Map
-              src={(currentMapID as MapUpdated).imageURL}
+              src={(currentMap as MapUpdated).imageURL}
              
               width={'100%'}
               objectFit='contain'
               zIndex={2}
               alt="Your image could not be displayed."
             />
-
-
-
-
           </Box>
         }
       </Box>
