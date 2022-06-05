@@ -1,6 +1,6 @@
-import { Box, Image, Text, IconButton, Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Editable, EditableInput, EditablePreview, EditableTextarea, VStack, Heading } from "@chakra-ui/react";
-import { useContext, useState } from "react";
-import { FaFlag } from "react-icons/fa";
+import { Box, Image, Text, IconButton, Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Editable, EditableInput, EditablePreview, EditableTextarea, VStack, Heading, SimpleGrid, Flex } from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
+import { FaFlag, FaPlus } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 import { MapPin, Map } from "ddtools-types"
@@ -23,9 +23,18 @@ export function WorldMaps() {
       collection(firestore, "campaigns", campaign.id, "maps").withConverter(
         mapConverter,
       ),
-      orderBy("name"),
+      
     ),
   );
+
+  useEffect(() => {
+    
+      console.log({
+        mapDocs,
+        mapDocsError
+    });
+    
+  }, [mapDocs, mapDocsError]);
 
     // const [pins, setPins] = useState<MapPin[]>([]);
     const [isPinning, setIsPinning] = useState<boolean>(false);
@@ -37,20 +46,15 @@ export function WorldMaps() {
         const map = document.getElementById('map');
         if (!map) return;
         var rect = map.getBoundingClientRect();
-        var x = (1 - ((rect.width - (e.clientX - rect.left)) / rect.width)).toFixed(3);
-        var y = (1 - ((rect.height - (e.clientY - rect.top)) / rect.height)).toFixed(3);
+        var x = (1 - ((rect.width - (e.clientX - rect.left -13)) / rect.width)).toFixed(3);
+        var y = (1 - ((rect.height - (e.clientY - rect.top -30)) / rect.height)).toFixed(3);
         // console.log("Left: " + x + " Top: " + y);
         const newPin: MapPin = {
-          // name: "New Pin",
           location: {xPercentage: +x, yPercentage: +y}
         };
         
         const newPins = [...currentMap.pins ?? [], newPin];
-        // setPins(newPins);
-        // (currentMap as MapUpdated).pins = newPins;
         updateMap(currentMap.id, {pins:newPins});
-        // currentMap.pins?.push(newPin);
-        // console.log(currentMap?.pins);
         setIsPinning(false);
       }
     } 
@@ -90,13 +94,14 @@ export function WorldMaps() {
 
     return (
       <Box>
-        
-        {currentMap && 
-          <VStack
+        <VStack
           zIndex={5}
           position={'absolute'}
           spacing={"0"}
         >
+        {currentMap && 
+          
+        <>
           <IconButton
               aria-label='Add Landmark'
               onClick={currentMap !== null? () => setIsPinning(!isPinning): undefined}
@@ -118,22 +123,55 @@ export function WorldMaps() {
               size="lg"
               margin='2'
           />
-          </VStack>
+        </>
         }
+        </VStack>
         
 
         {!currentMap?
         (
           <Box>
-            <Heading>Your Maps</Heading>
+            <Heading marginBottom={5}>Your Maps</Heading>
+
+            <SimpleGrid columns = {2} spacing={4}>
+              <Flex 
+                  minW="100%"
+                  height={200}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  mb="5"
+                />
             {mapDocs?.map((curMap) => (
-              <Box onClick={() => setCurrentMapID(curMap.id)} >
-                <Heading>{curMap.name}</Heading>
-                <Image src={(curMap as MapUpdated).imageURL}/>
-                {/* <Text>{curMap.description}</Text> */}
-              </Box>
+              <Flex 
+                justifyContent="center"
+                key={curMap.id} 
+                onClick={() => setCurrentMapID(curMap.id)} 
+                minW="100%"
+                maxH="100%"
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                mb="5"
+              >
+                <Box flex={2} padding={4}>
+                  <Heading>{curMap.name || "No name!"}</Heading>
+                  <Text>{curMap.description || "No description!"}</Text>
+                </Box>
+
+                <Box flex={3} justifyContent="center" backgroundColor={"#1a202c"}>
+                  <Image 
+                    height={200}
+                    src={(curMap as MapUpdated).imageURL || "https://csp-clients.s3.amazonaws.com/easttexasspa/wp-content/uploads/2021/06/no-image-icon-23485.png"}
+                    // width={"100%"}
+                    object-fit="contain"
+                  />
+                </Box>
+                
+              </Flex>
 
             ))}
+            </SimpleGrid>
           </Box>
         
         ) :
@@ -152,6 +190,8 @@ export function WorldMaps() {
               zIndex={2}
               alt="Your image could not be displayed."
             />
+            {/* <Heading marginTop={2} >Poop</Heading>
+            <Text marginTop={2} marginBottom={2}>smells bad.</Text> */}
           </Box>
         }
       </Box>
