@@ -1,4 +1,3 @@
-import { Timestamped } from "ddtools-types";
 import {
   DocumentData,
   QueryDocumentSnapshot,

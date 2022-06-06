@@ -11,7 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { ErrorBoundary } from "react-error-boundary";
 import { Widget } from "./widgets";
+import { ErrorAlert } from "../../../../components/ErrorAlert/ErrorAlert";
+import { handleError } from "../../../../services/errors";
 
 type WidgetContainerPropTypes = {
   widgets: Widget[];
@@ -56,7 +59,16 @@ export function WidgetContainer({
       </TabList>
       <TabPanels h="90%" overflow="auto">
         {userWidgets.map((widget) => (
-          <TabPanel key={widget.label}>{widget.component}</TabPanel>
+          <TabPanel key={widget.label}>
+            <ErrorBoundary
+              FallbackComponent={() => (
+                <ErrorAlert description="A fatal error occured... Please try again later." />
+              )}
+              onError={handleError}
+            >
+              {widget.component}
+            </ErrorBoundary>
+          </TabPanel>
         ))}
       </TabPanels>
     </Tabs>

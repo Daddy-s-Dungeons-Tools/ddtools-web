@@ -11,11 +11,11 @@ export function ErrorAlert({
   title,
   description,
   ...props
-}: { title: string; description: string } & AlertProps) {
+}: { title?: string; description: string } & AlertProps) {
   return (
     <Alert status="error" {...props}>
       <AlertIcon />
-      <AlertTitle>{title}</AlertTitle>
+      {title && <AlertTitle>{title}</AlertTitle>}
       <AlertDescription>{description}</AlertDescription>
     </Alert>
   );

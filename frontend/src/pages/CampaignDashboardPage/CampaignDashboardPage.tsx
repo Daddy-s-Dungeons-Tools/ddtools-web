@@ -9,6 +9,7 @@ import {
 import { Campaign, Character } from "ddtools-types";
 import { User } from "firebase/auth";
 import { collection, doc, FirestoreDataConverter } from "firebase/firestore";
+import { ErrorBoundary } from "react-error-boundary";
 import { createContext, useEffect, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -21,6 +22,8 @@ import { auth, firestore } from "../../services/firebase";
 
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
+import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { handleError } from "../../services/errors";
 
 type CampaignUserContextType = {
   user: User;
@@ -131,18 +134,28 @@ export default function CampaignDashboardPage() {
   } else {
     return (
       <CampaignUserContext.Provider value={campaignUserContextValue}>
-        <Container
-          maxW="100%"
-          px="3"
-          id="main-dashboard"
-          height="calc(100vh - 150px)"
-        >
-          {campaignUserContextValue.userRole === "dm" ? (
-            <DMDashboard />
-          ) : (
-            <PlayerDashboard />
+        <ErrorBoundary
+          FallbackComponent={() => (
+            <ErrorAlert
+              title="Oops!"
+              description="A fatal error occured... Please try again later."
+            />
           )}
-        </Container>
+          onError={handleError}
+        >
+          <Container
+            maxW="100%"
+            px="3"
+            id="main-dashboard"
+            height="calc(100vh - 150px)"
+          >
+            {campaignUserContextValue.userRole === "dm" ? (
+              <DMDashboard />
+            ) : (
+              <PlayerDashboard />
+            )}
+          </Container>
+        </ErrorBoundary>
 
         <Box position="fixed" right="50px" bottom="50px">
           <Button
