@@ -12,16 +12,29 @@ import { useEffect, useState } from "react";
 import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
 import { useProtectedRoute } from "../../hooks/routes";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { collection, orderBy, query, where } from "firebase/firestore";
+import {
+  collection,
+  Firestore,
+  FirestoreDataConverter,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
 import { FaPlus } from "react-icons/fa";
 import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
-import { converterFactory } from "../../services/converter";
+import { converter, FirestoreDoc } from "../../services/converter";
 
-const campaignConverter = converterFactory<Campaign>();
+const readCampaignConverter = converter as FirestoreDataConverter<
+  Campaign & FirestoreDoc
+>;
+
+const campaignCollection = collection(firestore, "campaigns").withConverter(
+  readCampaignConverter,
+);
 
 export default function CampaignsPage() {
   useProtectedRoute();
@@ -39,10 +52,10 @@ export default function CampaignsPage() {
   const [playerCampaigns, isPlayerCampaignsLoading, playerCampaignsError] =
     useCollectionData(
       query(
-        collection(firestore, "campaigns"),
+        campaignCollection,
         where("playerUserIds", "array-contains", auth.currentUser?.uid ?? null),
         orderBy("createdAt", "desc"),
-      ).withConverter(campaignConverter),
+      ),
     );
   const [
     playerCampaignInvites,
@@ -50,24 +63,24 @@ export default function CampaignsPage() {
     playerCampaignInvitesError,
   ] = useCollectionData(
     query(
-      collection(firestore, "campaigns"),
+      campaignCollection,
       where(
         "playerInviteEmails",
         "array-contains",
         auth.currentUser?.email ?? null,
       ),
       orderBy("createdAt", "desc"),
-    ).withConverter(campaignConverter),
+    ),
   );
 
   // DM data
   const [dmCampaigns, isDMCampaignsLoading, dmCampaignsError] =
     useCollectionData(
       query(
-        collection(firestore, "campaigns"),
+        campaignCollection,
         where("dmUserIds", "array-contains", auth.currentUser?.uid ?? null),
         orderBy("createdAt", "desc"),
-      ).withConverter(campaignConverter),
+      ),
     );
 
   const [
@@ -76,14 +89,14 @@ export default function CampaignsPage() {
     dmCampaignInvitesError,
   ] = useCollectionData(
     query(
-      collection(firestore, "campaigns"),
+      campaignCollection,
       where(
         "dmInviteEmails",
         "array-contains",
         auth.currentUser?.email ?? null,
       ),
       orderBy("createdAt", "desc"),
-    ).withConverter(campaignConverter),
+    ),
   );
 
   // Log errors to console
@@ -151,7 +164,7 @@ export default function CampaignsPage() {
               <CampaignBox
                 key={campaign.id}
                 as="player"
-                campaign={campaign as Campaign}
+                campaign={campaign}
                 // character={null}
                 isLink
               />
@@ -202,7 +215,7 @@ export default function CampaignsPage() {
               <CampaignBox
                 key={campaign.id}
                 as="dm"
-                campaign={campaign as Campaign}
+                campaign={campaign}
                 isLink
               />
             ))

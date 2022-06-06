@@ -7,37 +7,33 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Campaign, Character } from "ddtools-types";
-import { collection, doc } from "firebase/firestore";
+import { User } from "firebase/auth";
+import { collection, doc, FirestoreDataConverter } from "firebase/firestore";
 import { createContext, useEffect, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
-import { converterFactory } from "../../services/converter";
+import { FirestoreDoc, converter } from "../../services/converter";
 import { diceBox } from "../../services/dice";
 import { auth, firestore } from "../../services/firebase";
 
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
 
-const campaignConverter = converterFactory<Campaign>();
-
 type CampaignUserContextType = {
+  user: User;
   userRole: "dm" | "player";
-  campaign: Campaign;
-  playerCharacter?: Character;
+  campaign: Campaign & FirestoreDoc;
+  playerCharacter?: Character & FirestoreDoc;
 };
 export const CampaignUserContext = createContext<CampaignUserContextType>(
   undefined!,
 );
 
-const characterConverter = converterFactory<Character>();
-
 export default function CampaignDashboardPage() {
   useProtectedRoute();
-
-  // console.log("render here");
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -48,7 +44,7 @@ export default function CampaignDashboardPage() {
   // Firestore data
   const [campaignDoc, isCampaignDocLoading, campaignDocError] = useDocumentData(
     doc(collection(firestore, "campaigns"), campaignId).withConverter(
-      campaignConverter,
+      converter as FirestoreDataConverter<Campaign & FirestoreDoc>,
     ),
   );
 
@@ -61,7 +57,9 @@ export default function CampaignDashboardPage() {
         campaignId!,
         "characters",
         user!.uid,
-      ).withConverter(characterConverter),
+      ).withConverter(
+        converter as FirestoreDataConverter<Character & FirestoreDoc>,
+      ),
     );
 
   // We memoize this value since otherwise it would change every time this parent component rerenders,
@@ -69,9 +67,8 @@ export default function CampaignDashboardPage() {
   const campaignUserContextValue = useMemo<CampaignUserContextType>(() => {
     if (!user || !campaignDoc || isPlayerCharacterLoading) return null!;
     return {
-      userRole: campaignDoc.playerUserIds?.includes(user?.uid)
-        ? "player"
-        : "dm",
+      user,
+      userRole: campaignDoc.playerUserIds?.includes(user.uid) ? "player" : "dm",
       campaign: campaignDoc,
       playerCharacter,
     };

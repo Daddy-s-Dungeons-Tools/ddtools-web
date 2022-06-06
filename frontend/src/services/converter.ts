@@ -1,36 +1,43 @@
-import { FirestoreDoc } from "ddtools-types";
+import { Timestamped } from "ddtools-types";
 import {
   DocumentData,
-  FirestoreDataConverter,
   QueryDocumentSnapshot,
   SnapshotOptions,
   PartialWithFieldValue,
+  DocumentSnapshot,
 } from "firebase/firestore";
 
-function customToFirestore<T extends FirestoreDoc>(
+export type FirestoreDoc = {
+  id: DocumentSnapshot<DocumentData>["id"];
+  ref: DocumentSnapshot<DocumentData>["ref"];
+};
+
+function customToFirestore<T extends object>(
   obj: PartialWithFieldValue<T>,
 ): DocumentData {
   const o = { ...obj };
-  delete o.ref;
-  delete o.id;
   return o;
 }
 
-function customFromFirestore<T extends FirestoreDoc>(
+function customFromFirestore<T>(
   snapshot: QueryDocumentSnapshot,
   options: SnapshotOptions,
-): T {
-  const data = snapshot.data(options) as T;
+): T & FirestoreDoc {
+  const data = snapshot.data(options);
+
+  try {
+    data.createdAt = data.createdAt?.toDate() ?? new Date();
+    data.updatedAt = data.updatedAt?.toDate() ?? new Date();
+  } catch (error) {}
+
   return {
-    ...data,
+    ...(data as T),
     id: snapshot.id,
     ref: snapshot.ref,
   };
 }
 
-export function converterFactory<T>(): FirestoreDataConverter<T> {
-  return {
-    toFirestore: customToFirestore,
-    fromFirestore: customFromFirestore,
-  };
-}
+export const converter = {
+  toFirestore: customToFirestore,
+  fromFirestore: customFromFirestore,
+};

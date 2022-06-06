@@ -9,8 +9,9 @@ import {
   GiGlobe,
 } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
-import { EventLog } from "./EventLog";
+import { Log } from "./Log";
 import { ManageUsers } from "./ManageUsers";
+import { Notes } from "./Notes";
 import Party from "./Party";
 import { Settings } from "./Settings";
 import { WorldMaps } from "./WorldMaps";
@@ -28,7 +29,7 @@ export const notesWidget: Widget = {
   label: "Notes",
   ariaLabel: "notes",
   icon: GiScrollQuill,
-  component: <p>Notes</p>,
+  component: <Notes />,
   shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
@@ -37,7 +38,7 @@ export const logWidget: Widget = {
   label: "Log",
   ariaLabel: "log",
   icon: GiScrollUnfurled,
-  component: <EventLog />,
+  component: <Log />,
   shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };

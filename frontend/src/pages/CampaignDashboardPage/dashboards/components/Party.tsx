@@ -1,32 +1,26 @@
 import {
   Box,
-  Heading,
   Text,
-  UnorderedList,
-  ListItem,
   VStack,
-  Input,
-  Flex,
-  Button,
-  useToast,
-  Badge,
-  Divider,
   Skeleton,
   AlertIcon,
   AlertTitle,
   AlertDescription,
   Alert,
 } from "@chakra-ui/react";
-import { Character } from "ddtools-types";
-import { collection, orderBy, query } from "firebase/firestore";
+import { Campaign, Character } from "ddtools-types";
+import {
+  collection,
+  FirestoreDataConverter,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox/CampaignPlayerBox";
-import { converterFactory } from "../../../../services/converter";
+import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
-
-const characterConverter = converterFactory<Character>();
 
 export default function Party() {
   const { campaign } = useContext(CampaignUserContext);
@@ -39,7 +33,9 @@ export default function Party() {
     query(
       collection(firestore, "campaigns", campaign.id, "characters"),
       orderBy("name"),
-    ).withConverter(characterConverter),
+    ).withConverter(
+      converter as FirestoreDataConverter<Character & FirestoreDoc>,
+    ),
   );
 
   return (

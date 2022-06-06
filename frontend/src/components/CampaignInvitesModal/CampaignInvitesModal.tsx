@@ -8,13 +8,14 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
+import { FirestoreDoc } from "../../services/converter";
 import { CampaignBox } from "../CampaignBox/CampaignBox";
 
 type CampaignInvitesModalPropTypes = {
   isOpen: boolean;
   as: "player" | "dm";
   onClose: () => void;
-  campaignInvites: Campaign[];
+  campaignInvites: (Campaign & FirestoreDoc)[];
 };
 export function CampaignInvitesModal(props: CampaignInvitesModalPropTypes) {
   return (

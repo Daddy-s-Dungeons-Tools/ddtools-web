@@ -23,10 +23,11 @@ import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
 import { UserAvatarFromSummary } from "../UserAvatar/UserAvatar";
 import { FaUserSlash } from "react-icons/fa";
+import { FirestoreDoc } from "../../services/converter";
 
 type CampaignBoxPropTypes = {
   /** The campaign to display info for */
-  campaign: Campaign;
+  campaign: Campaign & FirestoreDoc;
   /** The role of the user viewing the campaign */
   as: "player" | "dm";
   /** The character of the player to display a summary of (only used when player) */
@@ -246,7 +247,7 @@ export function CampaignBox({
               textTransform="uppercase"
               mt="3"
             >
-              started {new Date(campaign.createdAt).toLocaleDateString()}
+              started {campaign.createdAt.toLocaleDateString()}
             </Box>
           </LinkOverlay>
           {isInvite && (

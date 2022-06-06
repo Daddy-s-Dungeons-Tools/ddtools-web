@@ -17,20 +17,24 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 import { Audio } from "ddtools-types";
-import { collection, orderBy, query, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  FirestoreDataConverter,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { ref } from "firebase/storage";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDownloadURL } from "react-firebase-hooks/storage";
 import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
-import { addCampaignAudioFiles } from "../../../../services/api";
-import { converterFactory } from "../../../../services/converter";
+// import { addCampaignAudioFiles } from "../../../../services/api";
+import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore, storage } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
-const audioConverter = converterFactory<Audio>();
-
-function AudioBox({ audioDoc }: { audioDoc: Audio }) {
+function AudioBox({ audioDoc }: { audioDoc: Audio & FirestoreDoc }) {
   const [downloadURL, isDownloadURLLoading, downloadURLError] = useDownloadURL(
     ref(storage, audioDoc.filePath),
   );
@@ -146,7 +150,7 @@ export function AudioManager() {
   const [audioDocs, isAudioDocsLoading, audioDocsError] = useCollectionData(
     query(
       collection(firestore, "campaigns", campaign.id, "audio").withConverter(
-        audioConverter,
+        converter as FirestoreDataConverter<Audio & FirestoreDoc>,
       ),
       orderBy("createdAt", "desc"),
     ),
@@ -159,7 +163,7 @@ export function AudioManager() {
     if (!target.files) return;
 
     const files = Array.from(target.files);
-    await addCampaignAudioFiles(campaign.id, files);
+    // await addCampaignAudioFiles(campaign.id, files);
     target.files = null;
   };
 

@@ -67,6 +67,7 @@ export const filterClass = (cls: any): Class => {
       sides: cls.hd.faces,
     },
     level: 1,
+    features: undefined!,
   };
 
   return filteredClass;

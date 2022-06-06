@@ -18,66 +18,36 @@ import {
   serverTimestamp,
   PartialWithFieldValue,
   WithFieldValue,
+  FirestoreDataConverter,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
-import { converterFactory } from "./converter";
+import { converter, FirestoreDoc } from "./converter";
 import { auth, firestore, storage } from "./firebase";
 
 const DATA_URL_PREFIX =
   "https://raw.githubusercontent.com/Daddy-s-Dungeons-Tools/ddtools-data/main/";
 
-const campaignConverter = converterFactory<Campaign>();
-const noteConverter = converterFactory<Note>();
-const logConverter = converterFactory<LogItem>();
-const characterConverter = converterFactory<Character>();
+// export async function addCampaignAudioFiles(campaignId: string, files: File[]) {
+//   const audioCollection = collection(
+//     campaignCollection,
+//     campaignId,
+//     "audio",
+//   ).withConverter(converterFactory<Audio>());
 
-const campaignCollection = collection(firestore, "campaigns").withConverter(
-  campaignConverter,
-);
+//   for (const file of files) {
+//     const fileRef = ref(storage, "campaigns/" + campaignId + "/" + file.name);
+//     const uploadResult = await uploadBytes(fileRef, file);
 
-/** Add a new note for a particular user in a particular campaign. Can be empty. */
-export function addNote(
-  userId: string,
-  campaignId: Campaign["id"],
-  note: WithFieldValue<Note>,
-) {
-  const notesCollection = collection(
-    campaignCollection,
-    campaignId,
-    "notes",
-  ).withConverter(noteConverter);
-  return addDoc(notesCollection, {
-    ...note,
-    ownerUserId: userId,
-    createdAt: serverTimestamp(),
-    sharedWith: [],
-  });
-}
-
-export async function addCampaignAudioFiles(
-  campaignId: Campaign["id"],
-  files: File[],
-) {
-  const audioCollection = collection(
-    campaignCollection,
-    campaignId,
-    "audio",
-  ).withConverter(converterFactory<Audio>());
-
-  for (const file of files) {
-    const fileRef = ref(storage, "campaigns/" + campaignId + "/" + file.name);
-    const uploadResult = await uploadBytes(fileRef, file);
-
-    await addDoc(audioCollection, {
-      createdAt: new Date().getTime(),
-      filePath: uploadResult.ref.fullPath,
-      name: file.name,
-      ownerUserId: "",
-      sharedWith: [],
-      defaultVolume: 100,
-    });
-  }
-}
+//     await addDoc(audioCollection, {
+//       createdAt: new Date(),
+//       filePath: uploadResult.ref.fullPath,
+//       name: file.name,
+//       ownerUserId: "",
+//       sharedWith: [],
+//       defaultVolume: 100,
+//     });
+//   }
+// }
 
 /** Fetch a data source from the GitHub ddtools-data repository. */
 export async function fetchData<T>(filename: string): Promise<T[]> {
@@ -87,6 +57,14 @@ export async function fetchData<T>(filename: string): Promise<T[]> {
 }
 
 export abstract class CampaignAPI {
+  private static campaignConverter = converter as FirestoreDataConverter<
+    Campaign & FirestoreDoc
+  >;
+  private static campaignCollection = collection(
+    firestore,
+    "campaigns",
+  ).withConverter(this.campaignConverter);
+
   /** Add a new campaign with the desired name and DM invitations. */
   public static async add({
     name,
@@ -103,7 +81,7 @@ export abstract class CampaignAPI {
     let counter = 2;
 
     // CHECK IF DOCID ALREADY EXISTS, TRY TO ADD COUNTER UP TO 100
-    while ((await getDoc(doc(campaignCollection, docId))).exists()) {
+    while ((await getDoc(doc(this.campaignCollection, docId))).exists()) {
       console.warn("Campaign already exists with ID " + docId);
       docId = name.toLowerCase().replaceAll(" ", "-") + "-" + counter;
       counter++;
@@ -134,30 +112,29 @@ export abstract class CampaignAPI {
       campaignDoc.color = color;
     }
 
-    return setDoc(doc(campaignCollection, docId), campaignDoc);
+    return setDoc(doc(this.campaignCollection, docId), campaignDoc);
   }
 
   /** Updates the name, description, and/or color of a campaign. */
   public static updateDetails(
-    campaignId: Campaign["id"],
+    campaignId: string,
     updates: PartialWithFieldValue<
       Pick<Campaign, "name" | "description" | "color">
     >,
   ) {
-    return updateDoc(
-      doc(campaignCollection, campaignId).withConverter(campaignConverter),
-      updates,
-    );
+    return updateDoc(doc(this.campaignCollection, campaignId), updates);
   }
 
   /** Add desired users (by their user IDs) to a campaign. */
   public static addUsers(
-    campaignId: Campaign["id"],
+    campaignId: string,
     as: "player" | "dm",
     userIds: string[],
   ) {
     return updateDoc(
-      doc(campaignCollection, campaignId).withConverter(campaignConverter),
+      doc(this.campaignCollection, campaignId).withConverter(
+        this.campaignConverter,
+      ),
       {
         [as === "player" ? "playerUserIds" : "dmUserIds"]: arrayUnion(
           ...userIds,
@@ -168,12 +145,14 @@ export abstract class CampaignAPI {
 
   /** Add the desired user invites (by their user IDs) from a campaign. */
   public static addUserInvites(
-    campaignId: Campaign["id"],
+    campaignId: string,
     as: "player" | "dm",
     userEmails: string[],
   ) {
     return updateDoc(
-      doc(campaignCollection, campaignId).withConverter(campaignConverter),
+      doc(this.campaignCollection, campaignId).withConverter(
+        this.campaignConverter,
+      ),
       {
         [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]: arrayUnion(
           ...userEmails,
@@ -184,46 +163,78 @@ export abstract class CampaignAPI {
 
   /** Remove the desired user invites (by their emails) from a campaign. */
   public static removeUserInvites(
-    campaignId: Campaign["id"],
+    campaignId: string,
     as: "player" | "dm",
     userEmails: string[],
   ) {
     return updateDoc(
-      doc(campaignCollection, campaignId).withConverter(campaignConverter),
+      doc(this.campaignCollection, campaignId).withConverter(
+        this.campaignConverter,
+      ),
       {
         [as === "player" ? "playerInviteEmails" : "dmInviteEmails"]:
           arrayRemove(...userEmails),
       },
     );
   }
+}
+export abstract class LogAPI {
+  private static logConverter = converter as FirestoreDataConverter<LogItem>;
+  private static campaignCollection = collection(firestore, "campaigns");
 
   /** Add an item to a campaign's log. */
-  public static log(campaignId: Campaign["id"], item: WithFieldValue<LogItem>) {
+  public static log(campaignId: string, item: WithFieldValue<LogItem>) {
     const logCollection = collection(
-      campaignCollection,
+      this.campaignCollection,
       campaignId,
       "log",
-    ).withConverter(logConverter);
+    ).withConverter(this.logConverter);
     return addDoc(logCollection, { ...item, createdAt: serverTimestamp() });
   }
 }
-
 export abstract class CharacterAPI {
+  private static characterConverter =
+    converter as FirestoreDataConverter<Character>;
+  private static campaignCollection = collection(firestore, "campaigns");
+
   public static setCampaignPlayerCharacter(
-    campaignId: Campaign["id"],
+    campaignId: string,
     userId: UserID,
     character: Character,
   ) {
     const campaignCharacterCollection = collection(
-      campaignCollection,
+      this.campaignCollection,
       campaignId,
       "characters",
-    ).withConverter(characterConverter);
+    ).withConverter(CharacterAPI.characterConverter);
 
     return setDoc(doc(campaignCharacterCollection, userId), {
       ...character,
       createdAt: serverTimestamp(),
       ownerUserId: userId,
+    });
+  }
+}
+
+export abstract class NoteAPI {
+  private static noteConverter = converter as FirestoreDataConverter<Note>;
+  private static campaignCollection = collection(firestore, "campaigns");
+  /** Add a new note for a particular user in a particular campaign. Can be empty. */
+  public static add(
+    userId: string,
+    campaignId: string,
+    note: WithFieldValue<Note>,
+  ) {
+    const notesCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "notes",
+    ).withConverter(NoteAPI.noteConverter);
+    return addDoc(notesCollection, {
+      ...note,
+      ownerUserId: userId,
+      createdAt: serverTimestamp(),
+      sharedWith: [],
     });
   }
 }

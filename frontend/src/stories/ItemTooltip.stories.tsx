@@ -30,7 +30,7 @@ Default.args = {
     ],
     value: 2130,
     page: 213,
-    createdAt: new Date().getTime(),
+    createdAt: new Date(),
     ownerUserId: "sadasd",
     sharedWith: [],
   },

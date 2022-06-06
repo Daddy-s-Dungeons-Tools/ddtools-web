@@ -15,17 +15,28 @@ import {
   InputLeftElement,
 } from "@chakra-ui/react";
 import { Campaign, LogItem } from "ddtools-types";
-import { collection, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  FirestoreDataConverter,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
 import { UserAvatarFromSummary } from "../../../../components/UserAvatar/UserAvatar";
-import { converterFactory } from "../../../../services/converter";
+import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 /** Single log item display. Shows all present information except for the payload. */
-function LogItemBox({ campaign, item }: { campaign: Campaign; item: LogItem }) {
+function LogItemBox({
+  campaign,
+  item,
+}: {
+  campaign: Campaign & FirestoreDoc;
+  item: LogItem & FirestoreDoc;
+}) {
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       {item.message && <Text>{item.message}</Text>}
@@ -52,14 +63,12 @@ function LogItemBox({ campaign, item }: { campaign: Campaign; item: LogItem }) {
   );
 }
 
-const converter = converterFactory<LogItem>();
-
-export function EventLog() {
+export function Log() {
   const { campaign } = useContext(CampaignUserContext);
   const [eventLog, isEventLogLoading, eventLogError] = useCollectionData(
     query(
       collection(firestore, "campaigns", campaign.id, "log").withConverter(
-        converter,
+        converter as FirestoreDataConverter<LogItem & FirestoreDoc>,
       ),
       orderBy("createdAt", "desc"),
     ),

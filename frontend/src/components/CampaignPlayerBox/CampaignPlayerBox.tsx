@@ -20,13 +20,14 @@ import {
   characterPhysicalDescription,
   characterRaceAndClasses,
 } from "../../utils/characters";
+import { FirestoreDoc } from "../../services/converter";
 
 /** Very odd... webpack freaks out when I try to import this from ddtools-types */
 const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;
 
 type CampaignPlayerBoxPropTypes = {
   userDisplayName: string;
-  character: Character;
+  character: Character & FirestoreDoc;
 };
 export function CampaignPlayerBox({
   character,

@@ -1,15 +1,20 @@
 import { ABILITIES, Campaign, Character, SKILLS } from "ddtools-types";
+import { FirestoreDoc } from "../services/converter";
 
-export const testCampaign: Campaign = {
+export const testCampaign: Campaign & FirestoreDoc = {
+  id: "fakeid",
+  ref: null!,
   name: "Test Campaign",
   mode: "out-of-combat",
-  createdAt: new Date().getTime(),
+  createdAt: new Date(),
   color: "green",
   dmUserIds: ["123123124123123"],
   description: "lorem ipsum dolor sit amet",
 };
 
-export const testCharacter: Character = {
+export const testCharacter: Character & FirestoreDoc = {
+  id: "fakeid",
+  ref: null!,
   xp: 0,
   race: { name: "Human", entries: [] },
   classes: [
@@ -20,6 +25,7 @@ export const testCharacter: Character = {
         current: 3,
         sides: 6,
       },
+      features: undefined!,
     },
   ],
   alignment: "lawful good",
@@ -59,7 +65,7 @@ export const testCharacter: Character = {
     copper: 0,
   },
   name: "Nil Agosto",
-  size: "small",
+  size: "S",
   speed: {
     walking: 0,
     climbing: 0,
@@ -125,7 +131,7 @@ export const testCharacter: Character = {
   tags: [],
   ownerUserId: "123123124123123",
   sharedWith: [],
-  createdAt: new Date().getTime(),
+  createdAt: new Date(),
   isActive: true,
   isJackOfAllTrades: false,
 };
@@ -186,7 +192,7 @@ export const emptyCharacter: Character = {
     copper: 0,
   },
   name: "",
-  size: "tiny",
+  size: "T",
   speed: {
     walking: 30,
     climbing: 0,
@@ -226,7 +232,7 @@ export const emptyCharacter: Character = {
   tags: [],
   ownerUserId: "",
   sharedWith: [],
-  createdAt: 0,
+  createdAt: new Date(),
   isActive: true,
   isJackOfAllTrades: false,
 };
