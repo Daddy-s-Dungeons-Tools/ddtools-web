@@ -6,11 +6,12 @@ import {
   FormLabel,
   Input,
   Textarea,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
 import { Field, Formik, FormikHelpers } from "formik";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { CampaignAPI } from "../../../../services/api";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
@@ -18,6 +19,7 @@ type CampaignUpdate = Pick<Campaign, "name" | "description" | "color">;
 
 export function Settings() {
   const { campaign } = useContext(CampaignUserContext);
+  const toast = useToast();
 
   const handleUpdateSettings = async (
     values: CampaignUpdate,
@@ -25,8 +27,23 @@ export function Settings() {
   ) => {
     try {
       await CampaignAPI.updateDetails(campaign.id, values);
+
+      toast({
+        title: "Updated!",
+        description: "The campaign details have been updated.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error(error);
+      toast({
+        title: "Yikes!",
+        description: "There was an error while saving...",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -42,12 +59,18 @@ export function Settings() {
         }
         onSubmit={handleUpdateSettings}
       >
-        {({ handleSubmit }) => (
+        {({ handleSubmit, isSubmitting }) => (
           <form onSubmit={handleSubmit}>
             <VStack spacing="3">
               <FormControl>
                 <FormLabel htmlFor="campaignName">Campaign Name</FormLabel>
-                <Field id="campaignName" type="text" name="name" as={Input} />
+                <Field
+                  id="campaignName"
+                  type="text"
+                  name="name"
+                  as={Input}
+                  isReadOnly={isSubmitting}
+                />
               </FormControl>
 
               <FormControl>
@@ -62,10 +85,11 @@ export function Settings() {
                   height={100}
                   minH={100}
                   maxH={100}
+                  isReadOnly={isSubmitting}
                 />
               </FormControl>
 
-              <Button type="submit" minW="100%">
+              <Button type="submit" minW="100%" isLoading={isSubmitting}>
                 Update
               </Button>
             </VStack>
