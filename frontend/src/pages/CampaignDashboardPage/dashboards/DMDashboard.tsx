@@ -4,6 +4,7 @@ import {
   audioManagerWidget,
   campaignSettingsWidget,
   charactersWidget,
+  logWidget,
   mapWidget,
   notesWidget,
   npcCreatureWidget,
@@ -19,7 +20,12 @@ export function DMDashboard() {
     >
       <GridItem rowSpan={2} colSpan={{ base: 6, lg: 2 }}>
         <WidgetContainer
-          widgets={[notesWidget, charactersWidget, npcCreatureWidget]}
+          widgets={[
+            notesWidget,
+            charactersWidget,
+            npcCreatureWidget,
+            logWidget,
+          ]}
         />
       </GridItem>
 
@@ -40,7 +46,6 @@ export function DMDashboard() {
       <GridItem colSpan={{ base: 3, lg: 2 }}>
         <WidgetContainer widgets={[]} />
       </GridItem> */}
-
     </Grid>
   );
 }

@@ -14,12 +14,14 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProtectedRoute } from "../../hooks/routes";
-import { campaignConverter, converterFactory } from "../../services/converter";
+import { converterFactory } from "../../services/converter";
 import { diceBox } from "../../services/dice";
 import { auth, firestore } from "../../services/firebase";
 
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
+
+const campaignConverter = converterFactory<Campaign>();
 
 type CampaignUserContextType = {
   userRole: "dm" | "player";

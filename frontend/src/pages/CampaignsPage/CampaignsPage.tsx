@@ -15,11 +15,13 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, orderBy, query, where } from "firebase/firestore";
 import { auth, firestore } from "../../services/firebase";
 import { Campaign } from "ddtools-types";
-import { campaignConverter } from "../../services/converter";
 import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
 import { FaPlus } from "react-icons/fa";
 import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { converterFactory } from "../../services/converter";
+
+const campaignConverter = converterFactory<Campaign>();
 
 export default function CampaignsPage() {
   useProtectedRoute();

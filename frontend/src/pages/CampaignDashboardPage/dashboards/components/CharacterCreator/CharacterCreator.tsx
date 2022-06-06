@@ -45,7 +45,7 @@ import { Field, Formik, FormikHelpers } from "formik";
 import { useContext } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDataSource } from "../../../../../hooks/useDataSource";
-import { setCampaignPlayerCharacter } from "../../../../../services/api";
+import { CharacterAPI } from "../../../../../services/api";
 import { auth } from "../../../../../services/firebase";
 import {
   abilityScoreBaseModifier,
@@ -82,7 +82,11 @@ export function CharacterCreator() {
     formikHelpers.setSubmitting(true);
 
     try {
-      await setCampaignPlayerCharacter(campaign.id, user!.uid, character);
+      await CharacterAPI.setCampaignPlayerCharacter(
+        campaign.id,
+        user!.uid,
+        character,
+      );
       toast({
         title: "Created Player",
         description: (

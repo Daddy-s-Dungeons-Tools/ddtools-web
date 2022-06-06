@@ -22,10 +22,7 @@ import { collection, orderBy, query } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox/CampaignPlayerBox";
-import {
-  addUserCampaignInvites,
-  removeUserCampaignInvites,
-} from "../../../../services/api";
+import { CampaignAPI } from "../../../../services/api";
 import { converterFactory } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
@@ -48,7 +45,11 @@ function CampaignUsersManager() {
       .map((email: string) => email.trim());
 
     try {
-      await addUserCampaignInvites(campaign.id, "player", newUserInviteEmails);
+      await CampaignAPI.addUserInvites(
+        campaign.id,
+        "player",
+        newUserInviteEmails,
+      );
       input.value = "";
 
       toast({
@@ -82,7 +83,9 @@ function CampaignUsersManager() {
           campaign.playerInviteEmails.map((playerEmail) => (
             <ListItem
               onClick={() =>
-                removeUserCampaignInvites(campaign.id, "player", [playerEmail])
+                CampaignAPI.removeUserInvites(campaign.id, "player", [
+                  playerEmail,
+                ])
               }
               key={playerEmail}
             >

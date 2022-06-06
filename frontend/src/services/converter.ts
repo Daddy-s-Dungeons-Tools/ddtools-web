@@ -1,14 +1,14 @@
-import { Audio, Campaign, FirestoreDoc, Note } from "ddtools-types";
+import { FirestoreDoc } from "ddtools-types";
 import {
   DocumentData,
   FirestoreDataConverter,
   QueryDocumentSnapshot,
   SnapshotOptions,
-  WithFieldValue,
+  PartialWithFieldValue,
 } from "firebase/firestore";
 
 function customToFirestore<T extends FirestoreDoc>(
-  obj: WithFieldValue<T>,
+  obj: PartialWithFieldValue<T>,
 ): DocumentData {
   const o = { ...obj };
   delete o.ref;
@@ -27,21 +27,6 @@ function customFromFirestore<T extends FirestoreDoc>(
     ref: snapshot.ref,
   };
 }
-
-export const campaignConverter: FirestoreDataConverter<Campaign> = {
-  toFirestore: customToFirestore,
-  fromFirestore: customFromFirestore,
-};
-
-export const noteConverter: FirestoreDataConverter<Note> = {
-  toFirestore: customToFirestore,
-  fromFirestore: customFromFirestore,
-};
-
-export const audioConverter: FirestoreDataConverter<Audio> = {
-  toFirestore: customToFirestore,
-  fromFirestore: customFromFirestore,
-};
 
 export function converterFactory<T>(): FirestoreDataConverter<T> {
   return {
