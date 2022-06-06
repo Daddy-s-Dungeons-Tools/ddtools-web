@@ -14,7 +14,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { addCampaign } from "../../services/api";
+import { CampaignAPI } from "../../services/api";
 
 type NewCampaignModalPropTypes = {
   isOpen: boolean;
@@ -42,7 +42,7 @@ export function NewCampaignModal(props: NewCampaignModalPropTypes) {
     const color: string | undefined = event.currentTarget.campaignColor.value;
 
     try {
-      await addCampaign({
+      await CampaignAPI.add({
         name: campaignName,
         dmInviteEmails: campaignDMInviteEmails,
         color,

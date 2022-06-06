@@ -58,7 +58,7 @@ export function EventLog() {
   const { campaign } = useContext(CampaignUserContext);
   const [eventLog, isEventLogLoading, eventLogError] = useCollectionData(
     query(
-      collection(firestore, "campaigns", campaign.id, "eventLog").withConverter(
+      collection(firestore, "campaigns", campaign.id, "log").withConverter(
         converter,
       ),
       orderBy("createdAt", "desc"),

@@ -13,11 +13,14 @@ import { auth } from "../../services/firebase";
 
 import { Link as ReactRouterLink } from "react-router-dom";
 import { Logo } from "../Logo/Logo";
+import { useState } from "react";
 
 export default function TopNavbar() {
   const [user, isUserLoading] = useAuthState(auth);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [isLogoOpen, setIsLogoOpen] = useState<boolean>(false);
 
   return (
     <Flex
@@ -29,8 +32,13 @@ export default function TopNavbar() {
       p={8}
     >
       <Box mr="5">
-        <HStack>
-          <Logo isOpen={isUserLoading} />
+        <HStack
+          onMouseEnter={() => setIsLogoOpen(true)}
+          onMouseLeave={() => setIsLogoOpen(false)}
+          cursor="pointer"
+          onClick={() => navigate("/")}
+        >
+          <Logo isOpen={isLogoOpen} />
           <Text fontSize={"lg"} fontWeight="bold">
             DDTools
           </Text>

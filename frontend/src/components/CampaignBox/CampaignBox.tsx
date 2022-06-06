@@ -18,10 +18,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import { Campaign, Character } from "ddtools-types";
 import { useState } from "react";
-import {
-  addUsersToCampaigns,
-  removeUserCampaignInvites,
-} from "../../services/api";
+import { CampaignAPI } from "../../services/api";
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
 import { UserAvatarFromSummary } from "../UserAvatar/UserAvatar";
@@ -68,12 +65,12 @@ export function CampaignBox({
     setIsAccepting(true);
     try {
       await Promise.allSettled([
-        addUsersToCampaigns(
+        CampaignAPI.addUsers(
           campaign.id,
           as,
           auth.currentUser ? [auth.currentUser.uid] : [],
         ),
-        removeUserCampaignInvites(
+        CampaignAPI.removeUserInvites(
           campaign.id,
           as,
           auth.currentUser && auth.currentUser.email
@@ -124,7 +121,7 @@ export function CampaignBox({
 
     setIsDeclining(true);
     try {
-      await removeUserCampaignInvites(
+      await CampaignAPI.removeUserInvites(
         campaign.id,
         as,
         auth.currentUser && auth.currentUser.email

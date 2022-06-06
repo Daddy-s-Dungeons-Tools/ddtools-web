@@ -11,10 +11,10 @@ import "./services/dice";
 import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import CampaignIndexPage from "./pages/CampaignPages/CampaignIndexPage";
+import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
 import theme from "./services/theme";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
-import CampaignDashboardPage from "./pages/CampaignPages/CampaignDashboardPage";
+import CampaignDashboardPage from "./pages/CampaignDashboardPage/CampaignDashboardPage";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
@@ -27,7 +27,7 @@ root.render(
             <Route index element={<LoginPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="campaigns">
-              <Route index element={<CampaignIndexPage />} />
+              <Route index element={<CampaignsPage />} />
               <Route path=":campaignId" element={<CampaignDashboardPage />} />
             </Route>
             <Route path="*" element={<p>Page not found!</p>} />

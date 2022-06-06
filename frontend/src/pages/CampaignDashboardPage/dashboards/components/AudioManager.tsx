@@ -24,9 +24,11 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDownloadURL } from "react-firebase-hooks/storage";
 import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
 import { addCampaignAudioFiles } from "../../../../services/api";
-import { audioConverter } from "../../../../services/converter";
+import { converterFactory } from "../../../../services/converter";
 import { firestore, storage } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
+
+const audioConverter = converterFactory<Audio>();
 
 function AudioBox({ audioDoc }: { audioDoc: Audio }) {
   const [downloadURL, isDownloadURLLoading, downloadURLError] = useDownloadURL(
