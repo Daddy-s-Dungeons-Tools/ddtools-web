@@ -11,6 +11,7 @@ import {
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
 import Party from "./Party";
+import { Setting } from "./Settings";
 import { WorldMaps } from "./WorldMaps";
 
 export type Widget = {
@@ -69,7 +70,7 @@ export const campaignSettingsWidget: Widget = {
   label: "Campaign Settings",
   ariaLabel: "campaign settings",
   icon: GiSettingsKnobs,
-  component: <p>In progress...</p>,
+  component: <Setting />,
   shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
@@ -77,7 +78,7 @@ export const mapWidget: Widget = {
   label: "Maps",
   ariaLabel: "maps",
   icon: GiGlobe,
-  component: <WorldMaps/>,
+  component: <WorldMaps />,
   shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
