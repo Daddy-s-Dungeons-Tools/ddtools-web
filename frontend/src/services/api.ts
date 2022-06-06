@@ -17,6 +17,7 @@ import {
   addDoc,
   serverTimestamp,
   PartialWithFieldValue,
+  WithFieldValue,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { converterFactory } from "./converter";
@@ -25,32 +26,31 @@ import { auth, firestore, storage } from "./firebase";
 const DATA_URL_PREFIX =
   "https://raw.githubusercontent.com/Daddy-s-Dungeons-Tools/ddtools-data/main/";
 
-const campaignCollection = collection(firestore, "campaigns").withConverter(
-  converterFactory<Campaign>(),
-);
-
 const campaignConverter = converterFactory<Campaign>();
 const noteConverter = converterFactory<Note>();
 const logConverter = converterFactory<LogItem>();
 const characterConverter = converterFactory<Character>();
 
+const campaignCollection = collection(firestore, "campaigns").withConverter(
+  campaignConverter,
+);
+
 /** Add a new note for a particular user in a particular campaign. Can be empty. */
 export function addNote(
   userId: string,
   campaignId: Campaign["id"],
-  note?: Partial<Omit<Note, "timestamp" | "authorUserId">>,
+  note: WithFieldValue<Note>,
 ) {
   const notesCollection = collection(
-    firestore,
-    "campaigns",
+    campaignCollection,
     campaignId,
     "notes",
-  ).withConverter(converterFactory<Note>());
+  ).withConverter(noteConverter);
   return addDoc(notesCollection, {
+    ...note,
     ownerUserId: userId,
     createdAt: serverTimestamp(),
     sharedWith: [],
-    ...note,
   });
 }
 
@@ -59,8 +59,7 @@ export async function addCampaignAudioFiles(
   files: File[],
 ) {
   const audioCollection = collection(
-    firestore,
-    "campaigns",
+    campaignCollection,
     campaignId,
     "audio",
   ).withConverter(converterFactory<Audio>());
@@ -122,12 +121,12 @@ export abstract class CampaignAPI {
     // Filter empty values
     dmInviteEmails = dmInviteEmails.filter((email) => !!email);
 
-    const campaignDoc: Campaign = {
+    const campaignDoc: WithFieldValue<Campaign> = {
       name,
       dmUserIds,
       dmInviteEmails,
       mode: "out-of-combat",
-      createdAt: new Date().getTime(),
+      createdAt: serverTimestamp(),
     };
 
     // Optional starting values
@@ -135,12 +134,10 @@ export abstract class CampaignAPI {
       campaignDoc.color = color;
     }
 
-    return setDoc(
-      doc(campaignCollection, docId).withConverter(campaignConverter),
-      campaignDoc,
-    );
+    return setDoc(doc(campaignCollection, docId), campaignDoc);
   }
 
+  /** Updates the name, description, and/or color of a campaign. */
   public static updateDetails(
     campaignId: Campaign["id"],
     updates: PartialWithFieldValue<
@@ -201,17 +198,13 @@ export abstract class CampaignAPI {
   }
 
   /** Add an item to a campaign's log. */
-  public static log(
-    campaignId: Campaign["id"],
-    item: PartialWithFieldValue<LogItem>,
-  ) {
+  public static log(campaignId: Campaign["id"], item: WithFieldValue<LogItem>) {
     const logCollection = collection(
-      firestore,
-      "campaigns",
+      campaignCollection,
       campaignId,
       "log",
     ).withConverter(logConverter);
-    return addDoc(logCollection, item);
+    return addDoc(logCollection, { ...item, createdAt: serverTimestamp() });
   }
 }
 
@@ -222,15 +215,14 @@ export abstract class CharacterAPI {
     character: Character,
   ) {
     const campaignCharacterCollection = collection(
-      firestore,
-      "campaigns",
+      campaignCollection,
       campaignId,
       "characters",
     ).withConverter(characterConverter);
 
     return setDoc(doc(campaignCharacterCollection, userId), {
       ...character,
-      createdAt: new Date().getTime(),
+      createdAt: serverTimestamp(),
       ownerUserId: userId,
     });
   }
