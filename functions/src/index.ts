@@ -33,7 +33,7 @@ const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
  * @param {LogItem} item
  * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
  */
-function logToCampaign(campaignId: Campaign["id"], item: LogItem) {
+function logToCampaign(campaignId: string, item: LogItem) {
   return db.collection(`campaigns/${campaignId}/log`).add(item);
 }
 
@@ -91,7 +91,7 @@ export const modifyCampaign = functions.firestore
       await logToCampaign(change.after.id, {
         type: "campaign-created",
         message: `Campaign ${campaign.name} was created`,
-        createdAt: new Date().getTime(),
+        createdAt: new Date(),
         sourceUserIds: campaign.dmUserIds,
       });
     }
