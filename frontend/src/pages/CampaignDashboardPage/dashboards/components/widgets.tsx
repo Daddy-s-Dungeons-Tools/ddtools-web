@@ -10,6 +10,7 @@ import {
 } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
 import { EventLog } from "./EventLog";
+import { ManageUsers } from "./ManageUsers";
 import Party from "./Party";
 import { Settings } from "./Settings";
 import { WorldMaps } from "./WorldMaps";
@@ -58,6 +59,16 @@ export const charactersWidget: Widget = {
   shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
+
+export const manageUsersWidget: Widget = {
+  label: "Manage Users",
+  ariaLabel: "manage users",
+  icon: FaUsers,
+  component: <ManageUsers />,
+  shownToUserRoles: ["dm"],
+  shownDuringCampaignMode: ["combat", "out-of-combat"],
+};
+
 export const audioManagerWidget: Widget = {
   label: "Audio Manager",
   ariaLabel: "audio manager",
@@ -66,6 +77,7 @@ export const audioManagerWidget: Widget = {
   shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
+
 export const campaignSettingsWidget: Widget = {
   label: "Campaign Settings",
   ariaLabel: "campaign settings",
@@ -74,6 +86,7 @@ export const campaignSettingsWidget: Widget = {
   shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
+
 export const mapWidget: Widget = {
   label: "Maps",
   ariaLabel: "maps",
