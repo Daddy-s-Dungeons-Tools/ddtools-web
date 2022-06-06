@@ -141,6 +141,18 @@ export abstract class CampaignAPI {
     );
   }
 
+  public static updateDetails(
+    campaignId: Campaign["id"],
+    updates: PartialWithFieldValue<
+      Pick<Campaign, "name" | "description" | "color">
+    >,
+  ) {
+    return updateDoc(
+      doc(campaignCollection, campaignId).withConverter(campaignConverter),
+      updates,
+    );
+  }
+
   /** Add desired users (by their user IDs) to a campaign. */
   public static addUsers(
     campaignId: Campaign["id"],
