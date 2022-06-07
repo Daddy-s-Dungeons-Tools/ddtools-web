@@ -8,7 +8,9 @@ import {
   GiSettingsKnobs,
   GiGlobe,
 } from "react-icons/gi";
+import { BsGrid3X3 } from "react-icons/bs";
 import { AudioManager } from "./AudioManager";
+import { BattleMaps } from "./BattleMaps/BattleMaps";
 import { Log } from "./Log";
 import { ManageUsers } from "./ManageUsers";
 import { Notes } from "./Notes";
@@ -93,6 +95,15 @@ export const mapWidget: Widget = {
   ariaLabel: "maps",
   icon: GiGlobe,
   component: <WorldMaps />,
+  shownToUserRoles: ["dm", "player"],
+  shownDuringCampaignMode: ["combat", "out-of-combat"],
+};
+
+export const battleMapsWidget: Widget = {
+  label: "Battle Maps",
+  ariaLabel: "battle maps",
+  icon: BsGrid3X3,
+  component: <BattleMaps />,
   shownToUserRoles: ["dm", "player"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
