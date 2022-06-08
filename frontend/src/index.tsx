@@ -1,25 +1,20 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-
 import { ChakraProvider } from "@chakra-ui/react";
-import App from "./App";
-
-// Initializes Firebase and emulators
-import "./services/firebase";
-import "./services/dice";
-
-import "./index.css";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
-import theme from "./services/theme";
-import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import App from "./App";
 import CampaignDashboardPage from "./pages/CampaignDashboardPage/CampaignDashboardPage";
+import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import "./services/dice";
+import "./services/firebase";
+import theme from "./services/theme";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <ChakraProvider theme={theme}>
       <Router>
         <Routes>
@@ -35,5 +30,5 @@ root.render(
         </Routes>
       </Router>
     </ChakraProvider>
-  </React.StrictMode>,
+  </StrictMode>,
 );
