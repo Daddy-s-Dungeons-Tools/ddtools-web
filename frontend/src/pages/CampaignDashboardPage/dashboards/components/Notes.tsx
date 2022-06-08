@@ -1,4 +1,12 @@
-import { Box, Heading, Skeleton, VStack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Skeleton,
+  VStack,
+  Text,
+  Textarea,
+  Input,
+} from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import {
   collection,
@@ -6,20 +14,57 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { useContext, useEffect } from "react";
+import { Field, Formik, FormikHelpers } from "formik";
+import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { ErrorAlert } from "../../../../components/ErrorAlert/ErrorAlert";
+import { NoteAPI } from "../../../../services/api";
 import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
-function NoteBox({ note }: { note: Note }) {
+function NewNoteBox() {
+  const { campaign, user } = useContext(CampaignUserContext);
+
+  async function handleAddNote(
+    values: Note,
+    formikHelpers: FormikHelpers<Note>,
+  ) {
+    try {
+      await NoteAPI.add(user.uid, campaign.id, values);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <Box>
+    <Box minW="100%">
+      <Formik initialValues={{ body: "" } as Note} onSubmit={handleAddNote}>
+        {({ handleSubmit }) => (
+          <form onSubmit={handleSubmit}>
+            <Field name="title" as={Input} placeholder="Note title" />
+            <Field name="body" as={Textarea} placeholder="Note body" />
+          </form>
+        )}
+      </Formik>
+    </Box>
+  );
+}
+
+function NoteBox({ note }: { note: Note }) {
+  const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
+  return (
+    <Box minW="100%">
       {note.title && <Heading size="md">{note.title}</Heading>}
-      <Text>{note.body}</Text>
+      <Text noOfLines={isShowingFullText ? undefined : 4}>{note.body}</Text>
+      <Text
+        color="gray.500"
+        onClick={() => setIsShowingFullText(!isShowingFullText)}
+      >
+        Show {isShowingFullText ? "less" : "more"}...
+      </Text>
       <Text color="gray.500" size="sm" fontWeight="semibold">
-        {JSON.stringify(note.createdAt)}
+        {note.createdAt.toLocaleString()}
       </Text>
     </Box>
   );
@@ -48,6 +93,7 @@ export function Notes() {
       )}
 
       <VStack spacing="3">
+        <NewNoteBox />
         {isNotesLoading && (
           <>
             <Skeleton height="200px" />
