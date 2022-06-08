@@ -11,6 +11,7 @@ import {
   Flex,
   InputGroup,
   InputLeftElement,
+  Button,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import {
@@ -47,10 +48,26 @@ function NewNoteBox() {
   return (
     <Box minW="100%">
       <Formik initialValues={{ body: "" } as Note} onSubmit={handleAddNote}>
-        {({ handleSubmit }) => (
+        {({ handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit}>
             <Field name="title" as={Input} placeholder="Note title" />
             <Field name="body" as={Textarea} placeholder="Note body" />
+            <Input
+              name="tags"
+              placeholder="Comma-separated tags"
+              onChange={(ev) =>
+                setFieldValue(
+                  "tags",
+                  ev.currentTarget.value
+                    .toLowerCase()
+                    .split(",")
+                    .map((tag) => tag.trim()),
+                )
+              }
+            />
+            <Button type="submit" minW="100%">
+              Add
+            </Button>
           </form>
         )}
       </Formik>
