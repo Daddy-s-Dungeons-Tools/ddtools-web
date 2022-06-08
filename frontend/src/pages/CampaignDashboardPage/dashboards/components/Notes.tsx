@@ -13,6 +13,7 @@ import { Note } from "ddtools-types";
 import {
   collection,
   FirestoreDataConverter,
+  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -86,6 +87,7 @@ export function Notes() {
     query(
       collection(firestore, "campaigns", campaign.id, "notes"),
       where("ownerUserId", "==", user.uid),
+      orderBy("createdAt", "desc"),
     ).withConverter(converter as FirestoreDataConverter<Note & FirestoreDoc>),
   );
 
