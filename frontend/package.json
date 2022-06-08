@@ -29,7 +29,9 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "eslintConfig": {
     "extends": [
@@ -60,8 +62,22 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@chakra-ui/storybook-addon": "^4.0.1",
+    "@storybook/addon-actions": "^6.5.8",
+    "@storybook/addon-essentials": "^6.5.8",
+    "@storybook/addon-interactions": "^6.5.8",
+    "@storybook/addon-links": "^6.5.8",
+    "@storybook/builder-vite": "^0.1.36",
+    "@storybook/react": "^6.5.8",
+    "@storybook/testing-library": "^0.0.11",
+    "babel-loader": "^8.2.5",
     "eslint-config-prettier": "^8.5.0",
+    "html-webpack-plugin": "^5.5.0",
     "prettier": "^2.6.2",
     "typescript": "^4.6.4"
+  },
+  "engines": {
+    "node": "^16.x.x"
   }
 }
