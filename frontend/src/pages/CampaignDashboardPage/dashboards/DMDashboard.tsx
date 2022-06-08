@@ -2,6 +2,7 @@ import { Grid, GridItem } from "@chakra-ui/react";
 import { WidgetContainer } from "./components/WidgetContainer";
 import {
   audioManagerWidget,
+  battleMapsWidget,
   campaignSettingsWidget,
   charactersWidget,
   logWidget,
@@ -31,7 +32,7 @@ export function DMDashboard() {
       </GridItem>
 
       <GridItem rowSpan={3} colSpan={{ base: 6, lg: 4 }}>
-        <WidgetContainer widgets={[mapWidget]} />
+        <WidgetContainer widgets={[mapWidget, battleMapsWidget]} />
       </GridItem>
 
       <GridItem rowSpan={1} colSpan={{ base: 6, lg: 2 }}>
