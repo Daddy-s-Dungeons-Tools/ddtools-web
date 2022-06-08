@@ -1,17 +1,17 @@
 import {
   Box,
-  Heading,
-  Skeleton,
-  VStack,
-  Text,
-  Textarea,
-  Input,
-  HStack,
-  Tag,
+  Button,
   Flex,
+  Heading,
+  HStack,
+  Input,
   InputGroup,
   InputLeftElement,
-  Button,
+  Skeleton,
+  Tag,
+  Text,
+  Textarea,
+  VStack,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import {
@@ -32,14 +32,27 @@ import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";
 
 function NewNoteBox() {
+  type TagInput = {
+    title: string;
+    body: string;
+    tagsStr: string;
+  };
   const { campaign, user } = useContext(CampaignUserContext);
 
   async function handleAddNote(
-    values: Note,
-    formikHelpers: FormikHelpers<Note>,
+    values: TagInput,
+    formikHelpers: FormikHelpers<TagInput>,
   ) {
     try {
-      await NoteAPI.add(user.uid, campaign.id, values);
+      await NoteAPI.add(user.uid, campaign.id, {
+        title: values.title,
+        body: values.body,
+        tags: values.tagsStr
+          ?.toLowerCase()
+          .split(",")
+          .map((tag) => tag.trim()),
+      } as Note);
+      formikHelpers.resetForm();
     } catch (error) {
       console.error(error);
     }
@@ -47,23 +60,18 @@ function NewNoteBox() {
 
   return (
     <Box minW="100%">
-      <Formik initialValues={{ body: "" } as Note} onSubmit={handleAddNote}>
+      <Formik
+        initialValues={{ title: "", body: "", tagsStr: "" } as TagInput}
+        onSubmit={handleAddNote}
+      >
         {({ handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit}>
             <Field name="title" as={Input} placeholder="Note title" />
             <Field name="body" as={Textarea} placeholder="Note body" />
-            <Input
-              name="tags"
+            <Field
+              as={Input}
+              name="tagsStr"
               placeholder="Comma-separated tags"
-              onChange={(ev) =>
-                setFieldValue(
-                  "tags",
-                  ev.currentTarget.value
-                    .toLowerCase()
-                    .split(",")
-                    .map((tag) => tag.trim()),
-                )
-              }
             />
             <Button type="submit" minW="100%">
               Add
@@ -91,7 +99,11 @@ function NoteBox({ note }: { note: Note }) {
         <HStack spacing="3" my="2" flex="1">
           {note.tags &&
             note.tags.length &&
-            note.tags.map((tag) => <Tag size="sm">{tag}</Tag>)}
+            note.tags.map((tag, tagIndex) => (
+              <Tag key={tagIndex} size="sm">
+                {tag}
+              </Tag>
+            ))}
         </HStack>
         <Text color="gray.500" size="sm" fontWeight="semibold">
           {note.createdAt.toLocaleString()}
