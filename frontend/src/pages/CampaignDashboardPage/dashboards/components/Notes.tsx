@@ -6,6 +6,8 @@ import {
   Text,
   Textarea,
   Input,
+  HStack,
+  Tag,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import {
@@ -63,6 +65,13 @@ function NoteBox({ note }: { note: Note }) {
       >
         Show {isShowingFullText ? "less" : "more"}...
       </Text>
+      {note.tags && note.tags.length && (
+        <HStack spacing="3" my="2">
+          {note.tags.map((tag) => (
+            <Tag size="sm">{tag}</Tag>
+          ))}
+        </HStack>
+      )}
       <Text color="gray.500" size="sm" fontWeight="semibold">
         {note.createdAt.toLocaleString()}
       </Text>
