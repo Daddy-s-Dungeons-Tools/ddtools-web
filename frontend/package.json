@@ -28,10 +28,8 @@
     "webpack": "^5.72.1"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "BUILD_PATH=../build react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
     "format": "prettier --write src/",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
