@@ -16,6 +16,8 @@ import { Note } from "ddtools-types";
 import { useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { FirestoreDoc } from "../services/converter";
+import { noteTags } from "../utils/consts";
+import { TagAddPopover } from "./TagAddPopover";
 
 type NoteBoxPropTypes = {
   note: Note & FirestoreDoc;
@@ -77,6 +79,10 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
                 {tag}
               </Tag>
             ))}
+          <TagAddPopover
+            suggestedTags={noteTags.filter((tag) => !note.tags?.includes(tag))}
+            onAddTag={(newTag) => window.alert("Adding " + newTag)}
+          />
         </HStack>
         <Text color="gray.500" size="sm" fontWeight="semibold">
           {note.createdAt.toLocaleString()}

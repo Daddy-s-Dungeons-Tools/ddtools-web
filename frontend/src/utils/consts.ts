@@ -1,6 +1,8 @@
 import { ABILITIES, Campaign, Character, SKILLS } from "ddtools-types";
 import { FirestoreDoc } from "../services/converter";
 
+export const noteTags = ["lore", "npc", "quest", "question"];
+
 export const testCampaign: Campaign & FirestoreDoc = {
   id: "fakeid",
   ref: null!,

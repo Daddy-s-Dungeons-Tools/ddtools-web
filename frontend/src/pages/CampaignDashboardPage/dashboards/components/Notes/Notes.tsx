@@ -7,6 +7,7 @@ import {
   InputGroup,
   InputLeftElement,
   Skeleton,
+  Tag,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
@@ -24,33 +25,24 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { ErrorAlert } from "../../../../../components/ErrorAlert/ErrorAlert";
 import { NoteBox } from "../../../../../components/NoteBox";
+import { TagAddPopover } from "../../../../../components/TagAddPopover";
 import { NoteAPI } from "../../../../../services/api";
 import { converter, FirestoreDoc } from "../../../../../services/converter";
 import { firestore } from "../../../../../services/firebase";
+import { noteTags } from "../../../../../utils/consts";
 import { CampaignUserContext } from "../../../CampaignDashboardPage";
 
 function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
-  type TagInput = {
-    title: string;
-    body: string;
-    tagsStr: string;
-  };
+  type NoteInput = Pick<Note, "title" | "body" | "tags">;
+
   const { campaign, user } = useContext(CampaignUserContext);
 
   async function handleAddNote(
-    values: TagInput,
-    formikHelpers: FormikHelpers<TagInput>,
+    values: NoteInput,
+    formikHelpers: FormikHelpers<NoteInput>,
   ) {
     try {
-      await NoteAPI.add(user.uid, campaign.id, {
-        title: values.title,
-        body: values.body,
-        tags: values.tagsStr
-          ?.toLowerCase()
-          .split(",")
-          .map((tag) => tag.trim().toLowerCase())
-          .filter((tag) => tag),
-      } as Note);
+      await NoteAPI.add(user.uid, campaign.id, values as Note);
       formikHelpers.resetForm();
       if (afterAdd) {
         afterAdd();
@@ -63,18 +55,28 @@ function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
   return (
     <Box minW="100%">
       <Formik
-        initialValues={{ title: "", body: "", tagsStr: "" } as TagInput}
+        initialValues={{ title: "", body: "", tags: [] } as NoteInput}
         onSubmit={handleAddNote}
       >
-        {({ handleSubmit, setFieldValue }) => (
-          <form onSubmit={handleSubmit}>
+        {({ values, handleSubmit, setFieldValue }) => (
+          <form onSubmit={handleSubmit} noValidate>
             <Field name="title" as={Input} placeholder="Note title" />
             <Field name="body" as={Textarea} placeholder="Note body" required />
-            <Field
-              as={Input}
-              name="tagsStr"
-              placeholder="Comma-separated tags"
-            />
+            <HStack spacing="3" my="2" flex="1">
+              {values.tags?.map((tag, tagIndex) => (
+                <Tag key={tagIndex} size="sm">
+                  {tag}
+                </Tag>
+              ))}
+              <TagAddPopover
+                suggestedTags={noteTags.filter(
+                  (tag) => !values.tags?.includes(tag),
+                )}
+                onAddTag={(newTag) =>
+                  setFieldValue("tags", [...(values.tags ?? []), newTag])
+                }
+              />
+            </HStack>
             <Button type="submit" minW="100%">
               Add
             </Button>
