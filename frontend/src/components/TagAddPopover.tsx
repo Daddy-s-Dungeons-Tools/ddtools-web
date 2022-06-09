@@ -44,6 +44,13 @@ export function TagAddPopover({
             onChange={(ev) =>
               setCustomTag(ev.currentTarget.value.trim().toLowerCase())
             }
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.code === "Enter") {
+                onAddTag(customTag);
+                setCustomTag("");
+              }
+            }}
             required
           />
         </VStack>

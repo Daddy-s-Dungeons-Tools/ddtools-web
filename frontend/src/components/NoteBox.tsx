@@ -11,9 +11,15 @@ import {
   IconButton,
   Tag,
   Text,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
-import { arrayRemove, arrayUnion } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  PartialWithFieldValue,
+} from "firebase/firestore";
 import { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { CampaignUserContext } from "../pages/CampaignDashboardPage/CampaignDashboardPage";
@@ -33,13 +39,23 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
   const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
   const [isEditingBody, setIsEditingBody] = useState<boolean>(false);
 
+  async function updateNote(updates: PartialWithFieldValue<Note>) {
+    try {
+      await NoteAPI.update(campaign.id, note.id, updates);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       <HStack>
         <Editable
-          defaultValue={note.title || "Untitled Note"}
+          defaultValue={note.title}
+          placeholder={note.title || "Untitled Note"}
           isDisabled={!isEditable}
           color="gray.500"
+          onSubmit={(newTitle) => updateNote({ title: newTitle })}
           flex="1"
         >
           <EditablePreview as={Heading} size="md" fontWeight="semibold" />
@@ -60,47 +76,53 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
         </ButtonGroup>
       </HStack>
 
-      <Editable defaultValue={note.body} isDisabled={!isEditable}>
-        <EditablePreview />
-        <EditableTextarea noOfLines={4} rows={5} />
+      <Editable
+        defaultValue={note.body}
+        isDisabled={!isEditable}
+        onSubmit={(newBody) => updateNote({ body: newBody })}
+        placeholder={note.title || "No content"}
+      >
+        <EditablePreview noOfLines={4} />
+        <EditableTextarea rows={5} />
       </Editable>
 
-      {!isEditingBody && (
+      {/* {!isEditingBody && (
         <Text
           color="gray.500"
           onClick={() => setIsShowingFullText(!isShowingFullText)}
         >
           Show {isShowingFullText ? "less" : "more"}...
         </Text>
-      )}
+      )} */}
 
       <Flex>
         <HStack spacing="3" my="2" flex="1">
-          {note.tags &&
-            note.tags.length &&
-            note.tags.map((tag, tagIndex) => (
-              <Tag
-                key={tagIndex}
-                size="sm"
-                cursor="pointer"
-                onClick={() =>
-                  NoteAPI.update(campaign.id, note.id, {
-                    tags: arrayRemove(tag),
-                  })
-                }
-              >
-                {tag}
-              </Tag>
-            ))}
+          <Wrap>
+            {note.tags &&
+              note.tags.length &&
+              note.tags.map((tag, tagIndex) => (
+                <WrapItem key={tagIndex}>
+                  <Tag
+                    size="sm"
+                    cursor="pointer"
+                    onClick={() =>
+                      updateNote({
+                        tags: arrayRemove(tag),
+                      })
+                    }
+                  >
+                    {tag}
+                  </Tag>
+                </WrapItem>
+              ))}
+          </Wrap>
           <TagAddPopover
             suggestedTags={noteTags.filter((tag) => !note.tags?.includes(tag))}
-            onAddTag={(newTag) =>
-              NoteAPI.update(campaign.id, note.id, { tags: arrayUnion(newTag) })
-            }
+            onAddTag={(newTag) => updateNote({ tags: arrayUnion(newTag) })}
           />
         </HStack>
         <Text color="gray.500" size="sm" fontWeight="semibold">
-          {note.createdAt.toLocaleString()}
+          {note.createdAt.toLocaleDateString()}
         </Text>
       </Flex>
     </Box>
