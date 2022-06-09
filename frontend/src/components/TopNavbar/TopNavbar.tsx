@@ -2,13 +2,18 @@ import {
   Box,
   Button,
   Flex,
+  Hide,
   HStack,
+  Icon,
+  IconButton,
   Link,
+  Show,
   Spacer,
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { FaSignOutAlt } from "react-icons/fa";
 import { Link as WouterLink, useLocation } from "wouter";
 import { auth } from "../../services/firebase";
 import { Logo } from "../Logo/Logo";
@@ -42,9 +47,11 @@ export default function TopNavbar() {
           }}
         >
           <Logo isOpen={isLogoOpen} />
-          <Text fontSize={"lg"} fontWeight="bold">
-            DDTools
-          </Text>
+          <Hide below="md">
+            <Text fontSize={"lg"} fontWeight="bold">
+              DDTools
+            </Text>
+          </Hide>
         </HStack>
       </Box>
       {!isUserLoading && user && !location.startsWith("/campaigns/") && (
@@ -62,12 +69,21 @@ export default function TopNavbar() {
 
       {user ? (
         <>
-          <Text display="block" mx="2">
-            Logged in as <strong>{user.displayName ?? user.email}</strong>
-          </Text>
-          <Button colorScheme="teal" onClick={handleSignOut}>
-            Sign out
-          </Button>
+          <Hide below="md">
+            <Text display="block" mx="2">
+              Logged in as <strong>{user.displayName ?? user.email}</strong>
+            </Text>
+            {/* <Button colorScheme="teal" onClick={handleSignOut} size="sm">
+              Sign out
+            </Button> */}
+          </Hide>
+          <Show below="md"></Show>
+          <IconButton
+            onClick={handleSignOut}
+            icon={<Icon as={FaSignOutAlt} />}
+            aria-label={"Sign out"}
+            size="sm"
+          />
         </>
       ) : (
         location !== "/" && (
