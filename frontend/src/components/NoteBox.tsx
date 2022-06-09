@@ -9,12 +9,12 @@ import {
   Heading,
   HStack,
   IconButton,
+  Tag,
   Text,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import { useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
-import { Tag } from "react-konva";
 import { FirestoreDoc } from "../services/converter";
 
 type NoteBoxPropTypes = {
@@ -25,39 +25,49 @@ type NoteBoxPropTypes = {
 
 export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
   const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
+  const [isEditingBody, setIsEditingBody] = useState<boolean>(false);
+
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
-      <ButtonGroup size="xs" float="right">
-        {onDelete && (
-          <IconButton
-            aria-label="Delete note"
-            title="Delete note"
-            icon={<FaTrashAlt />}
-            colorScheme="pink"
-            onClick={onDelete}
-          />
-        )}
-      </ButtonGroup>
-      <Editable
-        float="left"
-        defaultValue={note.title || "Untitled Note"}
-        isDisabled={!isEditable}
-        color="gray.500"
-      >
-        <EditablePreview as={Heading} size="md" fontWeight="semibold" />
-        <EditableInput />
-      </Editable>
+      <HStack>
+        <Editable
+          defaultValue={note.title || "Untitled Note"}
+          isDisabled={!isEditable}
+          color="gray.500"
+          flex="1"
+        >
+          <EditablePreview as={Heading} size="md" fontWeight="semibold" />
+          <EditableInput />
+        </Editable>
+
+        <ButtonGroup size="xs">
+          {onDelete && (
+            <IconButton
+              aria-label="Delete note"
+              title="Delete note"
+              icon={<FaTrashAlt />}
+              colorScheme="pink"
+              variant="ghost"
+              onClick={onDelete}
+            />
+          )}
+        </ButtonGroup>
+      </HStack>
 
       <Editable defaultValue={note.body} isDisabled={!isEditable}>
         <EditablePreview />
         <EditableTextarea noOfLines={4} rows={5} />
       </Editable>
-      <Text
-        color="gray.500"
-        onClick={() => setIsShowingFullText(!isShowingFullText)}
-      >
-        Show {isShowingFullText ? "less" : "more"}...
-      </Text>
+
+      {!isEditingBody && (
+        <Text
+          color="gray.500"
+          onClick={() => setIsShowingFullText(!isShowingFullText)}
+        >
+          Show {isShowingFullText ? "less" : "more"}...
+        </Text>
+      )}
+
       <Flex>
         <HStack spacing="3" my="2" flex="1">
           {note.tags &&

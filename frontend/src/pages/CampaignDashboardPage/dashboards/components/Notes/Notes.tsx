@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  HStack,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -17,9 +19,9 @@ import {
   where,
 } from "firebase/firestore";
 import { Field, Formik, FormikHelpers } from "formik";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { FaSearch } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import { ErrorAlert } from "../../../../../components/ErrorAlert/ErrorAlert";
 import { NoteBox } from "../../../../../components/NoteBox";
 import { NoteAPI } from "../../../../../services/api";
@@ -27,7 +29,7 @@ import { converter, FirestoreDoc } from "../../../../../services/converter";
 import { firestore } from "../../../../../services/firebase";
 import { CampaignUserContext } from "../../../CampaignDashboardPage";
 
-function NewNoteBox() {
+function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
   type TagInput = {
     title: string;
     body: string;
@@ -46,10 +48,13 @@ function NewNoteBox() {
         tags: values.tagsStr
           ?.toLowerCase()
           .split(",")
-          .map((tag) => tag.trim())
+          .map((tag) => tag.trim().toLowerCase())
           .filter((tag) => tag),
       } as Note);
       formikHelpers.resetForm();
+      if (afterAdd) {
+        afterAdd();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -90,6 +95,8 @@ export function Notes() {
       orderBy("createdAt", "desc"),
     ).withConverter(converter as FirestoreDataConverter<Note & FirestoreDoc>),
   );
+  const [isAddingNewNote, setIsAddingNewNote] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     if (notesError) {
@@ -105,19 +112,40 @@ export function Notes() {
     }
   }
 
+  const searchResults = useMemo(
+    () =>
+      notes?.filter(
+        (note) =>
+          !searchTerm.length ||
+          note.tags?.includes(searchTerm.toLowerCase()) ||
+          note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          note.body.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    [notes, searchTerm],
+  );
+
   return (
     <Box>
       <VStack spacing="3">
-        <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <FaSearch />
-          </InputLeftElement>
-          <Input
-            type="text"
-            placeholder="(Coming soon...) Search for notes by text or tag"
-            disabled
+        <HStack minW="100%">
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <FaSearch />
+            </InputLeftElement>
+            <Input
+              type="text"
+              placeholder="Search for notes by text or tag"
+              value={searchTerm}
+              onChange={(ev) => setSearchTerm(ev.currentTarget.value)}
+            />
+          </InputGroup>
+          <IconButton
+            aria-label="New note"
+            icon={<FaPlus />}
+            onClick={() => setIsAddingNewNote(!isAddingNewNote)}
+            colorScheme={isAddingNewNote ? "teal" : undefined}
           />
-        </InputGroup>
+        </HStack>
 
         {notesError && (
           <ErrorAlert
@@ -125,7 +153,9 @@ export function Notes() {
             description="Failed to fetch your notes."
           />
         )}
-        <NewNoteBox />
+        {isAddingNewNote && (
+          <NewNoteBox afterAdd={() => setIsAddingNewNote(false)} />
+        )}
         {isNotesLoading && (
           <>
             <Skeleton height="200px" />
@@ -133,7 +163,7 @@ export function Notes() {
             <Skeleton height="200px" />
           </>
         )}
-        {notes?.map((note) => (
+        {searchResults?.map((note) => (
           <NoteBox
             key={note.id}
             note={note}
