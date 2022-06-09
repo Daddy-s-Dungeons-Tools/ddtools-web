@@ -60,26 +60,39 @@ function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
       >
         {({ values, handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit} noValidate>
-            <Field name="title" as={Input} placeholder="Note title" />
-            <Field name="body" as={Textarea} placeholder="Note body" required />
-            <HStack spacing="3" my="2" flex="1">
-              {values.tags?.map((tag, tagIndex) => (
-                <Tag key={tagIndex} size="sm">
-                  {tag}
-                </Tag>
-              ))}
-              <TagAddPopover
-                suggestedTags={noteTags.filter(
-                  (tag) => !values.tags?.includes(tag),
-                )}
-                onAddTag={(newTag) =>
-                  setFieldValue("tags", [...(values.tags ?? []), newTag])
-                }
+            <VStack align="left">
+              <Field
+                name="title"
+                as={Input}
+                placeholder="Note title"
+                size="sm"
               />
-            </HStack>
-            <Button type="submit" minW="100%">
-              Add
-            </Button>
+              <Field
+                name="body"
+                as={Textarea}
+                placeholder="Note body"
+                size="sm"
+                required
+              />
+              <HStack spacing="3" flex="1">
+                {values.tags?.map((tag, tagIndex) => (
+                  <Tag key={tagIndex} size="sm">
+                    {tag}
+                  </Tag>
+                ))}
+                <TagAddPopover
+                  suggestedTags={noteTags.filter(
+                    (tag) => !values.tags?.includes(tag),
+                  )}
+                  onAddTag={(newTag) =>
+                    setFieldValue("tags", [...(values.tags ?? []), newTag])
+                  }
+                />
+              </HStack>
+              <Button type="submit" minW="100%">
+                Add
+              </Button>
+            </VStack>
           </form>
         )}
       </Formik>
@@ -126,6 +139,11 @@ export function Notes() {
     [notes, searchTerm],
   );
 
+  const allTags = useMemo(
+    () => Array.from(new Set((notes ?? []).flatMap((note) => note.tags ?? []))),
+    [notes],
+  );
+
   return (
     <Box>
       <VStack spacing="3">
@@ -139,7 +157,13 @@ export function Notes() {
               placeholder="Search for notes by text or tag"
               value={searchTerm}
               onChange={(ev) => setSearchTerm(ev.currentTarget.value)}
+              list="current-tags"
             />
+            <datalist id="current-tags">
+              {allTags.map((tag) => (
+                <option key={tag} value={tag} />
+              ))}
+            </datalist>
           </InputGroup>
           <IconButton
             aria-label="New note"
