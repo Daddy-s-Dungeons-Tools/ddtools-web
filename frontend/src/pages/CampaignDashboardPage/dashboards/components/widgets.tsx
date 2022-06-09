@@ -1,19 +1,19 @@
 import { Campaign } from "ddtools-types";
 import { IconType } from "react-icons";
+import { BsGrid3X3 } from "react-icons/bs";
 import { FaUsers, FaVolumeUp } from "react-icons/fa";
 import {
+  GiGlobe,
+  GiPerson,
   GiScrollQuill,
   GiScrollUnfurled,
-  GiPerson,
   GiSettingsKnobs,
-  GiGlobe,
 } from "react-icons/gi";
-import { BsGrid3X3 } from "react-icons/bs";
 import { AudioManager } from "./AudioManager";
 import { BattleMaps } from "./BattleMaps/BattleMaps";
 import { Log } from "./Log";
 import { ManageUsers } from "./ManageUsers";
-import { Notes } from "./Notes";
+import { Notes } from "./Notes/Notes";
 import Party from "./Party";
 import { Settings } from "./Settings";
 import { WorldMaps } from "./WorldMaps";

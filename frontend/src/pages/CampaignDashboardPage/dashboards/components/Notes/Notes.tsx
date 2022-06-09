@@ -1,15 +1,10 @@
 import {
   Box,
   Button,
-  Flex,
-  Heading,
-  HStack,
   Input,
   InputGroup,
   InputLeftElement,
   Skeleton,
-  Tag,
-  Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
@@ -22,14 +17,14 @@ import {
   where,
 } from "firebase/firestore";
 import { Field, Formik, FormikHelpers } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
-import { ErrorAlert } from "../../../../components/ErrorAlert/ErrorAlert";
-import { NoteAPI } from "../../../../services/api";
-import { converter, FirestoreDoc } from "../../../../services/converter";
-import { firestore } from "../../../../services/firebase";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { ErrorAlert } from "../../../../../components/ErrorAlert/ErrorAlert";
+import { NoteAPI } from "../../../../../services/api";
+import { converter, FirestoreDoc } from "../../../../../services/converter";
+import { firestore } from "../../../../../services/firebase";
+import { CampaignUserContext } from "../../../CampaignDashboardPage";
 
 function NewNoteBox() {
   type TagInput = {
@@ -79,36 +74,6 @@ function NewNoteBox() {
           </form>
         )}
       </Formik>
-    </Box>
-  );
-}
-
-function NoteBox({ note }: { note: Note }) {
-  const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
-  return (
-    <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
-      {note.title && <Heading size="md">{note.title}</Heading>}
-      <Text noOfLines={isShowingFullText ? undefined : 4}>{note.body}</Text>
-      <Text
-        color="gray.500"
-        onClick={() => setIsShowingFullText(!isShowingFullText)}
-      >
-        Show {isShowingFullText ? "less" : "more"}...
-      </Text>
-      <Flex>
-        <HStack spacing="3" my="2" flex="1">
-          {note.tags &&
-            note.tags.length &&
-            note.tags.map((tag, tagIndex) => (
-              <Tag key={tagIndex} size="sm">
-                {tag}
-              </Tag>
-            ))}
-        </HStack>
-        <Text color="gray.500" size="sm" fontWeight="semibold">
-          {note.createdAt.toLocaleString()}
-        </Text>
-      </Flex>
     </Box>
   );
 }
