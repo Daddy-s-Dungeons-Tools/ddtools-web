@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
-import { arrayUnion } from "firebase/firestore";
+import { arrayRemove, arrayUnion } from "firebase/firestore";
 import { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { CampaignUserContext } from "../pages/CampaignDashboardPage/CampaignDashboardPage";
@@ -79,7 +79,16 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
           {note.tags &&
             note.tags.length &&
             note.tags.map((tag, tagIndex) => (
-              <Tag key={tagIndex} size="sm">
+              <Tag
+                key={tagIndex}
+                size="sm"
+                cursor="pointer"
+                onClick={() =>
+                  NoteAPI.update(campaign.id, note.id, {
+                    tags: arrayRemove(tag),
+                  })
+                }
+              >
                 {tag}
               </Tag>
             ))}

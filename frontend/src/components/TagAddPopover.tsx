@@ -25,7 +25,7 @@ export function TagAddPopover({
   return (
     <Popover placement="right" closeOnBlur={true}>
       <PopoverTrigger>
-        <IconButton size="sm" icon={<FaPlus />} aria-label={""} />
+        <IconButton size="xs" icon={<FaPlus />} aria-label={""} />
       </PopoverTrigger>
       <PopoverContent p={5}>
         <VStack>
