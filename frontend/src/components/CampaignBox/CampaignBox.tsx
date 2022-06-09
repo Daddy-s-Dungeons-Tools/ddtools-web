@@ -14,16 +14,15 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
-
 import { Campaign, Character } from "ddtools-types";
 import { useState } from "react";
+import { FaUserSlash } from "react-icons/fa";
+import { Link as WouterLink } from "wouter";
 import { CampaignAPI } from "../../services/api";
+import { FirestoreDoc } from "../../services/converter";
 import { auth } from "../../services/firebase";
 import { characterRaceAndClasses } from "../../utils/characters";
 import { UserAvatarFromSummary } from "../UserAvatar/UserAvatar";
-import { FaUserSlash } from "react-icons/fa";
-import { FirestoreDoc } from "../../services/converter";
 
 type CampaignBoxPropTypes = {
   /** The campaign to display info for */
@@ -184,8 +183,8 @@ export function CampaignBox({
         </Hide>
         <Box p={6}>
           <LinkOverlay
-            as={ReactRouterLink}
-            to={isLink ? "/campaigns/" + campaign.id : ""}
+            as={WouterLink}
+            href={isLink ? "/campaigns/" + campaign.id : ""}
           >
             <Heading size={as === "dm" || isInvite ? "lg" : "sm"}>
               {campaign.name}

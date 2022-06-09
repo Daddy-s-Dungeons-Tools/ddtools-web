@@ -1,32 +1,30 @@
 import {
+  Button,
   Container,
   Flex,
   Heading,
-  VStack,
-  Button,
   Skeleton,
   Stack,
   Text,
+  VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
-import { useProtectedRoute } from "../../hooks/routes";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import { Campaign } from "ddtools-types";
 import {
   collection,
-  Firestore,
   FirestoreDataConverter,
   orderBy,
   query,
   where,
 } from "firebase/firestore";
-import { auth, firestore } from "../../services/firebase";
-import { Campaign } from "ddtools-types";
-import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
-import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
+import { useEffect, useState } from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaPlus } from "react-icons/fa";
+import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
+import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
 import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
 import { converter, FirestoreDoc } from "../../services/converter";
+import { auth, firestore } from "../../services/firebase";
 
 const readCampaignConverter = converter as FirestoreDataConverter<
   Campaign & FirestoreDoc
@@ -37,8 +35,6 @@ const campaignCollection = collection(firestore, "campaigns").withConverter(
 );
 
 export default function CampaignsPage() {
-  useProtectedRoute();
-
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     useState<boolean>(false);
   const [

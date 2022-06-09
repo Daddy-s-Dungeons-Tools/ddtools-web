@@ -1,13 +1,10 @@
-import { Container, Heading, useToast, VStack, Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-
-import { auth } from "../../services/firebase";
-import { useNavigate } from "react-router-dom";
+import { Button, Container, Heading, useToast, VStack } from "@chakra-ui/react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FaGoogle } from "react-icons/fa";
 import { Logo } from "../../components/Logo/Logo";
-
+import { auth } from "../../services/firebase";
 import "./LoginPage.css";
 
 const provider = new GoogleAuthProvider();
@@ -15,15 +12,8 @@ const provider = new GoogleAuthProvider();
 export default function LoginPage() {
   const [user] = useAuthState(auth);
   const toast = useToast();
-  const navigate = useNavigate();
 
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (user) {
-      navigate("/campaigns", { replace: true });
-    }
-  }, [navigate, user]);
 
   /** Login handler that sends sign-in email with Firebase */
   const handleSignIn = async () => {
