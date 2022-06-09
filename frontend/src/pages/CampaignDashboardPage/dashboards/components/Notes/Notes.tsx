@@ -21,6 +21,7 @@ import { useContext, useEffect } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
 import { ErrorAlert } from "../../../../../components/ErrorAlert/ErrorAlert";
+import { NoteBox } from "../../../../../components/NoteBox";
 import { NoteAPI } from "../../../../../services/api";
 import { converter, FirestoreDoc } from "../../../../../services/converter";
 import { firestore } from "../../../../../services/firebase";
@@ -45,7 +46,8 @@ function NewNoteBox() {
         tags: values.tagsStr
           ?.toLowerCase()
           .split(",")
-          .map((tag) => tag.trim()),
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
       } as Note);
       formikHelpers.resetForm();
     } catch (error) {
@@ -62,7 +64,7 @@ function NewNoteBox() {
         {({ handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit}>
             <Field name="title" as={Input} placeholder="Note title" />
-            <Field name="body" as={Textarea} placeholder="Note body" />
+            <Field name="body" as={Textarea} placeholder="Note body" required />
             <Field
               as={Input}
               name="tagsStr"
@@ -95,6 +97,14 @@ export function Notes() {
     }
   }, [notesError]);
 
+  async function deleteNote(noteId: FirestoreDoc["id"]) {
+    try {
+      await NoteAPI.delete(campaign.id, noteId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Box>
       <VStack spacing="3">
@@ -124,7 +134,12 @@ export function Notes() {
           </>
         )}
         {notes?.map((note) => (
-          <NoteBox key={note.id} note={note} />
+          <NoteBox
+            key={note.id}
+            note={note}
+            isEditable={true}
+            onDelete={() => deleteNote(note.id)}
+          />
         ))}
       </VStack>
     </Box>
