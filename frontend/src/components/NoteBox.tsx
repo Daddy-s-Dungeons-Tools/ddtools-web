@@ -11,6 +11,7 @@ import {
   IconButton,
   Tag,
   Text,
+  useEditableControls,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
@@ -45,6 +46,13 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function EditableControls() {
+    const { isEditing, getEditButtonProps, getSubmitButtonProps } =
+      useEditableControls();
+
+    return <Text {...getEditButtonProps()}>Edit</Text>;
   }
 
   return (
@@ -82,8 +90,9 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
         onSubmit={(newBody) => updateNote({ body: newBody })}
         placeholder={note.title || "No content"}
       >
-        <EditablePreview noOfLines={4} />
+        <EditablePreview />
         <EditableTextarea rows={5} />
+        {/* <EditableControls /> */}
       </Editable>
 
       {/* {!isEditingBody && (
@@ -97,10 +106,9 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
 
       <Flex>
         <HStack spacing="3" my="2" flex="1">
-          <Wrap>
-            {note.tags &&
-              note.tags.length &&
-              note.tags.map((tag, tagIndex) => (
+          {note.tags && note.tags.length && (
+            <Wrap>
+              {note.tags.map((tag, tagIndex) => (
                 <WrapItem key={tagIndex}>
                   <Tag
                     size="sm"
@@ -115,7 +123,8 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
                   </Tag>
                 </WrapItem>
               ))}
-          </Wrap>
+            </Wrap>
+          )}
           <TagAddPopover
             suggestedTags={noteTags.filter((tag) => !note.tags?.includes(tag))}
             onAddTag={(newTag) => updateNote({ tags: arrayUnion(newTag) })}
