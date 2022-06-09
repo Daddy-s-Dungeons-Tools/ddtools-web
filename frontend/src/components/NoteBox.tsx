@@ -13,8 +13,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Note } from "ddtools-types";
-import { useState } from "react";
+import { arrayUnion } from "firebase/firestore";
+import { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
+import { CampaignUserContext } from "../pages/CampaignDashboardPage/CampaignDashboardPage";
+import { NoteAPI } from "../services/api";
 import { FirestoreDoc } from "../services/converter";
 import { noteTags } from "../utils/consts";
 import { TagAddPopover } from "./TagAddPopover";
@@ -26,6 +29,7 @@ type NoteBoxPropTypes = {
 };
 
 export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
+  const { campaign } = useContext(CampaignUserContext);
   const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
   const [isEditingBody, setIsEditingBody] = useState<boolean>(false);
 
@@ -81,7 +85,9 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
             ))}
           <TagAddPopover
             suggestedTags={noteTags.filter((tag) => !note.tags?.includes(tag))}
-            onAddTag={(newTag) => window.alert("Adding " + newTag)}
+            onAddTag={(newTag) =>
+              NoteAPI.update(campaign.id, note.id, { tags: arrayUnion(newTag) })
+            }
           />
         </HStack>
         <Text color="gray.500" size="sm" fontWeight="semibold">

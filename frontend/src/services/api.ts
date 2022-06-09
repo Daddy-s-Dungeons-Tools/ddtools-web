@@ -232,6 +232,20 @@ export abstract class NoteAPI {
     });
   }
 
+  public static update(
+    campaignId: string,
+    noteId: FirestoreDoc["id"],
+    updates: PartialWithFieldValue<Note>,
+  ) {
+    const notesCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "notes",
+    ).withConverter(this.noteConverter);
+
+    return updateDoc(doc(notesCollection, noteId), updates);
+  }
+
   /** Add a new note for a particular user in a particular campaign. Can be empty. */
   public static delete(campaignId: string, noteId: FirestoreDoc["id"]) {
     const notesCollection = collection(
