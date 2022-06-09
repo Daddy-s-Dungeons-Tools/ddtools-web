@@ -2,10 +2,14 @@ import { Box, Center, Container, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Outlet } from "react-router-dom";
+import { Redirect, Route, Switch } from "wouter";
 import { ErrorAlert } from "./components/ErrorAlert/ErrorAlert";
 import TopNavbar from "./components/TopNavbar/TopNavbar";
 import UserNameAlert from "./components/UserNameAlert/UserNameAlert";
+import CampaignDashboardPage from "./pages/CampaignDashboardPage/CampaignDashboardPage";
+import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { handleError } from "./services/errors";
 import { auth } from "./services/firebase";
 
@@ -28,6 +32,7 @@ function App() {
       <header>
         <TopNavbar />
       </header>
+
       <ErrorBoundary
         FallbackComponent={() => (
           <ErrorAlert
@@ -49,7 +54,24 @@ function App() {
                   <UserNameAlert close={() => setIsUserNameAlertShown(false)} />
                 </Container>
               )}
-              <Outlet />
+              {user ? (
+                <Switch>
+                  <Route path="/">
+                    <Redirect to="/campaigns" />
+                  </Route>
+                  <Route path="/campaigns" component={CampaignsPage} />
+                  <Route path="/profile" component={ProfilePage} />
+                  <Route
+                    path="/campaigns/:campaignId"
+                    component={CampaignDashboardPage}
+                  />
+                  <Route>
+                    <p>Page not found!</p>
+                  </Route>
+                </Switch>
+              ) : (
+                <LoginPage />
+              )}
             </>
           )}
         </Box>

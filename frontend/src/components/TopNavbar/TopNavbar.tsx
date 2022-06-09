@@ -1,26 +1,27 @@
 import {
-  Flex,
   Box,
-  Text,
   Button,
-  Spacer,
-  Link,
+  Flex,
   HStack,
+  Link,
+  Spacer,
+  Text,
 } from "@chakra-ui/react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../../services/firebase";
-
-import { Link as ReactRouterLink } from "react-router-dom";
-import { Logo } from "../Logo/Logo";
 import { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Link as WouterLink, useLocation } from "wouter";
+import { auth } from "../../services/firebase";
+import { Logo } from "../Logo/Logo";
 
 export default function TopNavbar() {
   const [user, isUserLoading] = useAuthState(auth);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
 
   const [isLogoOpen, setIsLogoOpen] = useState<boolean>(false);
+  async function handleSignOut() {
+    await auth.signOut();
+    setLocation("/");
+  }
 
   return (
     <Flex
@@ -36,7 +37,9 @@ export default function TopNavbar() {
           onMouseEnter={() => setIsLogoOpen(true)}
           onMouseLeave={() => setIsLogoOpen(false)}
           cursor="pointer"
-          onClick={() => navigate("/")}
+          onClick={() => {
+            if (location !== "/" && location !== "/campaigns") setLocation("/");
+          }}
         >
           <Logo isOpen={isLogoOpen} />
           <Text fontSize={"lg"} fontWeight="bold">
@@ -44,12 +47,12 @@ export default function TopNavbar() {
           </Text>
         </HStack>
       </Box>
-      {!isUserLoading && user && !location.pathname.startsWith("/campaigns/") && (
+      {!isUserLoading && user && !location.startsWith("/campaigns/") && (
         <HStack>
-          <Link as={ReactRouterLink} to="/profile">
+          <Link as={WouterLink} href="/profile">
             Profile
           </Link>
-          <Link as={ReactRouterLink} to="/campaigns">
+          <Link as={WouterLink} href="/campaigns">
             Campaigns
           </Link>
         </HStack>
@@ -62,17 +65,17 @@ export default function TopNavbar() {
           <Text display="block" mx="2">
             Logged in as <strong>{user.displayName ?? user.email}</strong>
           </Text>
-          <Button colorScheme="teal" onClick={() => auth.signOut()}>
+          <Button colorScheme="teal" onClick={handleSignOut}>
             Sign out
           </Button>
         </>
       ) : (
-        location.pathname !== "/" && (
+        location !== "/" && (
           <>
             <Text display={"block"} mx="2">
               Not signed in
             </Text>
-            <Button colorScheme="teal" onClick={() => navigate("/")}>
+            <Button colorScheme="teal" onClick={() => setLocation("/")}>
               Sign in
             </Button>
           </>

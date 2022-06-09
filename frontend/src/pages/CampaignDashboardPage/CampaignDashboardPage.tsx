@@ -9,21 +9,19 @@ import {
 import { Campaign, Character } from "ddtools-types";
 import { User } from "firebase/auth";
 import { collection, doc, FirestoreDataConverter } from "firebase/firestore";
-import { ErrorBoundary } from "react-error-boundary";
 import { createContext, useEffect, useMemo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
-import { useNavigate, useParams } from "react-router-dom";
-import { useProtectedRoute } from "../../hooks/routes";
-import { FirestoreDoc, converter } from "../../services/converter";
+import { Params, useLocation } from "wouter";
+import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { converter, FirestoreDoc } from "../../services/converter";
 import { diceBox } from "../../services/dice";
+import { handleError } from "../../services/errors";
 import { auth, firestore } from "../../services/firebase";
-
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
-import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
-import { handleError } from "../../services/errors";
 
 type CampaignUserContextType = {
   user: User;
@@ -35,12 +33,10 @@ export const CampaignUserContext = createContext<CampaignUserContextType>(
   undefined!,
 );
 
-export default function CampaignDashboardPage() {
-  useProtectedRoute();
-
-  const navigate = useNavigate();
+export default function CampaignDashboardPage({ params }: { params: Params }) {
+  const [location, setLocation] = useLocation();
   const toast = useToast();
-  let { campaignId } = useParams();
+  let { campaignId } = params;
 
   const [user, isUserLoading, userError] = useAuthState(auth);
 
@@ -97,7 +93,7 @@ export default function CampaignDashboardPage() {
 
     // Check if campaign actually exists
     if (!campaignDoc) {
-      navigate("/campaigns");
+      setLocation("/campaigns");
       toast({
         title: "Campaign Not Found",
         description: "We couldn't find the campaign you were looking for.",
@@ -112,7 +108,7 @@ export default function CampaignDashboardPage() {
       !campaignDoc.playerUserIds?.includes(user.uid)
     ) {
       // Check if user is either player or DM in campaign
-      navigate("/campaigns");
+      setLocation("/campaigns");
       toast({
         title: "Access Denied!",
         description:
@@ -122,7 +118,14 @@ export default function CampaignDashboardPage() {
         isClosable: true,
       });
     }
-  }, [user, isCampaignDocLoading, campaignDoc, navigate, toast, isUserLoading]);
+  }, [
+    user,
+    isCampaignDocLoading,
+    campaignDoc,
+    setLocation,
+    toast,
+    isUserLoading,
+  ]);
 
   // If anything is missing or loading, render a loading spinner
   if (!campaignUserContextValue) {

@@ -22,9 +22,9 @@
     "react-firebase-hooks": "^5.0.3",
     "react-icons": "^4.3.1",
     "react-konva": "^18.1.1",
-    "react-router-dom": "^6.3.0",
     "vite": "^2.9.10",
-    "webpack": "^5.72.1"
+    "webpack": "^5.72.1",
+    "wouter": "^2.8.0-alpha.2"
   },
   "scripts": {
     "start": "vite",
@@ -64,6 +64,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.2",
     "@chakra-ui/storybook-addon": "^4.0.1",
+    "@mdx-js/react": "^2.1.1",
     "@storybook/addon-actions": "^6.5.8",
     "@storybook/addon-essentials": "^6.5.8",
     "@storybook/addon-interactions": "^6.5.8",
