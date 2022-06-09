@@ -1,19 +1,57 @@
-import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  ButtonGroup,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  EditableTextarea,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import { Note } from "ddtools-types";
 import { useState } from "react";
+import { FaTrashAlt } from "react-icons/fa";
 import { Tag } from "react-konva";
-import { FirestoreDoc } from "../../../../../../services/converter";
+import { FirestoreDoc } from "../services/converter";
 
 type NoteBoxPropTypes = {
   note: Note & FirestoreDoc;
+  isEditable: boolean;
+  onDelete?: () => void;
 };
 
-export function NoteBox({ note }: NoteBoxPropTypes) {
+export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
   const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
-      {note.title && <Heading size="md">{note.title}</Heading>}
-      <Text noOfLines={isShowingFullText ? undefined : 4}>{note.body}</Text>
+      <ButtonGroup size="xs" float="right">
+        {onDelete && (
+          <IconButton
+            aria-label="Delete note"
+            title="Delete note"
+            icon={<FaTrashAlt />}
+            colorScheme="pink"
+            onClick={onDelete}
+          />
+        )}
+      </ButtonGroup>
+      <Editable
+        float="left"
+        defaultValue={note.title || "Untitled Note"}
+        isDisabled={!isEditable}
+        color="gray.500"
+      >
+        <EditablePreview as={Heading} size="md" fontWeight="semibold" />
+        <EditableInput />
+      </Editable>
+
+      <Editable defaultValue={note.body} isDisabled={!isEditable}>
+        <EditablePreview />
+        <EditableTextarea noOfLines={4} rows={5} />
+      </Editable>
       <Text
         color="gray.500"
         onClick={() => setIsShowingFullText(!isShowingFullText)}
