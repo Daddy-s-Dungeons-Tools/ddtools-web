@@ -1,28 +1,21 @@
+import { Campaign, Character, LogItem, Note, UserID } from "ddtools-types";
 import {
-  Campaign,
-  Note,
-  Audio,
-  LogItem,
-  UserID,
-  Character,
-} from "ddtools-types";
-import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
+  deleteDoc,
   doc,
+  FirestoreDataConverter,
+  getDoc,
+  PartialWithFieldValue,
+  serverTimestamp,
   setDoc,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
-  getDoc,
-  addDoc,
-  serverTimestamp,
-  PartialWithFieldValue,
   WithFieldValue,
-  FirestoreDataConverter,
 } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
 import { converter, FirestoreDoc } from "./converter";
-import { auth, firestore, storage } from "./firebase";
+import { auth, firestore } from "./firebase";
 
 const DATA_URL_PREFIX =
   "https://raw.githubusercontent.com/Daddy-s-Dungeons-Tools/ddtools-data/main/";
@@ -219,6 +212,7 @@ export abstract class CharacterAPI {
 export abstract class NoteAPI {
   private static noteConverter = converter as FirestoreDataConverter<Note>;
   private static campaignCollection = collection(firestore, "campaigns");
+
   /** Add a new note for a particular user in a particular campaign. Can be empty. */
   public static add(
     userId: string,
@@ -236,5 +230,15 @@ export abstract class NoteAPI {
       createdAt: serverTimestamp(),
       sharedWith: [],
     });
+  }
+
+  /** Add a new note for a particular user in a particular campaign. Can be empty. */
+  public static delete(campaignId: string, noteId: FirestoreDoc["id"]) {
+    const notesCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "notes",
+    );
+    return deleteDoc(doc(notesCollection, noteId));
   }
 }
