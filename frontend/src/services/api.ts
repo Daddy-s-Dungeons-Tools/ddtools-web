@@ -113,13 +113,24 @@ export abstract class CampaignAPI {
   }
 
   /** Updates the name, description, and/or color of a campaign. */
-  public static updateDetails(
+  public static async updateDetails(
     campaignId: string,
     updates: PartialWithFieldValue<
       Pick<Campaign, "name" | "description" | "color">
     >,
   ) {
-    return updateDoc(doc(this.campaignCollection, campaignId), updates);
+    await updateDoc(doc(this.campaignCollection, campaignId), updates);
+
+    const logMessage = Object.entries(updates)
+      .map(([field, newValue]) => `Field \`${field}\` set to \`'${newValue}'\``)
+      .join(", ");
+
+    return LogAPI.log(campaignId, {
+      type: "campaign-updated",
+      payload: updates,
+      message: logMessage,
+      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    });
   }
 
   /** Add desired users (by their user IDs) to a campaign. */

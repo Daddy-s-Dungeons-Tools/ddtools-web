@@ -25,6 +25,7 @@ import {
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
+import ReactMarkdown from "react-markdown";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
 import { CampaignUserContext } from "../context";
@@ -40,7 +41,11 @@ function LogItemBox({
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       <VStack minW="100%">
-        {item.message && <Text minW="100%">{item.message}</Text>}
+        {item.message && (
+          <Text as={ReactMarkdown} minW="100%">
+            {item.message}
+          </Text>
+        )}
         <Flex minW="100%" justify="space-between">
           <Box>
             <Tag>{item.type}</Tag>
