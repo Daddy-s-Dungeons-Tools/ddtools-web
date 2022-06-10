@@ -14,6 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { MarkdownText } from "components/MarkdownText";
 import { UserAvatarFromSummary } from "components/UserAvatar";
 import { Campaign, LogItem } from "ddtools-types";
 import {
@@ -25,7 +26,6 @@ import {
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
-import ReactMarkdown from "react-markdown";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
 import { CampaignUserContext } from "../context";
@@ -42,9 +42,7 @@ function LogItemBox({
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
       <VStack minW="100%">
         {item.message && (
-          <Text as={ReactMarkdown} minW="100%">
-            {item.message}
-          </Text>
+          <MarkdownText className="w-100">{item.message}</MarkdownText>
         )}
         <Flex minW="100%" justify="space-between">
           <Box>
