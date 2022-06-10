@@ -14,23 +14,22 @@ ddtools-web is a [Google Firebase](https://firebase.google.com/) project and a R
 
 ## Planned Features Master List
 
-- [x] Login with sign-in link
-- [ ] Login with Google Account
+- [x] Login with Google Account
 - [ ] Users
   - [x] Change display name
-  - [ ] Upload user avatar
   - [ ] Delete user account
 - [ ] Campaigns
   - [ ] DMs
     - [x] Accept/decline campaign invites
     - [x] Invite players
     - [ ] Manage players
+    - [ ] Edit campaign details
   - [ ] Players
     - [x] Accept/decline campaign invites
     - [ ] Create character
   - [ ] Campaign Dashboards
     - [ ] World map widget
-    - [ ] Notes widget
+    - [x] Notes widget
     - [x] Adventuring Party widget
     - [ ] Event log/chat widget
     - [ ] Clock widget
@@ -65,3 +64,5 @@ npm start
 - [Adventurer's Codex](https://adventurerscodex.com/)
 - [5e Tools](https://5etools-mirror-1.github.io/)
 - [Foundry VTT](https://foundryvtt.com/)
+- [Beyond Tabletop](https://www.beyondtabletop.com/)
+- [Mythic Table](https://www.mythictable.com/)

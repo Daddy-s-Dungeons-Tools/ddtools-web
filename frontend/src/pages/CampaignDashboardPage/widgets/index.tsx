@@ -10,6 +10,7 @@ import { BsGrid3X3 } from "react-icons/bs";
 import { FaUsers, FaVolumeUp } from "react-icons/fa";
 import {
   GiGlobe,
+  GiOpenBook,
   GiPerson,
   GiScrollQuill,
   GiScrollUnfurled,
@@ -23,6 +24,14 @@ import { Notes } from "./Notes";
 import Party from "./Party";
 import { Settings } from "./Settings";
 import { WorldMaps } from "./WorldMaps";
+
+const inProgressWidget = (
+  <Alert status="warning">
+    <AlertIcon />
+    <AlertTitle>Coming Soon!</AlertTitle>
+    <AlertDescription>This widget is in progress.</AlertDescription>
+  </Alert>
+);
 
 export type Widget = {
   label: string;
@@ -55,13 +64,7 @@ export const npcCreatureWidget: Widget = {
   label: "NPCs and Creatures",
   ariaLabel: "npcs and creatures",
   icon: GiPerson,
-  component: (
-    <Alert status="warning">
-      <AlertIcon />
-      <AlertTitle>Coming Soon!</AlertTitle>
-      <AlertDescription>This widget is in progress.</AlertDescription>
-    </Alert>
-  ),
+  component: inProgressWidget,
   shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };
@@ -117,5 +120,14 @@ export const battleMapsWidget: Widget = {
   icon: BsGrid3X3,
   component: <BattleMaps />,
   shownToUserRoles: ["dm", "player"],
+  shownDuringCampaignMode: ["combat", "out-of-combat"],
+};
+
+export const compendiumWidget: Widget = {
+  label: "D&D Compendium",
+  ariaLabel: "d&D compendium",
+  icon: GiOpenBook,
+  component: inProgressWidget,
+  shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };

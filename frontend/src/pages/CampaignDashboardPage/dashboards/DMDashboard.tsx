@@ -19,6 +19,7 @@ import {
   battleMapsWidget,
   campaignSettingsWidget,
   charactersWidget,
+  compendiumWidget,
   logWidget,
   manageUsersWidget,
   mapWidget,
@@ -33,6 +34,7 @@ export function DMDashboard() {
   const [sidebarWidget, setSidebarWidget] = useState<Widget | null>(null);
   return (
     <>
+      {/* Desktop view */}
       <Show above="lg">
         <Grid
           height="100%"
@@ -60,12 +62,15 @@ export function DMDashboard() {
               widgets={[
                 audioManagerWidget,
                 manageUsersWidget,
+                compendiumWidget,
                 campaignSettingsWidget,
               ]}
             />
           </GridItem>
         </Grid>
       </Show>
+
+      {/* Mobile view */}
       <Show below="lg">
         <>
           {sidebarWidget && (
