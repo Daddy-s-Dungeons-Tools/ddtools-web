@@ -1,16 +1,35 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { NoteBox } from "../components/NoteBox";
+import { NoteBox } from "components/NoteBox";
+import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
+import { withReactContext } from "storybook-react-context";
+import { testCampaign } from "utils/consts";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: "DDTools/Notes/NoteBox",
   component: NoteBox,
+  decorators: [
+    withReactContext({
+      Context: CampaignUserContext,
+      initialState: {
+        user: {},
+        userRole: "player",
+        campaign: testCampaign,
+      },
+    }),
+  ],
 } as ComponentMeta<typeof NoteBox>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof NoteBox> = (args) => (
   <NoteBox {...args} />
 );
+
+Template.parameters = {
+  reactContext: {
+    initialState: {},
+  },
+};
 
 const onDelete = () => window.alert("Deleted!");
 

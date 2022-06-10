@@ -21,7 +21,7 @@ import {
   arrayUnion,
   PartialWithFieldValue,
 } from "firebase/firestore";
-import { CampaignUserContext } from "pages/CampaignDashboardPage/CampaignDashboardPage";
+import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
 import { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { NoteAPI } from "services/api";

@@ -8,9 +8,8 @@ import {
 } from "@chakra-ui/react";
 import { ErrorAlert } from "components/ErrorAlert";
 import { Campaign, Character } from "ddtools-types";
-import { User } from "firebase/auth";
 import { collection, doc, FirestoreDataConverter } from "firebase/firestore";
-import { createContext, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -20,18 +19,9 @@ import { diceBox } from "services/dice";
 import { handleError } from "services/errors";
 import { auth, firestore } from "services/firebase";
 import { Params, useLocation } from "wouter";
+import { CampaignUserContext, CampaignUserContextType } from "./context";
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
-
-type CampaignUserContextType = {
-  user: User;
-  userRole: "dm" | "player";
-  campaign: Campaign & FirestoreDoc;
-  playerCharacter?: Character & FirestoreDoc;
-};
-export const CampaignUserContext = createContext<CampaignUserContextType>(
-  undefined!,
-);
 
 export default function CampaignDashboardPage({ params }: { params: Params }) {
   const [location, setLocation] = useLocation();
