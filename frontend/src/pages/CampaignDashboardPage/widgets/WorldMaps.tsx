@@ -4,6 +4,8 @@ import {
   EditableInput,
   EditablePreview,
   EditableTextarea,
+  Flex,
+  Heading,
   IconButton,
   Image,
   Popover,
@@ -13,67 +15,94 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
+  SimpleGrid,
+  Skeleton,
+  Text,
   VStack,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import { ErrorAlert } from "components/ErrorAlert";
+import { Map, MapPin } from "ddtools-types";
+import {
+  collection,
+  doc,
+  FirestoreDataConverter,
+  query,
+  UpdateData,
+  updateDoc,
+} from "firebase/firestore";
+import { useContext, useEffect, useState } from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaFlag } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore } from "services/firebase";
 import { CampaignUserContext } from "../context";
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-/** individual locations on the map */
-interface Pin {
-  location: Point;
-  name?: string;
-  description?: string;
-  // imageURL?: string;
-  targetMapID?: string;
-}
-
-/**  */
-interface Map {
-  name?: string;
-  pins?: Pin[];
-  thumbnailImageID?: string;
-}
+type MapUpdated = Map & {
+  imageURL?: string;
+};
 
 export function WorldMaps() {
   const { campaign } = useContext(CampaignUserContext);
-  const [pins, setPins] = useState<Pin[]>([]);
+
+  const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
+    query(
+      collection(firestore, "campaigns", campaign.id, "maps").withConverter(
+        converter as FirestoreDataConverter<Map & FirestoreDoc>,
+      ),
+    ),
+  );
+
+  useEffect(() => {
+    if (mapDocsError) {
+      console.warn({
+        mapDocsError,
+      });
+    }
+  }, [mapDocsError]);
+
   const [isPinning, setIsPinning] = useState<boolean>(false);
+  const [currentMapID, setCurrentMapID] = useState<string | null>(null);
+  const currentMap = mapDocs?.find((map) => map.id === currentMapID);
 
   function placePin(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (isPinning) {
+    if (isPinning && currentMap) {
       const map = document.getElementById("map");
       if (!map) return;
-      var rect = map.getBoundingClientRect();
-      var x = (1 - (rect.width - (e.clientX - rect.left)) / rect.width).toFixed(
-        3,
-      );
-      var y = (
+      const rect = map.getBoundingClientRect();
+      const x = (
         1 -
-        (rect.height - (e.clientY - rect.top)) / rect.height
+        (rect.width - (e.clientX - rect.left - 13)) / rect.width
       ).toFixed(3);
-
-      // console.log("Left: " + x + " Top: " + y);
-
-      const newPin: Pin = {
-        // name: "New Pin",
-        location: { x: +x, y: +y },
+      const y = (
+        1 -
+        (rect.height - (e.clientY - rect.top - 30)) / rect.height
+      ).toFixed(3);
+      const newPin: MapPin = {
+        location: { xPercentage: +x, yPercentage: +y },
       };
-      const newPins = [...pins, newPin];
-      setPins(newPins);
+
+      const newPins = [...(currentMap.pins ?? []), newPin];
+      updateMap(currentMap.id, { pins: newPins });
       setIsPinning(false);
     }
   }
 
-  function PinPopover(props: { pin: Pin; pinKey: number }) {
-    const xPercentage = 100 * props.pin.location.x;
-    const yPercentage = 100 * props.pin.location.y;
+  function updateMap(mapID: string, mapUpdates: UpdateData<Map>) {
+    return updateDoc(
+      doc(
+        collection(firestore, "campaigns", campaign.id, "maps").withConverter(
+          converter as FirestoreDataConverter<Map>,
+        ),
+        mapID,
+      ),
+      mapUpdates,
+    );
+  }
+
+  function PinPopover(props: { pin: MapPin; pinKey: number }) {
+    const xPercentage = 100 * props.pin.location.xPercentage;
+    const yPercentage = 100 * props.pin.location.yPercentage;
 
     return (
       <Popover>
@@ -83,7 +112,7 @@ export function WorldMaps() {
             left={xPercentage + "%"}
             top={yPercentage + "%"}
             icon={<FaFlag color="red" size="20" />}
-            aria-label={"Pin"}
+            aria-label="Pin"
           />
         </PopoverTrigger>
         <PopoverContent>
@@ -109,42 +138,119 @@ export function WorldMaps() {
   return (
     <Box>
       <VStack zIndex={5} position={"absolute"} spacing={"0"}>
-        <IconButton
-          aria-label="Add Landmark"
-          onClick={() => setIsPinning(!isPinning)}
-          icon={<GiPin color={isPinning ? "red" : "#63b3ed"} size={30} />}
-          backgroundColor="#1a202c"
-          padding="2"
-          size="lg"
-          margin="2"
-        />
+        {currentMap && (
+          <>
+            <IconButton
+              aria-label="Add Landmark"
+              onClick={() => setIsPinning(!isPinning)}
+              icon={<GiPin color={isPinning ? "red" : "#63b3ed"} size={30} />}
+              backgroundColor="#1a202c"
+              padding="2"
+              size="lg"
+              margin="2"
+            />
 
-        <IconButton
-          aria-label="Add Landmark"
-          onClick={() => {}}
-          icon={<GiTreasureMap color={"#63b3ed"} size={30} />}
-          backgroundColor="#1a202c"
-          padding="2"
-          size="lg"
-          margin="2"
-        />
+            <IconButton
+              aria-label="Maps Menu"
+              onClick={() => setCurrentMapID(null)}
+              icon={<GiTreasureMap color={"#63b3ed"} size={30} />}
+              backgroundColor="#1a202c"
+              padding="2"
+              size="lg"
+              margin="2"
+            />
+          </>
+        )}
       </VStack>
 
-      <Box position="relative">
-        {pins.map((tempPin, index) => (
-          <PinPopover key={index} pin={tempPin} pinKey={index} />
-        ))}
-        <Image
-          id="map"
-          onClick={placePin}
-          // src="https://preview.redd.it/6qoafiw0nnvz.png?width=640&crop=smart&auto=webp&s=923f5f6d1ee646f7c5f7f20e7f61cfcf51973bf2"   // Horizontal Map
-          src="https://usercontent.one/wp/www.wistedt.net/wp-content/uploads/2019/12/underdark_concept_web-812x1024.png" // Vertical Map
-          width={"100%"}
-          objectFit="contain"
-          zIndex={2}
-          alt="Your image could not be displayed."
-        />
-      </Box>
+      {!currentMap ? (
+        <Box>
+          <Heading marginBottom={5}>Your Maps</Heading>
+
+          {mapDocsError && (
+            <ErrorAlert
+              title="Yikes!"
+              description="There was an error fetching the maps..."
+            />
+          )}
+
+          <SimpleGrid columns={2} spacing={4}>
+            <Flex
+              minW="100%"
+              height={200}
+              borderWidth="1px"
+              borderRadius="lg"
+              overflow="hidden"
+              mb="5"
+            />
+
+            {isMapDocsLoading && (
+              <>
+                <Skeleton height="200px" />
+                <Skeleton height="200px" />
+              </>
+            )}
+
+            {!isMapDocsLoading &&
+              mapDocs &&
+              mapDocs.map((curMap) => (
+                <Flex
+                  justifyContent="center"
+                  key={curMap.id}
+                  onClick={() => setCurrentMapID(curMap.id)}
+                  minW="100%"
+                  maxH="100%"
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  mb="5"
+                >
+                  <Box flex={2} padding={4}>
+                    <Heading>{curMap.name || "No name!"}</Heading>
+                    <Text>{curMap.description || "No description!"}</Text>
+                  </Box>
+
+                  <Box
+                    flex={3}
+                    justifyContent="center"
+                    backgroundColor={"#1a202c"}
+                  >
+                    <Image
+                      height={200}
+                      src={
+                        (curMap as MapUpdated).imageURL ||
+                        "https://csp-clients.s3.amazonaws.com/easttexasspa/wp-content/uploads/2021/06/no-image-icon-23485.png"
+                      }
+                      // width={"100%"}
+                      object-fit="contain"
+                    />
+                  </Box>
+                </Flex>
+              ))}
+          </SimpleGrid>
+        </Box>
+      ) : (
+        <Box position="relative">
+          {currentMap.pins &&
+            currentMap.pins.map((tempPin, index) => (
+              <PinPopover key={index} pin={tempPin} pinKey={index} />
+            ))}
+
+          <Image
+            id="map"
+            onClick={placePin}
+            // src="https://preview.redd.it/6qoafiw0nnvz.png?width=640&crop=smart&auto=webp&s=923f5f6d1ee646f7c5f7f20e7f61cfcf51973bf2"   // Horizontal Map
+            // src="https://usercontent.one/wp/www.wistedt.net/wp-content/uploads/2019/12/underdark_concept_web-812x1024.png"             // Vertical Map
+            src={(currentMap as MapUpdated).imageURL}
+            width={"100%"}
+            objectFit="contain"
+            zIndex={2}
+            alt="Your image could not be displayed."
+          />
+          {/* <Heading marginTop={2} >Poop</Heading>
+            <Text marginTop={2} marginBottom={2}>smells bad.</Text> */}
+        </Box>
+      )}
     </Box>
   );
 }
