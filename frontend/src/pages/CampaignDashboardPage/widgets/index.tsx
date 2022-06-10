@@ -1,3 +1,9 @@
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
 import { IconType } from "react-icons";
 import { BsGrid3X3 } from "react-icons/bs";
@@ -49,7 +55,13 @@ export const npcCreatureWidget: Widget = {
   label: "NPCs and Creatures",
   ariaLabel: "npcs and creatures",
   icon: GiPerson,
-  component: <p>Coming soon...</p>,
+  component: (
+    <Alert status="warning">
+      <AlertIcon />
+      <AlertTitle>Coming Soon!</AlertTitle>
+      <AlertDescription>This widget is in progress.</AlertDescription>
+    </Alert>
+  ),
   shownToUserRoles: ["dm"],
   shownDuringCampaignMode: ["combat", "out-of-combat"],
 };

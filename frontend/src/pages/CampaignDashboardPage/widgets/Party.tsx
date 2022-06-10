@@ -67,7 +67,7 @@ export default function Party() {
             ))}
 
           {!isCampaignCharactersLoading && campaignCharacters?.length === 0 && (
-            <Text>There are no adventurers in this campaign yet!</Text>
+            <Text color="gray.500">No adventurers have arrived yet!</Text>
           )}
 
           {isCampaignCharactersLoading && (
