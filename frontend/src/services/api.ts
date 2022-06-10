@@ -134,12 +134,12 @@ export abstract class CampaignAPI {
   }
 
   /** Add desired users (by their user IDs) to a campaign. */
-  public static addUsers(
+  public static async addUsers(
     campaignId: string,
     as: "player" | "dm",
     userIds: string[],
   ) {
-    return updateDoc(
+    await updateDoc(
       doc(this.campaignCollection, campaignId).withConverter(
         this.campaignConverter,
       ),
@@ -152,12 +152,12 @@ export abstract class CampaignAPI {
   }
 
   /** Add the desired user invites (by their user IDs) from a campaign. */
-  public static addUserInvites(
+  public static async addUserInvites(
     campaignId: string,
     as: "player" | "dm",
     userEmails: string[],
   ) {
-    return updateDoc(
+    await updateDoc(
       doc(this.campaignCollection, campaignId).withConverter(
         this.campaignConverter,
       ),
@@ -167,15 +167,21 @@ export abstract class CampaignAPI {
         ),
       },
     );
+
+    return LogAPI.log(campaignId, {
+      type: "player-invited",
+      message: `Invites for ${as} sent to \`${userEmails.join(", ")}\``,
+      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    });
   }
 
   /** Remove the desired user invites (by their emails) from a campaign. */
-  public static removeUserInvites(
+  public static async removeUserInvites(
     campaignId: string,
     as: "player" | "dm",
     userEmails: string[],
   ) {
-    return updateDoc(
+    await updateDoc(
       doc(this.campaignCollection, campaignId).withConverter(
         this.campaignConverter,
       ),
@@ -184,6 +190,12 @@ export abstract class CampaignAPI {
           arrayRemove(...userEmails),
       },
     );
+
+    // return LogAPI.log(campaignId, {
+    //   type: "player-uninvited",
+    //   message: `Invites for ${as} removed for \`${userEmails.join(", ")}\``,
+    //   sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    // });
   }
 }
 export abstract class LogAPI {
@@ -213,7 +225,7 @@ export abstract class CharacterAPI {
     converter as FirestoreDataConverter<Character>;
   private static campaignCollection = collection(firestore, "campaigns");
 
-  public static setCampaignPlayerCharacter(
+  public static async setCampaignPlayerCharacter(
     campaignId: string,
     userId: UserID,
     character: Character,
@@ -224,11 +236,17 @@ export abstract class CharacterAPI {
       "characters",
     ).withConverter(CharacterAPI.characterConverter);
 
-    return setDoc(doc(campaignCharacterCollection, userId), {
+    await setDoc(doc(campaignCharacterCollection, userId), {
       ...character,
       createdAt: serverTimestamp(),
       ownerUserId: userId,
     });
+
+    // return LogAPI.log(campaignId, {
+    //   type: "character-created",
+    //   message: `Created character ${character.name}`,
+    //   sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    // });
   }
 }
 
