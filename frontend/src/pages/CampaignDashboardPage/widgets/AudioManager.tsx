@@ -32,7 +32,7 @@ import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
 // import { addCampaignAudioFiles } from "../../../../services/api";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore, storage } from "services/firebase";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 function AudioBox({ audioDoc }: { audioDoc: Audio & FirestoreDoc }) {
   const [downloadURL, isDownloadURLLoading, downloadURLError] = useDownloadURL(

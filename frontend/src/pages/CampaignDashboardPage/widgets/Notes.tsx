@@ -30,7 +30,7 @@ import { NoteAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
 import { noteTags } from "utils/consts";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
   type NoteInput = Pick<Note, "title" | "body" | "tags">;

@@ -5,7 +5,7 @@ import {
   AlertTitle,
 } from "@chakra-ui/react";
 import { useContext } from "react";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 import { CharacterCreator } from "../widgets/CharacterCreator/CharacterCreator";
 
 export function PlayerDashboard() {

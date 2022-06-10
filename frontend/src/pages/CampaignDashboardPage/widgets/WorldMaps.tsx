@@ -18,7 +18,7 @@ import {
 import { useContext, useState } from "react";
 import { FaFlag } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 interface Point {
   x: number;

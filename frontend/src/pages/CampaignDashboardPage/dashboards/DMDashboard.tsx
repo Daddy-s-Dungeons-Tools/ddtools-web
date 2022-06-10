@@ -95,6 +95,7 @@ export function DMDashboard() {
                 campaignSettingsWidget,
               ].map((widget) => (
                 <IconButton
+                  key={widget.label}
                   aria-label={widget.ariaLabel}
                   icon={<Icon as={widget.icon} />}
                   onClick={() => setSidebarWidget(widget)}

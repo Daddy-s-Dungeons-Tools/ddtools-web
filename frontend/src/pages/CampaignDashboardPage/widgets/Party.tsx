@@ -20,7 +20,7 @@ import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 export default function Party() {
   const { campaign } = useContext(CampaignUserContext);

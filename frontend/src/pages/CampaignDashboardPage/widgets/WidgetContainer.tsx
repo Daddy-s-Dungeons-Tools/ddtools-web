@@ -13,7 +13,7 @@ import { ErrorAlert } from "components/ErrorAlert";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { handleError } from "services/errors";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 import { Widget } from "./index";
 
 type WidgetContainerPropTypes = {

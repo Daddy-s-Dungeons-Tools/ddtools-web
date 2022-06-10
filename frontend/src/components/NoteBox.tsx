@@ -11,7 +11,7 @@ import {
   IconButton,
   Tag,
   Text,
-  useEditableControls,
+  useToast,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
@@ -36,6 +36,7 @@ type NoteBoxPropTypes = {
 };
 
 export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
+  const toast = useToast();
   const { campaign } = useContext(CampaignUserContext);
   const [isShowingFullText, setIsShowingFullText] = useState<boolean>(false);
   const [isEditingBody, setIsEditingBody] = useState<boolean>(false);
@@ -45,14 +46,14 @@ export function NoteBox({ note, onDelete, isEditable }: NoteBoxPropTypes) {
       await NoteAPI.update(campaign.id, note.id, updates);
     } catch (error) {
       console.error(error);
+      toast({
+        title: "Yikes!",
+        description: "Failed to update note. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
-  }
-
-  function EditableControls() {
-    const { isEditing, getEditButtonProps, getSubmitButtonProps } =
-      useEditableControls();
-
-    return <Text {...getEditButtonProps()}>Edit</Text>;
   }
 
   return (

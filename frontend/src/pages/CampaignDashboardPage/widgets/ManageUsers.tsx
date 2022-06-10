@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { CampaignAPI } from "services/api";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 export function ManageUsers() {
   const toast = useToast();

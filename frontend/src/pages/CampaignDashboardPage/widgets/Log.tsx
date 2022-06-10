@@ -27,7 +27,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
-import { CampaignUserContext } from "../CampaignDashboardPage";
+import { CampaignUserContext } from "../context";
 
 /** Single log item display. Shows all present information except for the payload. */
 function LogItemBox({

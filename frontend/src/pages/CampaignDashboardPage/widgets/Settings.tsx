@@ -1,39 +1,30 @@
 import {
   Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  EditableTextarea,
+  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
 import { Campaign } from "ddtools-types";
-import { Field, Formik, FormikHelpers } from "formik";
+import { PartialWithFieldValue } from "firebase/firestore";
 import { useContext } from "react";
 import { CampaignAPI } from "services/api";
-import { CampaignUserContext } from "../CampaignDashboardPage";
-
-type CampaignUpdate = Pick<Campaign, "name" | "description" | "color">;
+import { CampaignUserContext } from "../context";
 
 export function Settings() {
   const { campaign } = useContext(CampaignUserContext);
   const toast = useToast();
 
-  const handleUpdateSettings = async (
-    values: CampaignUpdate,
-    formikHelpers: FormikHelpers<CampaignUpdate>,
+  const updateCampaign = async (
+    updates: PartialWithFieldValue<
+      Pick<Campaign, "name" | "description" | "color">
+    >,
   ) => {
     try {
-      await CampaignAPI.updateDetails(campaign.id, values);
-
-      toast({
-        title: "Updated!",
-        description: "The campaign details have been updated.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      await CampaignAPI.updateDetails(campaign.id, updates);
     } catch (error) {
       console.error(error);
       toast({
@@ -48,53 +39,35 @@ export function Settings() {
 
   return (
     <Box>
-      <Formik
-        initialValues={
-          {
-            name: campaign.name,
-            description: campaign.description ?? "",
-            color: campaign.color ?? "white",
-          } as CampaignUpdate
-        }
-        onSubmit={handleUpdateSettings}
-      >
-        {({ handleSubmit, isSubmitting }) => (
-          <form onSubmit={handleSubmit}>
-            <VStack spacing="3">
-              <FormControl>
-                <FormLabel htmlFor="campaignName">Campaign Name</FormLabel>
-                <Field
-                  id="campaignName"
-                  type="text"
-                  name="name"
-                  as={Input}
-                  isReadOnly={isSubmitting}
-                />
-              </FormControl>
+      <VStack>
+        <Box minW="100%">
+          <Text color="gray.500" fontWeight="semibold">
+            Name
+          </Text>
+          <Editable
+            defaultValue={campaign.name}
+            placeholder={campaign.name}
+            onSubmit={(name) => updateCampaign({ name })}
+          >
+            <EditablePreview />
+            <EditableInput />
+          </Editable>
+        </Box>
 
-              <FormControl>
-                <FormLabel htmlFor="campaignDescription">
-                  Campaign Description
-                </FormLabel>
-                <Field
-                  as={Textarea}
-                  id="campaignDescription"
-                  placeholder="Here is a sample placeholder"
-                  name="description"
-                  height={100}
-                  minH={100}
-                  maxH={100}
-                  isReadOnly={isSubmitting}
-                />
-              </FormControl>
-
-              <Button type="submit" minW="100%" isLoading={isSubmitting}>
-                Update
-              </Button>
-            </VStack>
-          </form>
-        )}
-      </Formik>
+        <Box minW="100%">
+          <Text color="gray.500" fontWeight="semibold">
+            Description
+          </Text>
+          <Editable
+            defaultValue={campaign.description}
+            placeholder={campaign.description || "No description set..."}
+            onSubmit={(description) => updateCampaign({ description })}
+          >
+            <EditablePreview />
+            <EditableTextarea />
+          </Editable>
+        </Box>
+      </VStack>
     </Box>
   );
 }
