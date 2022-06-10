@@ -11,12 +11,12 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
+import { Logo } from "components/Logo/Logo";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FaSignOutAlt } from "react-icons/fa";
+import { auth } from "services/firebase";
 import { Link as WouterLink, useLocation } from "wouter";
-import { auth } from "../../services/firebase";
-import { Logo } from "../Logo/Logo";
 
 export default function TopNavbar() {
   const [user, isUserLoading] = useAuthState(auth);
@@ -73,9 +73,6 @@ export default function TopNavbar() {
             <Text display="block" mx="2">
               Logged in as <strong>{user.displayName ?? user.email}</strong>
             </Text>
-            {/* <Button colorScheme="teal" onClick={handleSignOut} size="sm">
-              Sign out
-            </Button> */}
           </Hide>
           <Show below="md"></Show>
           <IconButton

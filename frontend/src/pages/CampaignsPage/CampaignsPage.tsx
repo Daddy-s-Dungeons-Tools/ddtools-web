@@ -8,6 +8,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { CampaignBox } from "components/CampaignBox";
+import { CampaignInvitesModal } from "components/CampaignInvitesModal/CampaignInvitesModal";
+import { ErrorAlert } from "components/ErrorAlert";
+import { NewCampaignModal } from "components/modals/NewCampaignModal";
 import { Campaign } from "ddtools-types";
 import {
   collection,
@@ -19,12 +23,8 @@ import {
 import { useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaPlus } from "react-icons/fa";
-import { CampaignBox } from "../../components/CampaignBox/CampaignBox";
-import { CampaignInvitesModal } from "../../components/CampaignInvitesModal/CampaignInvitesModal";
-import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
-import { NewCampaignModal } from "../../components/NewCampaignModal/NewCampaignModal";
-import { converter, FirestoreDoc } from "../../services/converter";
-import { auth, firestore } from "../../services/firebase";
+import { converter, FirestoreDoc } from "services/converter";
+import { auth, firestore } from "services/firebase";
 
 const readCampaignConverter = converter as FirestoreDataConverter<
   Campaign & FirestoreDoc

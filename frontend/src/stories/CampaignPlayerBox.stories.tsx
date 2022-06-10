@@ -1,7 +1,6 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-
-import { CampaignPlayerBox } from "../components/CampaignPlayerBox/CampaignPlayerBox";
-import { testCampaign, testCharacter } from "../utils/consts";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { CampaignPlayerBox } from "components/CampaignPlayerBox";
+import { testCharacter } from "utils/consts";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

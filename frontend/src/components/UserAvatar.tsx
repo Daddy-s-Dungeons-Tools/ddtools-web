@@ -3,7 +3,7 @@ import { CampaignUserSummaries, CampaignUserSummary } from "ddtools-types";
 import { User } from "firebase/auth";
 import { ref } from "firebase/storage";
 import { useDownloadURL } from "react-firebase-hooks/storage";
-import { storage } from "../../services/firebase";
+import { storage } from "services/firebase";
 
 type UserAvatarPropTypes = {
   userAs?: "player" | "dm";

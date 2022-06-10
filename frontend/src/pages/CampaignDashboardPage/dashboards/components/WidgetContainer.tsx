@@ -1,20 +1,20 @@
 import {
-  Tooltip,
-  Tabs,
-  TabList,
-  Tab,
   Icon,
+  PlacementWithLogical,
+  Tab,
+  TabList,
   TabPanel,
   TabPanels,
+  Tabs,
   TabsProps,
-  PlacementWithLogical,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useContext } from "react";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
 import { ErrorBoundary } from "react-error-boundary";
-import { Widget } from "./widgets";
-import { ErrorAlert } from "../../../../components/ErrorAlert/ErrorAlert";
+import { ErrorAlert } from "../../../../components/ErrorAlert";
 import { handleError } from "../../../../services/errors";
+import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { Widget } from "./widgets";
 
 type WidgetContainerPropTypes = {
   widgets: Widget[];

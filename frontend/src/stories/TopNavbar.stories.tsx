@@ -1,5 +1,5 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import TopNavbar from "../components/TopNavbar/TopNavbar";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import TopNavbar from "components/TopNavbar";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

@@ -21,12 +21,12 @@ import {
   arrayUnion,
   PartialWithFieldValue,
 } from "firebase/firestore";
+import { CampaignUserContext } from "pages/CampaignDashboardPage/CampaignDashboardPage";
 import { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
-import { CampaignUserContext } from "../pages/CampaignDashboardPage/CampaignDashboardPage";
-import { NoteAPI } from "../services/api";
-import { FirestoreDoc } from "../services/converter";
-import { noteTags } from "../utils/consts";
+import { NoteAPI } from "services/api";
+import { FirestoreDoc } from "services/converter";
+import { noteTags } from "utils/consts";
 import { TagAddPopover } from "./TagAddPopover";
 
 type NoteBoxPropTypes = {

@@ -23,7 +23,7 @@ import { Field, Formik, FormikHelpers } from "formik";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { ErrorAlert } from "../../../../../components/ErrorAlert/ErrorAlert";
+import { ErrorAlert } from "../../../../../components/ErrorAlert";
 import { NoteBox } from "../../../../../components/NoteBox";
 import { TagAddPopover } from "../../../../../components/TagAddPopover";
 import { NoteAPI } from "../../../../../services/api";

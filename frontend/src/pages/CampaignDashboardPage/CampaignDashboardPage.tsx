@@ -15,7 +15,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
 import { Params, useLocation } from "wouter";
-import { ErrorAlert } from "../../components/ErrorAlert/ErrorAlert";
+import { ErrorAlert } from "../../components/ErrorAlert";
 import { converter, FirestoreDoc } from "../../services/converter";
 import { diceBox } from "../../services/dice";
 import { handleError } from "../../services/errors";

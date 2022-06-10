@@ -1,18 +1,18 @@
 import {
-  Box,
-  VStack,
-  Text,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
-  Skeleton,
-  Tag,
-  Flex,
   AvatarGroup,
+  Box,
+  Flex,
   Input,
   InputGroup,
   InputLeftElement,
+  Skeleton,
+  Tag,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import { Campaign, LogItem } from "ddtools-types";
 import {
@@ -24,7 +24,7 @@ import {
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
-import { UserAvatarFromSummary } from "../../../../components/UserAvatar/UserAvatar";
+import { UserAvatarFromSummary } from "../../../../components/UserAvatar";
 import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";

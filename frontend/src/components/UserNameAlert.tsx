@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Input, Text, useToast } from "@chakra-ui/react";
 import { updateProfile } from "firebase/auth";
-import { auth } from "../../services/firebase";
+import { auth } from "services/firebase";
 
 type UserNameAlertPropTypes = {
   /** Close handler */

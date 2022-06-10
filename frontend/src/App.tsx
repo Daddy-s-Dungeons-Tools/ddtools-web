@@ -1,17 +1,17 @@
 import { Box, Center, Container, Spinner } from "@chakra-ui/react";
+import { ErrorAlert } from "components/ErrorAlert";
+import TopNavbar from "components/TopNavbar/TopNavbar";
+import UserNameAlert from "components/UserNameAlert/UserNameAlert";
+import CampaignDashboardPage from "pages/CampaignDashboardPage/CampaignDashboardPage";
+import CampaignsPage from "pages/CampaignsPage/CampaignsPage";
+import LoginPage from "pages/LoginPage/LoginPage";
+import { ProfilePage } from "pages/ProfilePage/ProfilePage";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { handleError } from "services/errors";
+import { auth } from "services/firebase";
 import { Redirect, Route, Switch } from "wouter";
-import { ErrorAlert } from "./components/ErrorAlert/ErrorAlert";
-import TopNavbar from "./components/TopNavbar/TopNavbar";
-import UserNameAlert from "./components/UserNameAlert/UserNameAlert";
-import CampaignDashboardPage from "./pages/CampaignDashboardPage/CampaignDashboardPage";
-import CampaignsPage from "./pages/CampaignsPage/CampaignsPage";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
-import { handleError } from "./services/errors";
-import { auth } from "./services/firebase";
 
 function App() {
   const [user, isUserLoading] = useAuthState(auth);

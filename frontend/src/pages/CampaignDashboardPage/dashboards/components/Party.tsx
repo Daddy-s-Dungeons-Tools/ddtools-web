@@ -1,14 +1,14 @@
 import {
-  Box,
-  Text,
-  VStack,
-  Skeleton,
+  Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
-  Alert,
+  Box,
+  Skeleton,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
-import { Campaign, Character } from "ddtools-types";
+import { Character } from "ddtools-types";
 import {
   collection,
   FirestoreDataConverter,
@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox/CampaignPlayerBox";
+import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox";
 import { converter, FirestoreDoc } from "../../../../services/converter";
 import { firestore } from "../../../../services/firebase";
 import { CampaignUserContext } from "../../CampaignDashboardPage";

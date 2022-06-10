@@ -1,5 +1,5 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { ItemTooltip } from "../components/ItemTooltip/ItemTooltip";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { ItemTooltip } from "../components/ItemTooltip";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

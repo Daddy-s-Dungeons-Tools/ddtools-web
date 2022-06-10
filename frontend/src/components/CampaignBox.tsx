@@ -14,15 +14,15 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { UserAvatarFromSummary } from "components/UserAvatar/UserAvatar";
 import { Campaign, Character } from "ddtools-types";
 import { useState } from "react";
 import { FaUserSlash } from "react-icons/fa";
+import { CampaignAPI } from "services/api";
+import { FirestoreDoc } from "services/converter";
+import { auth } from "services/firebase";
+import { characterRaceAndClasses } from "utils/characters";
 import { Link as WouterLink } from "wouter";
-import { CampaignAPI } from "../../services/api";
-import { FirestoreDoc } from "../../services/converter";
-import { auth } from "../../services/firebase";
-import { characterRaceAndClasses } from "../../utils/characters";
-import { UserAvatarFromSummary } from "../UserAvatar/UserAvatar";
 
 type CampaignBoxPropTypes = {
   /** The campaign to display info for */

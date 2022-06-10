@@ -1,26 +1,25 @@
-import { Character } from "ddtools-types";
-
 import {
   Box,
   Flex,
   Heading,
   Hide,
   HStack,
-  Tag,
   Image,
-  Tooltip,
-  VStack,
-  StatGroup,
   Stat,
+  StatGroup,
   StatLabel,
   StatNumber,
+  Tag,
+  Tooltip,
+  VStack,
 } from "@chakra-ui/react";
+import { Character } from "ddtools-types";
+import { FirestoreDoc } from "services/converter";
 import {
   characterHealthStatus,
   characterPhysicalDescription,
   characterRaceAndClasses,
-} from "../../utils/characters";
-import { FirestoreDoc } from "../../services/converter";
+} from "utils/characters";
 
 /** Very odd... webpack freaks out when I try to import this from ddtools-types */
 const ABILITIES = ["str", "dex", "con", "int", "wis", "cha"] as const;

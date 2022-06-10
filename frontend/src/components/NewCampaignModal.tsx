@@ -14,7 +14,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { CampaignAPI } from "../../services/api";
+import { CampaignAPI } from "services/api";
 
 type NewCampaignModalPropTypes = {
   isOpen: boolean;

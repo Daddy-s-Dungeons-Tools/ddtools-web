@@ -1,15 +1,15 @@
 import {
+  Box,
   Modal,
-  ModalOverlay,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Box,
+  ModalOverlay,
 } from "@chakra-ui/react";
+import { CampaignBox } from "components/CampaignBox";
 import { Campaign } from "ddtools-types";
-import { FirestoreDoc } from "../../services/converter";
-import { CampaignBox } from "../CampaignBox/CampaignBox";
+import { FirestoreDoc } from "services/converter";
 
 type CampaignInvitesModalPropTypes = {
   isOpen: boolean;
