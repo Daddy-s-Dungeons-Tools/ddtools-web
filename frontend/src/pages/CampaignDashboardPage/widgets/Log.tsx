@@ -12,10 +12,12 @@ import {
   Skeleton,
   Tag,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { MarkdownText } from "components/MarkdownText";
 import { UserAvatarFromSummary } from "components/UserAvatar";
+import { formatDistance } from "date-fns";
 import { Campaign, LogItem } from "ddtools-types";
 import {
   collection,
@@ -23,6 +25,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import useNow from "hooks/useNow";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
@@ -38,16 +41,16 @@ function LogItemBox({
   campaign: Campaign & FirestoreDoc;
   item: LogItem & FirestoreDoc;
 }) {
+  const now = useNow();
+
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
-      <VStack minW="100%">
+      <VStack minW="100%" spacing="5">
         {item.message && (
           <MarkdownText className="w-100">{item.message}</MarkdownText>
         )}
         <Flex minW="100%" justify="space-between">
-          <Box>
-            <Tag>{item.type}</Tag>
-          </Box>
+          <Tag size="sm">{item.type}</Tag>
           {item.sourceUserIds && (
             <AvatarGroup size="xs">
               {item.sourceUserIds.map((userId) => (
@@ -59,9 +62,11 @@ function LogItemBox({
               ))}
             </AvatarGroup>
           )}
-          <Text color="gray.500">
-            {new Date(item.createdAt).toLocaleString()}
-          </Text>
+          <Tooltip label={item.createdAt.toLocaleString()}>
+            <Text color="gray.500" fontSize={"15px"}>
+              {formatDistance(item.createdAt, now, { addSuffix: true })}
+            </Text>
+          </Tooltip>
         </Flex>
       </VStack>
     </Box>
