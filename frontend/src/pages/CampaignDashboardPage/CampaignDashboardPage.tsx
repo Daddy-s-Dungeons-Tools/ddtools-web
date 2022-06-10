@@ -6,6 +6,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
+import { ErrorAlert } from "components/ErrorAlert";
 import { Campaign, Character } from "ddtools-types";
 import { User } from "firebase/auth";
 import { collection, doc, FirestoreDataConverter } from "firebase/firestore";
@@ -14,12 +15,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
+import { converter, FirestoreDoc } from "services/converter";
+import { diceBox } from "services/dice";
+import { handleError } from "services/errors";
+import { auth, firestore } from "services/firebase";
 import { Params, useLocation } from "wouter";
-import { ErrorAlert } from "../../components/ErrorAlert";
-import { converter, FirestoreDoc } from "../../services/converter";
-import { diceBox } from "../../services/dice";
-import { handleError } from "../../services/errors";
-import { auth, firestore } from "../../services/firebase";
 import { DMDashboard } from "./dashboards/DMDashboard";
 import { PlayerDashboard } from "./dashboards/PlayerDashboard";
 

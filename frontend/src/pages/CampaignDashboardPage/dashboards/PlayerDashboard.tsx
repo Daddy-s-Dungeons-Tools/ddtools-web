@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { CampaignUserContext } from "../CampaignDashboardPage";
-import { CharacterCreator } from "./components/CharacterCreator/CharacterCreator";
+import { CharacterCreator } from "../widgets/CharacterCreator/CharacterCreator";
 
 export function PlayerDashboard() {
   const { playerCharacter } = useContext(CampaignUserContext);

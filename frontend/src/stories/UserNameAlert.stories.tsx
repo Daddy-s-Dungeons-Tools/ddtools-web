@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import UserNameAlert from "../components/UserNameAlert";
+import UserNameAlert from "components/UserNameAlert";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

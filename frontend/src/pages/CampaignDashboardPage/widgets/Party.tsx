@@ -8,6 +8,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { CampaignPlayerBox } from "components/CampaignPlayerBox";
 import { Character } from "ddtools-types";
 import {
   collection,
@@ -17,10 +18,9 @@ import {
 } from "firebase/firestore";
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { CampaignPlayerBox } from "../../../../components/CampaignPlayerBox";
-import { converter, FirestoreDoc } from "../../../../services/converter";
-import { firestore } from "../../../../services/firebase";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore } from "services/firebase";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 export default function Party() {
   const { campaign } = useContext(CampaignUserContext);

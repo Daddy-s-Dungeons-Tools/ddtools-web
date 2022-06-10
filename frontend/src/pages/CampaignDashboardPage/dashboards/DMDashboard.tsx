@@ -14,7 +14,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { WidgetContainer } from "./components/WidgetContainer";
 import {
   audioManagerWidget,
   battleMapsWidget,
@@ -26,7 +25,8 @@ import {
   notesWidget,
   npcCreatureWidget,
   Widget,
-} from "./components/widgets";
+} from "../widgets";
+import { WidgetContainer } from "../widgets/WidgetContainer";
 
 export function DMDashboard() {
   // Only for sidebar on mobile

@@ -14,6 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { UserAvatarFromSummary } from "components/UserAvatar";
 import { Campaign, LogItem } from "ddtools-types";
 import {
   collection,
@@ -24,10 +25,9 @@ import {
 import { useContext } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaSearch } from "react-icons/fa";
-import { UserAvatarFromSummary } from "../../../../components/UserAvatar";
-import { converter, FirestoreDoc } from "../../../../services/converter";
-import { firestore } from "../../../../services/firebase";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore } from "services/firebase";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 /** Single log item display. Shows all present information except for the payload. */
 function LogItemBox({

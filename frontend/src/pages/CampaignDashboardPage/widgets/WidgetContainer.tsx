@@ -9,12 +9,12 @@ import {
   TabsProps,
   Tooltip,
 } from "@chakra-ui/react";
+import { ErrorAlert } from "components/ErrorAlert";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorAlert } from "../../../../components/ErrorAlert";
-import { handleError } from "../../../../services/errors";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
-import { Widget } from "./widgets";
+import { handleError } from "services/errors";
+import { CampaignUserContext } from "../CampaignDashboardPage";
+import { Widget } from "./index";
 
 type WidgetContainerPropTypes = {
   widgets: Widget[];

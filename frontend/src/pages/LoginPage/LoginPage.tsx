@@ -1,10 +1,10 @@
 import { Button, Container, Heading, useToast, VStack } from "@chakra-ui/react";
+import { Logo } from "components/Logo/Logo";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FaGoogle } from "react-icons/fa";
-import { Logo } from "../../components/Logo/Logo";
-import { auth } from "../../services/firebase";
+import { auth } from "services/firebase";
 import "./LoginPage.css";
 
 const provider = new GoogleAuthProvider();

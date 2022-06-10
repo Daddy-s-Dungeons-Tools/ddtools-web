@@ -11,8 +11,8 @@ import {
 import { Campaign } from "ddtools-types";
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext } from "react";
-import { CampaignAPI } from "../../../../services/api";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { CampaignAPI } from "services/api";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 type CampaignUpdate = Pick<Campaign, "name" | "description" | "color">;
 

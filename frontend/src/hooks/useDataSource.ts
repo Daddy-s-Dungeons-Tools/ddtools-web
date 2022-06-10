@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchData } from "../services/api";
+import { fetchData } from "services/api";
 
 export function useDataSource<T>(name: string): [T[], boolean, Error | null] {
   const [data, setData] = useState<T[]>([]);

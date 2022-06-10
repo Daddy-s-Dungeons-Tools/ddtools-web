@@ -9,9 +9,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { CampaignBox } from "components/CampaignBox";
-import { CampaignInvitesModal } from "components/CampaignInvitesModal/CampaignInvitesModal";
+import { CampaignInvitesModal } from "components/CampaignInvitesModal";
 import { ErrorAlert } from "components/ErrorAlert";
-import { NewCampaignModal } from "components/modals/NewCampaignModal";
+import { NewCampaignModal } from "components/NewCampaignModal";
 import { Campaign } from "ddtools-types";
 import {
   collection,

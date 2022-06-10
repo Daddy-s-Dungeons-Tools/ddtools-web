@@ -11,6 +11,9 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { ErrorAlert } from "components/ErrorAlert";
+import { NoteBox } from "components/NoteBox";
+import { TagAddPopover } from "components/TagAddPopover";
 import { Note } from "ddtools-types";
 import {
   collection,
@@ -23,14 +26,11 @@ import { Field, Formik, FormikHelpers } from "formik";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { ErrorAlert } from "../../../../../components/ErrorAlert";
-import { NoteBox } from "../../../../../components/NoteBox";
-import { TagAddPopover } from "../../../../../components/TagAddPopover";
-import { NoteAPI } from "../../../../../services/api";
-import { converter, FirestoreDoc } from "../../../../../services/converter";
-import { firestore } from "../../../../../services/firebase";
-import { noteTags } from "../../../../../utils/consts";
-import { CampaignUserContext } from "../../../CampaignDashboardPage";
+import { NoteAPI } from "services/api";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore } from "services/firebase";
+import { noteTags } from "utils/consts";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 function NewNoteBox({ afterAdd }: { afterAdd?: () => void }) {
   type NoteInput = Pick<Note, "title" | "body" | "tags">;

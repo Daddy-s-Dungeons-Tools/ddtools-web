@@ -14,7 +14,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { UserAvatarFromSummary } from "components/UserAvatar/UserAvatar";
+import { UserAvatarFromSummary } from "components/UserAvatar";
 import { Campaign, Character } from "ddtools-types";
 import { useState } from "react";
 import { FaUserSlash } from "react-icons/fa";

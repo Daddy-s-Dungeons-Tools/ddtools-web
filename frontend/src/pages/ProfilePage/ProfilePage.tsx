@@ -12,7 +12,7 @@ import {
 import { updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../services/firebase";
+import { auth } from "services/firebase";
 
 export function ProfilePage() {
   const [user] = useAuthState(auth);

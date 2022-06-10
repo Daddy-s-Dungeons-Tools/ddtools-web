@@ -1,17 +1,17 @@
 import {
-  useToast,
-  Box,
-  UnorderedList,
-  ListItem,
   Badge,
-  Text,
-  Input,
+  Box,
   Button,
   HStack,
+  Input,
+  ListItem,
+  Text,
+  UnorderedList,
+  useToast,
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
-import { CampaignAPI } from "../../../../services/api";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { CampaignAPI } from "services/api";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 export function ManageUsers() {
   const toast = useToast();

@@ -1,5 +1,5 @@
 import { ABILITIES, Campaign, Character, SKILLS } from "ddtools-types";
-import { FirestoreDoc } from "../services/converter";
+import { FirestoreDoc } from "services/converter";
 
 export const noteTags = ["lore", "npc", "quest", "question"];
 

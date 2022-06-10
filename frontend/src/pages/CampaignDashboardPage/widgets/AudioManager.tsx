@@ -1,20 +1,20 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   ButtonGroup,
-  Skeleton,
-  Text,
-  Heading,
   Divider,
   Editable,
   EditableInput,
   EditablePreview,
-  VStack,
   Flex,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
+  Heading,
+  Skeleton,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import { Audio } from "ddtools-types";
 import {
@@ -30,9 +30,9 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDownloadURL } from "react-firebase-hooks/storage";
 import { FaBroadcastTower, FaPlay, FaRedo } from "react-icons/fa";
 // import { addCampaignAudioFiles } from "../../../../services/api";
-import { converter, FirestoreDoc } from "../../../../services/converter";
-import { firestore, storage } from "../../../../services/firebase";
-import { CampaignUserContext } from "../../CampaignDashboardPage";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore, storage } from "services/firebase";
+import { CampaignUserContext } from "../CampaignDashboardPage";
 
 function AudioBox({ audioDoc }: { audioDoc: Audio & FirestoreDoc }) {
   const [downloadURL, isDownloadURLLoading, downloadURLError] = useDownloadURL(

@@ -10,10 +10,10 @@ import {
   GiSettingsKnobs,
 } from "react-icons/gi";
 import { AudioManager } from "./AudioManager";
-import { BattleMaps } from "./BattleMaps/BattleMaps";
+import { BattleMaps } from "./BattleMaps";
 import { Log } from "./Log";
 import { ManageUsers } from "./ManageUsers";
-import { Notes } from "./Notes/Notes";
+import { Notes } from "./Notes";
 import Party from "./Party";
 import { Settings } from "./Settings";
 import { WorldMaps } from "./WorldMaps";

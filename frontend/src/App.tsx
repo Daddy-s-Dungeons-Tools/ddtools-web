@@ -1,7 +1,7 @@
 import { Box, Center, Container, Spinner } from "@chakra-ui/react";
 import { ErrorAlert } from "components/ErrorAlert";
-import TopNavbar from "components/TopNavbar/TopNavbar";
-import UserNameAlert from "components/UserNameAlert/UserNameAlert";
+import TopNavbar from "components/TopNavbar";
+import UserNameAlert from "components/UserNameAlert";
 import CampaignDashboardPage from "pages/CampaignDashboardPage/CampaignDashboardPage";
 import CampaignsPage from "pages/CampaignsPage/CampaignsPage";
 import LoginPage from "pages/LoginPage/LoginPage";
