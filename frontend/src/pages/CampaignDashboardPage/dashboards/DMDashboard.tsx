@@ -88,7 +88,7 @@ export function DMDashboard() {
               </DrawerContent>
             </Drawer>
           )}
-          <VStack h="80vh">
+          <VStack h="85vh">
             <HStack>
               {[
                 notesWidget,

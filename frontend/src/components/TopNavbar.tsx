@@ -35,7 +35,8 @@ export default function TopNavbar() {
       justify="space-between"
       wrap="wrap"
       w="100%"
-      p={8}
+      px={5}
+      height="70px"
     >
       <Box mr="5">
         <HStack

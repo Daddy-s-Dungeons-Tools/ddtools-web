@@ -57,7 +57,7 @@ export function WidgetContainer({
           </Tooltip>
         ))}
       </TabList>
-      <TabPanels h="90%" overflow="auto">
+      <TabPanels h="93%" overflow="auto">
         {userWidgets.map((widget) => (
           <TabPanel key={widget.label}>
             <ErrorBoundary

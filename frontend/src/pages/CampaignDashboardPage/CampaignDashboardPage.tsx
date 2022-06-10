@@ -140,7 +140,7 @@ export default function CampaignDashboardPage({ params }: { params: Params }) {
             maxW="100%"
             px="3"
             id="main-dashboard"
-            height="calc(100vh - 150px)"
+            height="calc(100vh - 120px)"
           >
             {campaignUserContextValue.userRole === "dm" ? (
               <DMDashboard />
