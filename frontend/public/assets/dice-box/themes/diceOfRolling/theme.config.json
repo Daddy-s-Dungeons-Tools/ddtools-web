@@ -1,0 +1,17 @@
+{
+  "name": "Dice of Rolling",
+  "systemName": "diceOfRolling",
+  "author": "Frank Ali",
+  "version": 0.1,
+  "meshName": "smoothDice",
+  "meshFile": "smoothDice.json",
+  "material": {
+    "type": "standard",
+    "diffuseTexture": "diffuse.jpg",
+    "bumpTexture": "../smooth/normal.png",
+    "specularTexture": "specularity.jpg",
+    "diffuseLevel": 1,
+    "bumpLevel": 0.6,
+    "specularPower": 1
+  }
+}

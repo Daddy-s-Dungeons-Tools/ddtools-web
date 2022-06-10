@@ -1,15 +1,22 @@
-import { Campaign, Character, SKILLS } from "ddtools-types";
+import { ABILITIES, Campaign, Character, SKILLS } from "ddtools-types";
+import { FirestoreDoc } from "services/converter";
 
-export const testCampaign: Campaign = {
+export const noteTags = ["lore", "npc", "quest", "question"];
+
+export const testCampaign: Campaign & FirestoreDoc = {
+  id: "fakeid",
+  ref: null!,
   name: "Test Campaign",
   mode: "out-of-combat",
-  createdAt: new Date().getTime(),
+  createdAt: new Date(),
   color: "green",
   dmUserIds: ["123123124123123"],
   description: "lorem ipsum dolor sit amet",
 };
 
-export const testCharacter: Character = {
+export const testCharacter: Character & FirestoreDoc = {
+  id: "fakeid",
+  ref: null!,
   xp: 0,
   race: { name: "Human", entries: [] },
   classes: [
@@ -20,6 +27,7 @@ export const testCharacter: Character = {
         current: 3,
         sides: 6,
       },
+      features: undefined!,
     },
   ],
   alignment: "lawful good",
@@ -59,7 +67,7 @@ export const testCharacter: Character = {
     copper: 0,
   },
   name: "Nil Agosto",
-  size: "small",
+  size: "S",
   speed: {
     walking: 0,
     climbing: 0,
@@ -125,7 +133,7 @@ export const testCharacter: Character = {
   tags: [],
   ownerUserId: "123123124123123",
   sharedWith: [],
-  createdAt: new Date().getTime(),
+  createdAt: new Date(),
   isActive: true,
   isJackOfAllTrades: false,
 };
@@ -138,10 +146,10 @@ const defaultSkills = SKILLS.reduce(
   {},
 ) as Character["skills"];
 
-const defaultSavingThrows = SKILLS.reduce(
-  (obj, skill) => ({
+const defaultSavingThrows = ABILITIES.reduce(
+  (obj, ability) => ({
     ...obj,
-    [skill]: { isProficient: false, miscModifier: 0 },
+    [ability]: { isProficient: false, miscModifier: 0 },
   }),
   {},
 ) as Character["savingThrows"];
@@ -151,7 +159,7 @@ export const emptyCharacter: Character = {
   race: undefined!,
   classes: [],
   alignment: "true neutral",
-  proficiencyBonus: 0,
+  proficiencyBonus: 2,
   hasInspiration: false,
   deathSaves: {
     successes: 0,
@@ -186,21 +194,21 @@ export const emptyCharacter: Character = {
     copper: 0,
   },
   name: "",
-  size: "tiny",
+  size: "T",
   speed: {
-    walking: 0,
+    walking: 30,
     climbing: 0,
     swimming: 0,
     flying: 0,
     burrowing: 0,
   },
   abilityScores: {
-    cha: 0,
-    str: 0,
-    dex: 0,
-    con: 0,
-    int: 0,
-    wis: 0,
+    cha: 10,
+    str: 10,
+    dex: 10,
+    con: 10,
+    int: 10,
+    wis: 10,
   },
   hitPoints: {
     current: 0,
@@ -226,7 +234,7 @@ export const emptyCharacter: Character = {
   tags: [],
   ownerUserId: "",
   sharedWith: [],
-  createdAt: 0,
+  createdAt: new Date(),
   isActive: true,
   isJackOfAllTrades: false,
 };

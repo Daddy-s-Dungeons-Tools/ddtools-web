@@ -1,23 +1,20 @@
 import {
-  Container,
-  Heading,
-  FormControl,
-  Input,
   Button,
-  VStack,
-  FormLabel,
-  useToast,
   ButtonGroup,
+  Container,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useProtectedRoute } from "../../hooks/routes";
-import { auth } from "../../services/firebase";
+import { auth } from "services/firebase";
 
 export function ProfilePage() {
-  useProtectedRoute();
-
   const [user] = useAuthState(auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

@@ -1,4 +1,11 @@
-import { Character } from "ddtools-types";
+import {
+  ABILITIES,
+  Character,
+  Class,
+  Race,
+  SKILLS,
+  SKILLS_TO_ABILITIES,
+} from "ddtools-types";
 
 export const characterPhysicalDescription = (character: Character) => {
   return `${character.physical.age} y/o, ${character.physical.eyes} eyes, ${character.physical.hair} hair, ${character.physical.skin} skin`;
@@ -38,4 +45,82 @@ export const characterRaceAndClasses = (character: Character) => {
       .join(" & ");
 
   return line;
+};
+
+/** Returns a NEW character with fields updated based on the given race. */
+export const filterRace = (race: any): Race => {
+  const filteredRace: Race = {
+    name: race.name,
+    entries: race.entries,
+    subtype: race.subtype,
+  };
+
+  return filteredRace;
+};
+
+/** Returns a NEW character with fields updated based on the given race. */
+export const filterClass = (cls: any): Class => {
+  const filteredClass: Class = {
+    name: cls.name,
+    hitDice: {
+      current: cls.hd.faces,
+      sides: cls.hd.faces,
+    },
+    level: 1,
+    features: undefined!,
+  };
+
+  return filteredClass;
+};
+
+export const abilityScoreBaseModifier = (abilityScore: number) =>
+  Math.floor((abilityScore - 10) / 2);
+
+export const skillTotalModifier = (
+  character: Character,
+  skill: typeof SKILLS[number],
+) => {
+  const associatedAbility = SKILLS_TO_ABILITIES[skill];
+  const baseModifier = abilityScoreBaseModifier(
+    character.abilityScores[associatedAbility],
+  );
+  const skillProperties = character.skills[skill];
+
+  let totalModifier = baseModifier;
+
+  if (skillProperties.isProficient) {
+    totalModifier += character.proficiencyBonus;
+  }
+
+  if (skillProperties.isProficient && skillProperties.isExpertise) {
+    totalModifier += character.proficiencyBonus;
+  }
+
+  if (skillProperties.miscModifier) {
+    totalModifier += skillProperties.miscModifier;
+  }
+
+  return totalModifier;
+};
+
+export const savingThrowTotalModifier = (
+  character: Character,
+  ability: typeof ABILITIES[number],
+) => {
+  const baseModifier = abilityScoreBaseModifier(
+    character.abilityScores[ability],
+  );
+  const savingThrowProperties = character.savingThrows[ability];
+
+  let totalModifier = baseModifier;
+
+  if (savingThrowProperties.isProficient) {
+    totalModifier += character.proficiencyBonus;
+  }
+
+  if (savingThrowProperties.miscModifier) {
+    totalModifier += savingThrowProperties.miscModifier;
+  }
+
+  return totalModifier;
 };
