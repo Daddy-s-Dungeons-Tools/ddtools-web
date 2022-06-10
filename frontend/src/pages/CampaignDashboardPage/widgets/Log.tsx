@@ -39,26 +39,28 @@ function LogItemBox({
 }) {
   return (
     <Box minW="100%" borderWidth="1px" borderRadius="lg" p="3">
-      {item.message && <Text>{item.message}</Text>}
-      <Flex mt="3" justify="space-between">
-        <Box>
-          <Tag>{item.type}</Tag>
-        </Box>
-        {item.sourceUserIds && (
-          <AvatarGroup size="xs">
-            {item.sourceUserIds.map((userId) => (
-              <UserAvatarFromSummary
-                key={userId}
-                userId={userId}
-                userSummaries={campaign.userSummaries}
-              />
-            ))}
-          </AvatarGroup>
-        )}
-        <Text color="gray.500">
-          {new Date(item.createdAt).toLocaleString()}
-        </Text>
-      </Flex>
+      <VStack minW="100%">
+        {item.message && <Text minW="100%">{item.message}</Text>}
+        <Flex minW="100%" justify="space-between">
+          <Box>
+            <Tag>{item.type}</Tag>
+          </Box>
+          {item.sourceUserIds && (
+            <AvatarGroup size="xs">
+              {item.sourceUserIds.map((userId) => (
+                <UserAvatarFromSummary
+                  key={userId}
+                  userId={userId}
+                  userSummaries={campaign.userSummaries}
+                />
+              ))}
+            </AvatarGroup>
+          )}
+          <Text color="gray.500">
+            {new Date(item.createdAt).toLocaleString()}
+          </Text>
+        </Flex>
+      </VStack>
     </Box>
   );
 }

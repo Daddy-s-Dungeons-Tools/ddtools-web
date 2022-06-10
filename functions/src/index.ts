@@ -2,18 +2,16 @@ import {
   ABILITIES,
   Campaign,
   CampaignUserSummaries,
-  LogItem,
   UserID,
 } from "ddtools-types";
-import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import * as functions from "firebase-functions";
 
 /** Firebase admin app with full permissions */
 const app = initializeApp();
 
-const db = getFirestore(app);
+// const db = getFirestore(app);
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -26,16 +24,16 @@ const db = getFirestore(app);
 const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
   JSON.stringify(arr1) === JSON.stringify(arr2);
 
-/**
- * Add a new log item to a campaign.
- *
- * @param {string} campaignId
- * @param {LogItem} item
- * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
- */
-function logToCampaign(campaignId: string, item: LogItem) {
-  return db.collection(`campaigns/${campaignId}/log`).add(item);
-}
+// /**
+//  * Add a new log item to a campaign.
+//  *
+//  * @param {string} campaignId
+//  * @param {LogItem} item
+//  * @return {Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>}
+//  */
+// function logToCampaign(campaignId: string, item: LogItem) {
+//   return db.collection(`campaigns/${campaignId}/log`).add(item);
+// }
 
 /**
  *
@@ -85,15 +83,6 @@ export const modifyCampaign = functions.firestore
 
     if (!campaign) {
       return;
-    }
-
-    if (!change.before.exists) {
-      await logToCampaign(change.after.id, {
-        type: "campaign-created",
-        message: `Campaign ${campaign.name} was created`,
-        createdAt: new Date(),
-        sourceUserIds: campaign.dmUserIds,
-      });
     }
 
     const previousDMUserIds = change.before.exists

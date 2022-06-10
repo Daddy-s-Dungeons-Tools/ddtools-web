@@ -105,7 +105,11 @@ export abstract class CampaignAPI {
       campaignDoc.color = color;
     }
 
-    return setDoc(doc(this.campaignCollection, docId), campaignDoc);
+    await setDoc(doc(this.campaignCollection, docId), campaignDoc);
+    return LogAPI.log(docId, {
+      type: "campaign-created",
+      sourceUserIds: dmUserIds,
+    });
   }
 
   /** Updates the name, description, and/or color of a campaign. */
@@ -176,7 +180,15 @@ export abstract class LogAPI {
   private static campaignCollection = collection(firestore, "campaigns");
 
   /** Add an item to a campaign's log. */
-  public static log(campaignId: string, item: WithFieldValue<LogItem>) {
+  public static log(
+    campaignId: string,
+    item: WithFieldValue<
+      Pick<
+        LogItem,
+        "type" | "message" | "payload" | "sourceUserIds" | "targetUserIds"
+      >
+    >,
+  ) {
     const logCollection = collection(
       this.campaignCollection,
       campaignId,
