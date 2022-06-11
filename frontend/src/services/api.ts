@@ -1,4 +1,4 @@
-import { Campaign, Character, LogItem, Note, UserID } from "ddtools-types";
+import { Campaign, Character, LogItem, Map, Note, UserID } from "ddtools-types";
 import {
   addDoc,
   arrayRemove,
@@ -295,5 +295,53 @@ export abstract class NoteAPI {
       "notes",
     );
     return deleteDoc(doc(notesCollection, noteId));
+  }
+}
+
+export abstract class MapAPI {
+  private static mapConverter = converter as FirestoreDataConverter<Map>;
+  private static campaignCollection = collection(firestore, "campaigns");
+
+  /** Add a new world map for a particular campaign. */
+  public static add(
+    userId: string,
+    campaignId: string,
+    map: WithFieldValue<Map>,
+  ) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "maps",
+    ).withConverter(this.mapConverter);
+    return addDoc(mapsCollection, {
+      ...map,
+      ownerUserId: userId,
+      createdAt: serverTimestamp(),
+      sharedWith: [],
+    });
+  }
+
+  public static update(
+    campaignId: string,
+    mapId: FirestoreDoc["id"],
+    updates: PartialWithFieldValue<Map>,
+  ) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "maps",
+    ).withConverter(this.mapConverter);
+
+    return updateDoc(doc(mapsCollection, mapId), updates);
+  }
+
+  /** Deletes a map for a particular particular campaign. Can be empty. */
+  public static delete(campaignId: string, mapId: FirestoreDoc["id"]) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "maps",
+    ).withConverter(this.mapConverter);
+    return deleteDoc(doc(mapsCollection, mapId));
   }
 }

@@ -22,18 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { ErrorAlert } from "components/ErrorAlert";
 import { Map, MapPin } from "ddtools-types";
-import {
-  collection,
-  doc,
-  FirestoreDataConverter,
-  query,
-  UpdateData,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, FirestoreDataConverter, query } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaFlag } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
+import { MapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
 import { CampaignUserContext } from "../context";
@@ -43,7 +37,7 @@ type MapUpdated = Map & {
 };
 
 export function WorldMaps() {
-  const { campaign } = useContext(CampaignUserContext);
+  const { campaign, userRole } = useContext(CampaignUserContext);
 
   const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
     query(
@@ -66,6 +60,10 @@ export function WorldMaps() {
   const currentMap = mapDocs?.find((map) => map.id === currentMapID);
 
   function placePin(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (userRole !== "dm") {
+      return;
+    }
+
     if (isPinning && currentMap) {
       const map = document.getElementById("map");
       if (!map) return;
@@ -83,21 +81,9 @@ export function WorldMaps() {
       };
 
       const newPins = [...(currentMap.pins ?? []), newPin];
-      updateMap(currentMap.id, { pins: newPins });
+      MapAPI.update(campaign.id, currentMap.id, { pins: newPins });
       setIsPinning(false);
     }
-  }
-
-  function updateMap(mapID: string, mapUpdates: UpdateData<Map>) {
-    return updateDoc(
-      doc(
-        collection(firestore, "campaigns", campaign.id, "maps").withConverter(
-          converter as FirestoreDataConverter<Map>,
-        ),
-        mapID,
-      ),
-      mapUpdates,
-    );
   }
 
   function PinPopover(props: { pin: MapPin; pinKey: number }) {
@@ -119,13 +105,21 @@ export function WorldMaps() {
           <PopoverArrow />
           <PopoverCloseButton />
           <PopoverHeader>
-            <Editable defaultValue={props.pin.name ?? "Pin Name"}>
+            <Editable
+              defaultValue={props.pin.name || "Unnamed Pin"}
+              placeholder={props.pin.name || "Unnamed Pin"}
+              isDisabled={userRole !== "dm"}
+            >
               <EditablePreview />
               <EditableInput />
             </Editable>
           </PopoverHeader>
           <PopoverBody>
-            <Editable defaultValue={props.pin.description ?? "Pin Description"}>
+            <Editable
+              defaultValue={props.pin.description || "No description given..."}
+              placeholder={props.pin.description || "No description given..."}
+              isDisabled={userRole !== "dm"}
+            >
               <EditablePreview />
               <EditableTextarea />
             </Editable>
