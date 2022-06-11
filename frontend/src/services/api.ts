@@ -318,7 +318,7 @@ export abstract class WorldMapAPI {
     const mapsCollection = collection(
       this.campaignCollection,
       campaignId,
-      "maps",
+      "worldmaps",
     ).withConverter(this.mapConverter);
     return addDoc(mapsCollection, {
       ...map,
@@ -336,7 +336,7 @@ export abstract class WorldMapAPI {
     const mapsCollection = collection(
       this.campaignCollection,
       campaignId,
-      "maps",
+      "worldmaps",
     ).withConverter(this.mapConverter);
 
     return updateDoc(doc(mapsCollection, mapId), updates);
@@ -347,7 +347,7 @@ export abstract class WorldMapAPI {
     const mapsCollection = collection(
       this.campaignCollection,
       campaignId,
-      "maps",
+      "worldmaps",
     ).withConverter(this.mapConverter);
     return deleteDoc(doc(mapsCollection, mapId));
   }

@@ -41,7 +41,12 @@ export function WorldMaps() {
 
   const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
     query(
-      collection(firestore, "campaigns", campaign.id, "maps").withConverter(
+      collection(
+        firestore,
+        "campaigns",
+        campaign.id,
+        "worldmaps",
+      ).withConverter(
         converter as FirestoreDataConverter<WorldMapWithUrl & FirestoreDoc>,
       ),
     ),
@@ -76,7 +81,7 @@ export function WorldMaps() {
         1 -
         (rect.height - (e.clientY - rect.top - 30)) / rect.height
       ).toFixed(3);
-      const newPin: MapPin = {
+      const newPin: WorldMapPin = {
         location: { xPercentage: +x, yPercentage: +y },
       };
 
@@ -134,15 +139,17 @@ export function WorldMaps() {
       <VStack zIndex={5} position={"absolute"} spacing={"0"}>
         {currentMap && (
           <>
-            <IconButton
-              aria-label="Add Landmark"
-              onClick={() => setIsPinning(!isPinning)}
-              icon={<GiPin color={isPinning ? "red" : "#63b3ed"} size={30} />}
-              backgroundColor="#1a202c"
-              padding="2"
-              size="lg"
-              margin="2"
-            />
+            {userRole === "dm" && (
+              <IconButton
+                aria-label="Add Landmark"
+                onClick={() => setIsPinning(!isPinning)}
+                icon={<GiPin color={isPinning ? "red" : "#63b3ed"} size={30} />}
+                backgroundColor="#1a202c"
+                padding="2"
+                size="lg"
+                margin="2"
+              />
+            )}
 
             <IconButton
               aria-label="Maps Menu"
@@ -241,8 +248,6 @@ export function WorldMaps() {
             zIndex={2}
             alt="Your image could not be displayed."
           />
-          {/* <Heading marginTop={2} >Poop</Heading>
-            <Text marginTop={2} marginBottom={2}>smells bad.</Text> */}
         </Box>
       )}
     </Box>
