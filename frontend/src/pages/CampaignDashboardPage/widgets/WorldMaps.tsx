@@ -21,18 +21,18 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { ErrorAlert } from "components/ErrorAlert";
-import { Map, MapPin } from "ddtools-types";
+import { WorldMap, WorldMapPin } from "ddtools-types";
 import { collection, FirestoreDataConverter, query } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaFlag } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
-import { MapAPI } from "services/api";
+import { WorldMapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
 import { CampaignUserContext } from "../context";
 
-type MapUpdated = Map & {
+type WorldMapWithUrl = WorldMap & {
   imageURL?: string;
 };
 
@@ -42,7 +42,7 @@ export function WorldMaps() {
   const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
     query(
       collection(firestore, "campaigns", campaign.id, "maps").withConverter(
-        converter as FirestoreDataConverter<Map & FirestoreDoc>,
+        converter as FirestoreDataConverter<WorldMapWithUrl & FirestoreDoc>,
       ),
     ),
   );
@@ -81,12 +81,12 @@ export function WorldMaps() {
       };
 
       const newPins = [...(currentMap.pins ?? []), newPin];
-      MapAPI.update(campaign.id, currentMap.id, { pins: newPins });
+      WorldMapAPI.update(campaign.id, currentMap.id, { pins: newPins });
       setIsPinning(false);
     }
   }
 
-  function PinPopover(props: { pin: MapPin; pinKey: number }) {
+  function PinPopover(props: { pin: WorldMapPin; pinKey: number }) {
     const xPercentage = 100 * props.pin.location.xPercentage;
     const yPercentage = 100 * props.pin.location.yPercentage;
 
@@ -212,7 +212,7 @@ export function WorldMaps() {
                     <Image
                       height={200}
                       src={
-                        (curMap as MapUpdated).imageURL ||
+                        curMap.imageURL ||
                         "https://csp-clients.s3.amazonaws.com/easttexasspa/wp-content/uploads/2021/06/no-image-icon-23485.png"
                       }
                       // width={"100%"}
@@ -235,7 +235,7 @@ export function WorldMaps() {
             onClick={placePin}
             // src="https://preview.redd.it/6qoafiw0nnvz.png?width=640&crop=smart&auto=webp&s=923f5f6d1ee646f7c5f7f20e7f61cfcf51973bf2"   // Horizontal Map
             // src="https://usercontent.one/wp/www.wistedt.net/wp-content/uploads/2019/12/underdark_concept_web-812x1024.png"             // Vertical Map
-            src={(currentMap as MapUpdated).imageURL}
+            src={currentMap.imageURL}
             width={"100%"}
             objectFit="contain"
             zIndex={2}

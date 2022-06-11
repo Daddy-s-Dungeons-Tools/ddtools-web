@@ -1,4 +1,11 @@
-import { Campaign, Character, LogItem, Map, Note, UserID } from "ddtools-types";
+import {
+  Campaign,
+  Character,
+  LogItem,
+  Note,
+  UserID,
+  WorldMap,
+} from "ddtools-types";
 import {
   addDoc,
   arrayRemove,
@@ -107,7 +114,7 @@ export abstract class CampaignAPI {
 
     await setDoc(doc(this.campaignCollection, docId), campaignDoc);
     return LogAPI.log(docId, {
-      type: "campaign-created",
+      type: "campaign created",
       sourceUserIds: dmUserIds,
     });
   }
@@ -126,7 +133,7 @@ export abstract class CampaignAPI {
       .join(", ");
 
     return LogAPI.log(campaignId, {
-      type: "campaign-updated",
+      type: "campaign updated",
       payload: updates,
       message: logMessage,
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
@@ -169,7 +176,7 @@ export abstract class CampaignAPI {
     );
 
     return LogAPI.log(campaignId, {
-      type: "player-invited",
+      type: "player invited",
       message: `Invites for ${as} sent to \`${userEmails.join(", ")}\``,
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
     });
@@ -191,11 +198,11 @@ export abstract class CampaignAPI {
       },
     );
 
-    // return LogAPI.log(campaignId, {
-    //   type: "player-uninvited",
-    //   message: `Invites for ${as} removed for \`${userEmails.join(", ")}\``,
-    //   sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
-    // });
+    return LogAPI.log(campaignId, {
+      type: "player uninvited",
+      message: `Invites for ${as} removed for \`${userEmails.join(", ")}\``,
+      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    });
   }
 }
 export abstract class LogAPI {
@@ -298,15 +305,15 @@ export abstract class NoteAPI {
   }
 }
 
-export abstract class MapAPI {
-  private static mapConverter = converter as FirestoreDataConverter<Map>;
+export abstract class WorldMapAPI {
+  private static mapConverter = converter as FirestoreDataConverter<WorldMap>;
   private static campaignCollection = collection(firestore, "campaigns");
 
   /** Add a new world map for a particular campaign. */
   public static add(
     userId: string,
     campaignId: string,
-    map: WithFieldValue<Map>,
+    map: WithFieldValue<WorldMap>,
   ) {
     const mapsCollection = collection(
       this.campaignCollection,
@@ -324,7 +331,7 @@ export abstract class MapAPI {
   public static update(
     campaignId: string,
     mapId: FirestoreDoc["id"],
-    updates: PartialWithFieldValue<Map>,
+    updates: PartialWithFieldValue<WorldMap>,
   ) {
     const mapsCollection = collection(
       this.campaignCollection,
