@@ -59,7 +59,7 @@ export function WidgetContainer({
       </TabList>
       <TabPanels h="93%" overflow="auto">
         {userWidgets.map((widget) => (
-          <TabPanel key={widget.label}>
+          <TabPanel key={widget.label} h="100%" minW="100%">
             <ErrorBoundary
               FallbackComponent={() => (
                 <ErrorAlert description="A fatal error occured... Please try again later." />
