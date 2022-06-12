@@ -8,7 +8,7 @@ import { debounce } from "utils/debounce";
 
 /** Size of grid cell in pixels */
 const GRID_CELL_SIZE = 50;
-const GRID_WIDTH = 1000;
+const GRID_WIDTH = 1500;
 const GRID_HEIGHT = 1000;
 const SCALE_BY = 1.2;
 const SCALE_MAX = 3;
