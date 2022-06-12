@@ -54,7 +54,7 @@ export function DMDashboard() {
           </GridItem>
 
           <GridItem rowSpan={3} colSpan={{ base: 6, lg: 4 }}>
-            <WidgetContainer widgets={[mapWidget, battleMapsWidget]} />
+            <WidgetContainer widgets={[mapWidget, battleMapsWidget]} isLazy />
           </GridItem>
 
           <GridItem rowSpan={1} colSpan={{ base: 6, lg: 2 }}>
