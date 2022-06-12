@@ -11,6 +11,8 @@ const GRID_CELL_SIZE = 50;
 const GRID_WIDTH = 1000;
 const GRID_HEIGHT = 1000;
 const SCALE_BY = 1.2;
+const SCALE_MAX = 3;
+const SCALE_MIN = 0.5;
 
 export function BattleMaps() {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -96,19 +98,23 @@ export function BattleMaps() {
       y: curStage.getPointerPosition()!.y / oldScale - curStage.y() / oldScale,
     };
 
-    const newScale =
+    let newScale =
       konvaEvent.evt.deltaY < 0 ? oldScale * SCALE_BY : oldScale / SCALE_BY;
 
-    setStage({
-      ...stage,
-      scale: newScale,
-      x:
-        (curStage.getPointerPosition()!.x / newScale - mousePointTo.x) *
-        newScale,
-      y:
-        (curStage.getPointerPosition()!.y / newScale - mousePointTo.y) *
-        newScale,
-    });
+    newScale = Math.min(Math.max(newScale, SCALE_MIN), SCALE_MAX);
+
+    if (newScale !== oldScale) {
+      setStage({
+        ...stage,
+        scale: Math.min(Math.max(newScale, SCALE_MIN), SCALE_MAX),
+        x:
+          (curStage.getPointerPosition()!.x / newScale - mousePointTo.x) *
+          newScale,
+        y:
+          (curStage.getPointerPosition()!.y / newScale - mousePointTo.y) *
+          newScale,
+      });
+    }
   }
 
   function handleStageDragEnd(konvaEvent: KonvaEventObject<DragEvent>) {
