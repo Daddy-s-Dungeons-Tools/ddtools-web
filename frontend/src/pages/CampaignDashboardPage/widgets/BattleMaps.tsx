@@ -1,5 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
+import { Stage as KonvaStage } from "konva/lib/Stage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { debounce } from "utils/debounce";
@@ -117,6 +119,15 @@ export function BattleMaps() {
     });
   }
 
+  /** Snape the target shape to the nearest grid cell. */
+  function snapToGrid(target: Shape<ShapeConfig> | KonvaStage) {
+    target.to({
+      x: Math.round(target.x() / GRID_CELL_SIZE) * GRID_CELL_SIZE,
+      y: Math.round(target.y() / GRID_CELL_SIZE) * GRID_CELL_SIZE,
+      duration: 0.1,
+    });
+  }
+
   return (
     <Box ref={boxRef} minW="100%" minH="100%">
       <Stage
@@ -140,6 +151,11 @@ export function BattleMaps() {
             width={GRID_CELL_SIZE}
             height={GRID_CELL_SIZE}
             fill="red"
+            onDragEnd={(e) => {
+              e.cancelBubble = true;
+              snapToGrid(e.target);
+            }}
+            draggable
           />
         </Layer>
       </Stage>
