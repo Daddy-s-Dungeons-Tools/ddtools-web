@@ -320,10 +320,11 @@ export function BattleMapCanvas({
       return;
     }
     backgroundLayerRef.current.toDataURL({
-      x: 0,
-      y: 0,
-      height: GRID_HEIGHT,
-      width: GRID_WIDTH,
+      x: stage.x,
+      y: stage.y,
+      height: GRID_HEIGHT * stage.scale,
+      width: GRID_WIDTH * stage.scale,
+      pixelRatio: 1 / stage.scale / 5,
       async callback(dataUrl) {
         const blob = await (await fetch(dataUrl)).blob();
         const path =
