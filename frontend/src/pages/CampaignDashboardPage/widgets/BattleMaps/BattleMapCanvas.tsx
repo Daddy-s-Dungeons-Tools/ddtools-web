@@ -10,7 +10,8 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { BattleMap, BattleMapBGImage } from "ddtools-types";
+import { BattleMap, BattleMapBGImage, BattleMapToken } from "ddtools-types";
+import { collection, FirestoreDataConverter, query } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -25,14 +26,16 @@ import {
   useRef,
   useState,
 } from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaEdit, FaFileUpload, FaImage, FaTrashAlt } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { BattleMapAPI } from "services/api";
-import { FirestoreDoc } from "services/converter";
-import { storage } from "services/firebase";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore, storage } from "services/firebase";
 import { debounce } from "utils/debounce";
 import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
+import { BattleMapTokenNode } from "./BattleMapToken";
 
 const GRID_WIDTH = 1500;
 const GRID_HEIGHT = 1000;
@@ -73,6 +76,27 @@ export function BattleMapCanvas({
     height: 500,
     scale: 1,
   });
+
+  // Fetch tokens
+  const [tokens, isTokensLoading, tokensError] = useCollectionData(
+    query(
+      collection(
+        firestore,
+        "campaigns",
+        campaign.id,
+        "battlemaps",
+        battleMap.id,
+        "tokens",
+      ),
+    ).withConverter(
+      converter as FirestoreDataConverter<BattleMapToken & FirestoreDoc>,
+    ),
+  );
+
+  /** The tokens that the user is allowed to see, based on their role and permissions. */
+  const userVisibleTokens = tokens?.filter(
+    (token) => userRole === "dm" || token.isVisible,
+  );
 
   const uploadBGImageInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingBGImage, setIsUploadingBGImage] = useState<boolean>(false);
@@ -229,14 +253,9 @@ export function BattleMapCanvas({
 
   /** Adds a new background image for the battle map. */
   async function addBackgroundImage(bgImage: BattleMapBGImage) {
-    if (!battleMap.backgroundImages) {
-      battleMap.backgroundImages = [];
-    }
-
-    battleMap.backgroundImages.push(bgImage);
     try {
       await BattleMapAPI.update(campaign.id, battleMap.id, {
-        backgroundImages: battleMap.backgroundImages,
+        backgroundImages: [...(battleMap.backgroundImages ?? []), bgImage],
       });
     } catch (error) {
       console.error(error);
@@ -252,10 +271,11 @@ export function BattleMapCanvas({
 
   async function deleteBackgroundImage(bgImageIndex: number) {
     if (!battleMap.backgroundImages) return;
-    battleMap.backgroundImages.splice(bgImageIndex, 1);
     try {
       await BattleMapAPI.update(campaign.id, battleMap.id, {
-        backgroundImages: battleMap.backgroundImages,
+        backgroundImages: battleMap.backgroundImages.filter(
+          (img, imgIndex) => imgIndex !== bgImageIndex,
+        ),
       });
     } catch (error) {
       console.error(error);
@@ -407,7 +427,7 @@ export function BattleMapCanvas({
         <Layer id="grid" draggable={false} x={0} y={0}>
           {gridLines}
         </Layer>
-        <Layer>
+        <Layer id="tokens">
           <Rect
             x={gridCellSize}
             y={gridCellSize}
@@ -423,7 +443,16 @@ export function BattleMapCanvas({
             }}
             draggable
           />
+
+          {userVisibleTokens?.map((token) => (
+            <BattleMapTokenNode
+              key={token.id}
+              token={token}
+              gridCellSize={gridCellSize}
+            />
+          ))}
         </Layer>
+        <Layer id="drawings"></Layer>
       </Stage>
 
       <ButtonGroup size="sm" position="absolute" top={1} left={3}>
@@ -478,6 +507,18 @@ export function BattleMapCanvas({
               >
                 Delete
               </MenuItem>
+            </MenuList>
+          </Menu>
+        )}
+        {userRole === "dm" && !isEditingBG && (
+          <Menu>
+            <MenuButton as={Button} rightIcon={<FaImage />}>
+              Add token
+            </MenuButton>
+            <MenuList>
+              <MenuItem disabled>Add Character</MenuItem>
+              <MenuItem disabled>Add NPC</MenuItem>
+              <MenuItem disabled>Add Creature</MenuItem>
             </MenuList>
           </Menu>
         )}
