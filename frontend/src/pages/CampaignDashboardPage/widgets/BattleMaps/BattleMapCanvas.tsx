@@ -1,7 +1,10 @@
 import {
   Button,
   ButtonGroup,
-  Icon,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  HStack,
   IconButton,
   Menu,
   MenuButton,
@@ -27,7 +30,13 @@ import {
   useState,
 } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { FaEdit, FaFileUpload, FaImage, FaTrashAlt } from "react-icons/fa";
+import {
+  FaChessBoard,
+  FaEdit,
+  FaFileUpload,
+  FaImage,
+  FaTrashAlt,
+} from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { BattleMapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
@@ -221,6 +230,23 @@ export function BattleMapCanvas({
       -(battleMap.gridTotalWidth * 0.8) * stage.scale,
       -(battleMap.gridTotalHeight * 0.8) * stage.scale,
     ];
+  }
+
+  async function updateMapName(newName: string) {
+    try {
+      await BattleMapAPI.update(campaign.id, battleMap.id, {
+        name: newName,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: `An Error Occurred`,
+        description: "Failed to save your changes. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   }
 
   /** Updates a single background image for the battle map. */
@@ -464,75 +490,93 @@ export function BattleMapCanvas({
         </Layer>
         <Layer id="drawings"></Layer>
       </Stage>
-
-      <ButtonGroup size="sm" position="absolute" top={1} left={3}>
-        <Button onClick={onExit}>Back</Button>
-        {userRole === "dm" && (
-          <Button
-            leftIcon={<FaEdit />}
-            colorScheme="pink"
-            onClick={() => {
-              if (isEditingBG) {
-                setIsEditingBG(false);
-                setSelectedBGImageIndex(null);
-              } else {
-                setIsEditingBG(true);
-              }
-            }}
-          >
-            {isEditingBG ? "Save" : "Edit"} map
-          </Button>
-        )}
-        {userRole === "dm" && isEditingBG && (
-          <>
-            <Tooltip label="Add background image">
-              <IconButton
-                icon={<Icon as={FaFileUpload} />}
-                aria-label={"add background image"}
-                colorScheme="green"
-                isLoading={isUploadingBGImage}
-                onClick={() => uploadBGImageInputRef.current?.click()}
-              />
-            </Tooltip>
+      <HStack position="absolute" top={1} left={3}>
+        <Button onClick={onExit} size="sm">
+          Back
+        </Button>
+        <Editable
+          defaultValue={battleMap.name}
+          placeholder={battleMap.name}
+          isDisabled={userRole !== "dm"}
+          fontSize={"2xl"}
+          fontWeight="semibold"
+          onSubmit={updateMapName}
+        >
+          <EditablePreview />
+          <EditableInput />
+        </Editable>
+        <ButtonGroup size="sm">
+          {userRole === "dm" && [
+            <Button
+              leftIcon={<FaEdit />}
+              onClick={() => {
+                if (isEditingBG) {
+                  setIsEditingBG(false);
+                  setSelectedBGImageIndex(null);
+                } else {
+                  setIsEditingBG(true);
+                }
+              }}
+              colorScheme={isEditingBG ? "pink" : undefined}
+              variant={isEditingBG ? "outline" : undefined}
+            >
+              {isEditingBG ? "Done editing" : "Edit"} background
+            </Button>,
+            isEditingBG && (
+              <Tooltip label="Add background image">
+                <IconButton
+                  icon={<FaFileUpload />}
+                  aria-label={"add background image"}
+                  colorScheme="green"
+                  isLoading={isUploadingBGImage}
+                  onClick={() => uploadBGImageInputRef.current?.click()}
+                />
+              </Tooltip>
+            ),
+            isEditingBG && (
+              <Button leftIcon={<FaChessBoard />} colorScheme="teal">
+                Edit grid
+              </Button>
+            ),
             <input
               type="file"
               style={{ display: "none" }}
               accept=".png,.jpg"
               ref={uploadBGImageInputRef}
               onChange={handleBGImageUpload}
-            />
-          </>
-        )}
-        {userRole === "dm" && isEditingBG && selectedBGImageIndex !== null && (
-          <Menu>
-            <MenuButton as={Button} rightIcon={<FaImage />}>
-              Edit image
-            </MenuButton>
-            <MenuList>
-              <MenuItem disabled>Reset size</MenuItem>
-              <MenuItem disabled>Reset rotation</MenuItem>
-              <MenuItem
-                icon={<FaTrashAlt />}
-                onClick={() => deleteBackgroundImage(selectedBGImageIndex)}
-              >
-                Delete
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        )}
-        {userRole === "dm" && !isEditingBG && (
-          <Menu>
-            <MenuButton as={Button} rightIcon={<FaImage />}>
-              Add token
-            </MenuButton>
-            <MenuList>
-              <MenuItem disabled>Add Character</MenuItem>
-              <MenuItem disabled>Add NPC</MenuItem>
-              <MenuItem disabled>Add Creature</MenuItem>
-            </MenuList>
-          </Menu>
-        )}
-      </ButtonGroup>
+            />,
+            isEditingBG && selectedBGImageIndex !== null && (
+              <Menu>
+                <MenuButton as={Button} rightIcon={<FaImage />}>
+                  Edit image
+                </MenuButton>
+                <MenuList>
+                  <MenuItem disabled>Reset size</MenuItem>
+                  <MenuItem disabled>Reset rotation</MenuItem>
+                  <MenuItem
+                    icon={<FaTrashAlt />}
+                    onClick={() => deleteBackgroundImage(selectedBGImageIndex)}
+                  >
+                    Delete
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            ),
+            !isEditingBG && (
+              <Menu>
+                <MenuButton as={Button} rightIcon={<FaImage />}>
+                  Add token
+                </MenuButton>
+                <MenuList>
+                  <MenuItem disabled>Add Character</MenuItem>
+                  <MenuItem disabled>Add NPC</MenuItem>
+                  <MenuItem disabled>Add Creature</MenuItem>
+                </MenuList>
+              </Menu>
+            ),
+          ]}
+        </ButtonGroup>
+      </HStack>
     </>
   );
 }
