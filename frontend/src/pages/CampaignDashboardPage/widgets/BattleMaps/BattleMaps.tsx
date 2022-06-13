@@ -90,6 +90,7 @@ export function BattleMaps() {
           scaleMax={4}
           gridCellSize={50}
           stagePadding={500}
+          onExit={() => setSelectedBattleMapId(null)}
         />
       ) : (
         <SimpleGrid columns={2} spacing={3}>

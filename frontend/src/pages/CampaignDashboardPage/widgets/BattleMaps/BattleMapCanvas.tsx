@@ -45,6 +45,7 @@ type BattleMapCanvasPropTypes = {
   scaleMax: number;
   gridCellSize: number;
   stagePadding: number;
+  onExit: () => void;
 };
 export function BattleMapCanvas({
   battleMap,
@@ -54,6 +55,7 @@ export function BattleMapCanvas({
   scaleMax,
   gridCellSize,
   stagePadding,
+  onExit,
 }: BattleMapCanvasPropTypes) {
   const toast = useToast();
   const { campaign, userRole } = useContext(CampaignUserContext);
@@ -191,10 +193,10 @@ export function BattleMapCanvas({
   /** x1,y1, x2,y2 */
   function getStageBoundingBox(): [number, number, number, number] {
     return [
-      stagePadding * stage.scale,
-      stagePadding * stage.scale,
-      -2000 * stage.scale,
-      -1000 * stage.scale,
+      GRID_WIDTH * 0.8 * stage.scale,
+      GRID_HEIGHT * 0.8 * stage.scale,
+      -(GRID_WIDTH * 0.8) * stage.scale,
+      -(GRID_HEIGHT * 0.8) * stage.scale,
     ];
   }
 
@@ -425,22 +427,22 @@ export function BattleMapCanvas({
       </Stage>
 
       <ButtonGroup size="sm" position="absolute" top={1} left={3}>
+        <Button onClick={onExit}>Back</Button>
         {userRole === "dm" && (
-          <Tooltip label="Edit battle map">
-            <IconButton
-              icon={<Icon as={FaEdit} />}
-              aria-label={"edit battle map"}
-              colorScheme="pink"
-              onClick={() => {
-                if (isEditingBG) {
-                  setIsEditingBG(false);
-                  setSelectedBGImageIndex(null);
-                } else {
-                  setIsEditingBG(true);
-                }
-              }}
-            />
-          </Tooltip>
+          <Button
+            leftIcon={<FaEdit />}
+            colorScheme="pink"
+            onClick={() => {
+              if (isEditingBG) {
+                setIsEditingBG(false);
+                setSelectedBGImageIndex(null);
+              } else {
+                setIsEditingBG(true);
+              }
+            }}
+          >
+            {isEditingBG ? "Save" : "Edit"} map
+          </Button>
         )}
         {userRole === "dm" && isEditingBG && (
           <>
