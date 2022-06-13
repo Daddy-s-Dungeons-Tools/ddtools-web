@@ -387,7 +387,7 @@ export abstract class BattleMapAPI {
     });
   }
 
-  public static async update(
+  public static update(
     campaignId: string,
     mapId: FirestoreDoc["id"],
     updates: PartialWithFieldValue<BattleMap>,
@@ -398,20 +398,9 @@ export abstract class BattleMapAPI {
       "battlemaps",
     ).withConverter(this.mapConverter);
 
-    await updateDoc(doc(mapsCollection, mapId), {
+    return updateDoc(doc(mapsCollection, mapId), {
       ...updates,
       updatedAt: new Date(),
-    });
-
-    return LogAPI.log(campaignId, {
-      message: updateMessage(updates) + " on battlemap " + mapId,
-      payload: {
-        campaignId,
-        mapId,
-        updates,
-      },
-      type: "battle map updated",
-      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
     });
   }
 
