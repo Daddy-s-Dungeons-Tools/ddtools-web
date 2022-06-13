@@ -1,4 +1,5 @@
 import {
+  BattleMap,
   Campaign,
   Character,
   LogItem,
@@ -21,6 +22,7 @@ import {
   updateDoc,
   WithFieldValue,
 } from "firebase/firestore";
+import { updateMessage } from "utils";
 import { converter, FirestoreDoc } from "./converter";
 import { auth, firestore } from "./firebase";
 
@@ -128,14 +130,10 @@ export abstract class CampaignAPI {
   ) {
     await updateDoc(doc(this.campaignCollection, campaignId), updates);
 
-    const logMessage = Object.entries(updates)
-      .map(([field, newValue]) => `Field \`${field}\` set to \`'${newValue}'\``)
-      .join(", ");
-
     return LogAPI.log(campaignId, {
       type: "campaign updated",
       payload: updates,
-      message: logMessage,
+      message: updateMessage(updates),
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
     });
   }
@@ -350,5 +348,72 @@ export abstract class WorldMapAPI {
       "worldmaps",
     ).withConverter(this.mapConverter);
     return deleteDoc(doc(mapsCollection, mapId));
+  }
+}
+
+export abstract class BattleMapAPI {
+  private static mapConverter = converter as FirestoreDataConverter<BattleMap>;
+  private static campaignCollection = collection(firestore, "campaigns");
+
+  /** Add a new world map for a particular campaign. */
+  public static async add(
+    userId: string,
+    campaignId: string,
+    map: WithFieldValue<Pick<BattleMap, "name">>,
+  ) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "battlemaps",
+    ).withConverter(this.mapConverter);
+    await addDoc(mapsCollection, {
+      ...map,
+      ownerUserId: userId,
+      createdAt: serverTimestamp(),
+      sharedWith: [],
+    });
+
+    return LogAPI.log(campaignId, {
+      message: `Battle map \`${map.name}\` created`,
+      type: "battle map created",
+      sourceUserIds: [userId],
+    });
+  }
+
+  public static async update(
+    campaignId: string,
+    mapId: FirestoreDoc["id"],
+    updates: PartialWithFieldValue<BattleMap>,
+  ) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "battlemaps",
+    ).withConverter(this.mapConverter);
+
+    await updateDoc(doc(mapsCollection, mapId), updates);
+
+    return LogAPI.log(campaignId, {
+      message: updateMessage(updates),
+      type: "battle map created",
+      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    });
+  }
+
+  /** Deletes a battle map for a particular campaign. Can be empty. */
+  public static async delete(campaignId: string, mapId: FirestoreDoc["id"]) {
+    const mapsCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "worldmaps",
+    ).withConverter(this.mapConverter);
+    await deleteDoc(doc(mapsCollection, mapId));
+    LogAPI.log(campaignId, {
+      type: "battle map deleted",
+      payload: {
+        mapId,
+      },
+      sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
+    });
   }
 }
