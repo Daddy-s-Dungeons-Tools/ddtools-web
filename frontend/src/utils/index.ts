@@ -8,6 +8,8 @@ export const updateMessage = (updates: Record<string, any>) =>
   Object.entries(updates)
     .map(
       ([field, newValue]) =>
-        `Field \`${field}\` set to \`'${JSON.stringify(newValue)}'\``,
+        `Field \`${field}\` set to \`'${
+          typeof newValue === "object" ? "object" : newValue
+        }'\``,
     )
     .join(", ");

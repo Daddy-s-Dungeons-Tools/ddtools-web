@@ -384,7 +384,6 @@ export abstract class BattleMapAPI {
     campaignId: string,
     mapId: FirestoreDoc["id"],
     updates: PartialWithFieldValue<BattleMap>,
-    logMessage?: string,
   ) {
     const mapsCollection = collection(
       this.campaignCollection,
@@ -395,8 +394,13 @@ export abstract class BattleMapAPI {
     await updateDoc(doc(mapsCollection, mapId), updates);
 
     return LogAPI.log(campaignId, {
-      message: logMessage ?? updateMessage(updates),
-      type: "battle map created",
+      message: updateMessage(updates) + " on battlemap " + mapId,
+      payload: {
+        campaignId,
+        mapId,
+        updates,
+      },
+      type: "battle map updated",
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
     });
   }

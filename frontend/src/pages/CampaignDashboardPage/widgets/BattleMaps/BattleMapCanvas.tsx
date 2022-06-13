@@ -197,14 +197,9 @@ export function BattleMapCanvas({
       ...updates,
     };
     try {
-      await BattleMapAPI.update(
-        campaign.id,
-        battleMap.id,
-        {
-          backgroundImages: battleMap.backgroundImages,
-        },
-        "Updated background image",
-      );
+      await BattleMapAPI.update(campaign.id, battleMap.id, {
+        backgroundImages: battleMap.backgroundImages,
+      });
     } catch (error) {
       console.error(error);
       toast({
@@ -225,14 +220,9 @@ export function BattleMapCanvas({
 
     battleMap.backgroundImages.push(bgImage);
     try {
-      await BattleMapAPI.update(
-        campaign.id,
-        battleMap.id,
-        {
-          backgroundImages: battleMap.backgroundImages,
-        },
-        "Added new BG image",
-      );
+      await BattleMapAPI.update(campaign.id, battleMap.id, {
+        backgroundImages: battleMap.backgroundImages,
+      });
     } catch (error) {
       console.error(error);
       toast({
