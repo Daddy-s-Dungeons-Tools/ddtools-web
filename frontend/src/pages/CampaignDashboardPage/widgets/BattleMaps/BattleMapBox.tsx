@@ -29,7 +29,7 @@ export function BattleMapBox({ map, onSelect }: BattleMapBoxPropTypes) {
       onClick={onSelect}
     >
       {map.name}
-      <Image src="" alt="Map preview" />
+      <Image src={downloadURL} alt="Map preview" />
     </Box>
   );
 }

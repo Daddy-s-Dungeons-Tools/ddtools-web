@@ -24,7 +24,7 @@ export function BackgroundImage({
   const shapeRef = useRef<ImageType>(null);
   const transformerRef = useRef<Transformer>(null);
   const [downloadURL] = useDownloadURL(ref(storage, bgImage.filePath));
-  const [image, imageStatus] = useImage(downloadURL!);
+  const [image, imageStatus] = useImage(downloadURL!, "anonymous");
 
   useEffect(() => {
     if (isSelected && transformerRef.current) {

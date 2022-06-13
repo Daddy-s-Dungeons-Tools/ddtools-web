@@ -374,6 +374,7 @@ export abstract class BattleMapAPI {
     ).withConverter(this.mapConverter);
     await addDoc(mapsCollection, {
       ...map,
+      isActive: false,
       ownerUserId: userId,
       createdAt: serverTimestamp(),
       sharedWith: [],

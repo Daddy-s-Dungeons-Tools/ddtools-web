@@ -51,6 +51,7 @@ export function BattleMapCanvas({
 }: BattleMapCanvasPropTypes) {
   const toast = useToast();
   const { campaign, userRole } = useContext(CampaignUserContext);
+  const stageRef = useRef<KonvaStage>(null);
   const [stage, setStage] = useState<{
     x: number;
     y: number;
@@ -95,6 +96,12 @@ export function BattleMapCanvas({
     window.addEventListener("resize", debouncedResizer);
     return () => window.removeEventListener("resize", debouncedResizer);
   }, []);
+
+  useEffect(() => {
+    if (!isEditingBG) {
+      saveMapThumbail();
+    }
+  }, [isEditingBG]);
 
   /** Given a scroll event, apply scaling to the stage. */
   function handleScrollWheel(konvaEvent: KonvaEventObject<WheelEvent>) {
@@ -283,6 +290,28 @@ export function BattleMapCanvas({
     setIsUploadingBGImage(false);
   }
 
+  async function saveMapThumbail() {
+    if (!stageRef.current) {
+      return;
+    }
+    stageRef.current.toDataURL({
+      x: 0,
+      y: 0,
+      height: GRID_HEIGHT,
+      width: GRID_WIDTH,
+      async callback(dataUrl) {
+        const blob = await (await fetch(dataUrl)).blob();
+        const path =
+          battleMap.thumbnailFilePath ??
+          "/battlemapthumbnails/" + battleMap.id + ".png";
+        const result = await uploadBytes(ref(storage, path), blob);
+        await BattleMapAPI.update(campaign.id, battleMap.id, {
+          thumbnailFilePath: result.ref.fullPath,
+        });
+      },
+    });
+  }
+
   const gridLines = useMemo(() => {
     return [...Array(GRID_HEIGHT / gridCellSize + 1)]
       .map((_, index) => (
@@ -330,6 +359,7 @@ export function BattleMapCanvas({
   return (
     <>
       <Stage
+        ref={stageRef}
         x={stage.x}
         y={stage.y}
         width={stage.width}
