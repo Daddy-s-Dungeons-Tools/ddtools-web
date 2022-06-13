@@ -289,7 +289,10 @@ export abstract class NoteAPI {
       "notes",
     ).withConverter(this.noteConverter);
 
-    return updateDoc(doc(notesCollection, noteId), updates);
+    return updateDoc(doc(notesCollection, noteId), {
+      ...updates,
+      updatedAt: new Date(),
+    });
   }
 
   /** Add a new note for a particular user in a particular campaign. Can be empty. */
@@ -337,7 +340,10 @@ export abstract class WorldMapAPI {
       "worldmaps",
     ).withConverter(this.mapConverter);
 
-    return updateDoc(doc(mapsCollection, mapId), updates);
+    return updateDoc(doc(mapsCollection, mapId), {
+      ...updates,
+      updatedAt: new Date(),
+    });
   }
 
   /** Deletes a map for a particular particular campaign. Can be empty. */
@@ -391,7 +397,10 @@ export abstract class BattleMapAPI {
       "battlemaps",
     ).withConverter(this.mapConverter);
 
-    await updateDoc(doc(mapsCollection, mapId), updates);
+    await updateDoc(doc(mapsCollection, mapId), {
+      ...updates,
+      updatedAt: new Date(),
+    });
 
     return LogAPI.log(campaignId, {
       message: updateMessage(updates) + " on battlemap " + mapId,
