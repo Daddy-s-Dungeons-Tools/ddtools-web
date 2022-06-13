@@ -87,8 +87,7 @@ export function BattleMaps() {
           parentDiv={boxRef.current!}
           scaleBy={1.2}
           scaleMin={0.5}
-          scaleMax={4}
-          stagePadding={500}
+          scaleMax={5}
           onExit={() => setSelectedBattleMapId(null)}
         />
       ) : (

@@ -11,7 +11,6 @@ import {
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
   PopoverTrigger,
   VStack,
@@ -43,7 +42,6 @@ export function EditGridPopover({
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
-        <PopoverCloseButton />
         <PopoverBody>
           <Formik
             initialValues={{
@@ -92,7 +90,7 @@ export function EditGridPopover({
                       <FormLabel htmlFor="gridTotalWidth">Grid Width</FormLabel>
                       <NumberInput
                         id="gridTotalWidth"
-                        defaultValue={map.gridCellSize}
+                        defaultValue={map.gridTotalWidth}
                         min={values.gridCellSize}
                         max={500 * values.gridCellSize}
                         step={values.gridCellSize}

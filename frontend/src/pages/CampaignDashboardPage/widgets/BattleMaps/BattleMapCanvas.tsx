@@ -52,7 +52,6 @@ type BattleMapCanvasPropTypes = {
   scaleBy: number;
   scaleMin: number;
   scaleMax: number;
-  stagePadding: number;
   onExit: () => void;
 };
 export function BattleMapCanvas({
@@ -61,7 +60,6 @@ export function BattleMapCanvas({
   scaleBy,
   scaleMin,
   scaleMax,
-  stagePadding,
   onExit,
 }: BattleMapCanvasPropTypes) {
   const toast = useToast();
