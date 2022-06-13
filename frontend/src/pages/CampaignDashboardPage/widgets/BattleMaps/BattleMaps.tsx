@@ -88,7 +88,6 @@ export function BattleMaps() {
           scaleBy={1.2}
           scaleMin={0.5}
           scaleMax={4}
-          gridCellSize={50}
           stagePadding={500}
           onExit={() => setSelectedBattleMapId(null)}
         />

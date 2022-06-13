@@ -37,16 +37,12 @@ import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
 import { BattleMapTokenNode } from "./BattleMapToken";
 
-const GRID_WIDTH = 1500;
-const GRID_HEIGHT = 1000;
-
 type BattleMapCanvasPropTypes = {
   battleMap: BattleMap & FirestoreDoc;
   parentDiv: HTMLDivElement;
   scaleBy: number;
   scaleMin: number;
   scaleMax: number;
-  gridCellSize: number;
   stagePadding: number;
   onExit: () => void;
 };
@@ -56,7 +52,6 @@ export function BattleMapCanvas({
   scaleBy,
   scaleMin,
   scaleMax,
-  gridCellSize,
   stagePadding,
   onExit,
 }: BattleMapCanvasPropTypes) {
@@ -208,8 +203,12 @@ export function BattleMapCanvas({
   /** Snape the target shape to the nearest grid cell. */
   function snapToGrid(target: Shape<ShapeConfig> | KonvaStage) {
     target.to({
-      x: Math.round(target.x() / gridCellSize) * gridCellSize,
-      y: Math.round(target.y() / gridCellSize) * gridCellSize,
+      x:
+        Math.round(target.x() / battleMap.gridCellSize) *
+        battleMap.gridCellSize,
+      y:
+        Math.round(target.y() / battleMap.gridCellSize) *
+        battleMap.gridCellSize,
       duration: 0.1,
     });
   }
@@ -217,10 +216,10 @@ export function BattleMapCanvas({
   /** x1,y1, x2,y2 */
   function getStageBoundingBox(): [number, number, number, number] {
     return [
-      GRID_WIDTH * 0.8 * stage.scale,
-      GRID_HEIGHT * 0.8 * stage.scale,
-      -(GRID_WIDTH * 0.8) * stage.scale,
-      -(GRID_HEIGHT * 0.8) * stage.scale,
+      battleMap.gridTotalWidth * 0.8 * stage.scale,
+      battleMap.gridTotalHeight * 0.8 * stage.scale,
+      -(battleMap.gridTotalWidth * 0.8) * stage.scale,
+      -(battleMap.gridTotalHeight * 0.8) * stage.scale,
     ];
   }
 
@@ -344,8 +343,8 @@ export function BattleMapCanvas({
     backgroundLayerRef.current.toDataURL({
       x: stage.x,
       y: stage.y,
-      height: GRID_HEIGHT * stage.scale,
-      width: GRID_WIDTH * stage.scale,
+      height: battleMap.gridTotalHeight * stage.scale,
+      width: battleMap.gridTotalWidth * stage.scale,
       pixelRatio: 1 / stage.scale / 5,
       async callback(dataUrl) {
         const blob = await (await fetch(dataUrl)).blob();
@@ -361,29 +360,40 @@ export function BattleMapCanvas({
   }
 
   const gridLines = useMemo(() => {
-    return [...Array(GRID_HEIGHT / gridCellSize + 1)]
+    return [...Array(battleMap.gridTotalHeight / battleMap.gridCellSize + 1)]
       .map((_, index) => (
         <Line
           key={"x" + index}
           stroke="black"
-          points={[0, index * gridCellSize, GRID_WIDTH, index * gridCellSize]}
+          points={[
+            0,
+            index * battleMap.gridCellSize,
+            battleMap.gridTotalWidth,
+            index * battleMap.gridCellSize,
+          ]}
         />
       ))
       .concat(
-        [...Array(GRID_WIDTH / gridCellSize + 1)].map((_, index) => (
-          <Line
-            key={"y" + index}
-            stroke="black"
-            points={[
-              index * gridCellSize,
-              0,
-              index * gridCellSize,
-              GRID_HEIGHT,
-            ]}
-          />
-        )),
+        [...Array(battleMap.gridTotalWidth / battleMap.gridCellSize + 1)].map(
+          (_, index) => (
+            <Line
+              key={"y" + index}
+              stroke="black"
+              points={[
+                index * battleMap.gridCellSize,
+                0,
+                index * battleMap.gridCellSize,
+                battleMap.gridTotalHeight,
+              ]}
+            />
+          ),
+        ),
       );
-  }, []);
+  }, [
+    battleMap.gridTotalHeight,
+    battleMap.gridTotalWidth,
+    battleMap.gridCellSize,
+  ]);
 
   const backgroundImages = useMemo(() => {
     return (
@@ -429,10 +439,10 @@ export function BattleMapCanvas({
         </Layer>
         <Layer id="tokens">
           <Rect
-            x={gridCellSize}
-            y={gridCellSize}
-            width={gridCellSize}
-            height={gridCellSize}
+            x={battleMap.gridCellSize}
+            y={battleMap.gridCellSize}
+            width={battleMap.gridCellSize}
+            height={battleMap.gridCellSize}
             fill="red"
             onDragMove={(e) => {
               e.cancelBubble = true;
@@ -448,7 +458,7 @@ export function BattleMapCanvas({
             <BattleMapTokenNode
               key={token.id}
               token={token}
-              gridCellSize={gridCellSize}
+              gridCellSize={battleMap.gridCellSize}
             />
           ))}
         </Layer>
