@@ -1,9 +1,18 @@
-import { BattleMap } from "ddtools-types";
+import { BattleMap, BattleMapBGImage } from "ddtools-types";
+import {
+  collection,
+  doc,
+  FirestoreDataConverter,
+  updateDoc,
+} from "firebase/firestore";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage as KonvaStage } from "konva/lib/Stage";
-import { useEffect, useMemo, useState } from "react";
+import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Layer, Line, Rect, Stage } from "react-konva";
+import { converter, FirestoreDoc } from "services/converter";
+import { firestore } from "services/firebase";
 import { debounce } from "utils/debounce";
 import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
@@ -12,7 +21,7 @@ const GRID_WIDTH = 1500;
 const GRID_HEIGHT = 1000;
 
 type BattleMapCanvasPropTypes = {
-  battleMap: BattleMap;
+  battleMap: BattleMap & FirestoreDoc;
   parentDiv: HTMLDivElement;
   scaleBy: number;
   scaleMin: number;
@@ -29,6 +38,7 @@ export function BattleMapCanvas({
   gridCellSize,
   stagePadding,
 }: BattleMapCanvasPropTypes) {
+  const { campaign } = useContext(CampaignUserContext);
   const [stage, setStage] = useState<{
     x: number;
     y: number;
@@ -101,6 +111,9 @@ export function BattleMapCanvas({
 
   /** Update the React state for the stage's position after ending a drag. */
   function handleStageDragEnd(konvaEvent: KonvaEventObject<DragEvent>) {
+    if (konvaEvent.target !== konvaEvent.target.getStage()) {
+      return;
+    }
     setStage({
       ...stage,
       x: konvaEvent.target.x(),
@@ -110,6 +123,11 @@ export function BattleMapCanvas({
 
   /** Limit how far the stage can be dragged. */
   function handleStageDragMove(konvaEvent: KonvaEventObject<DragEvent>) {
+    if (konvaEvent.target !== konvaEvent.target.getStage()) {
+      return;
+    }
+    console.log("stage dragged");
+
     const boundingBox = getStageBoundingBox();
     if (konvaEvent.target.x() > boundingBox[0]) {
       konvaEvent.target.x(boundingBox[0]);
@@ -140,7 +158,37 @@ export function BattleMapCanvas({
 
   /** x1,y1, x2,y2 */
   function getStageBoundingBox(): [number, number, number, number] {
-    return [stagePadding, stagePadding, -500, -400];
+    return [
+      stagePadding * stage.scale,
+      stagePadding * stage.scale,
+      -2000 * stage.scale,
+      -1000 * stage.scale,
+    ];
+  }
+
+  async function updateBackgroundImage(
+    imageIndex: number,
+    updates: Partial<BattleMapBGImage>,
+  ) {
+    if (!battleMap.backgroundImages) return;
+
+    battleMap.backgroundImages[imageIndex] = {
+      ...battleMap.backgroundImages[imageIndex],
+      ...updates,
+    };
+    try {
+      await updateDoc(
+        doc(
+          collection(firestore, "campaigns", campaign.id, "battlemaps"),
+          battleMap.id,
+        ).withConverter(converter as FirestoreDataConverter<BattleMap>),
+        {
+          backgroundImages: battleMap.backgroundImages,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const gridLines = useMemo(() => {
@@ -174,17 +222,15 @@ export function BattleMapCanvas({
         <BackgroundImage
           key={index}
           bgImage={bgImg}
-          isSelected={false}
+          isSelected={true}
           onSelect={function (): void {
             throw new Error("Function not implemented.");
           }}
-          onChange={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          onChange={(changes) => updateBackgroundImage(index, changes)}
         />
       )) ?? []
     );
-  }, []);
+  }, [battleMap]);
 
   return (
     <Stage
@@ -211,6 +257,9 @@ export function BattleMapCanvas({
           width={gridCellSize}
           height={gridCellSize}
           fill="red"
+          onDragMove={(e) => {
+            e.cancelBubble = true;
+          }}
           onDragEnd={(e) => {
             e.cancelBubble = true;
             snapToGrid(e.target);
