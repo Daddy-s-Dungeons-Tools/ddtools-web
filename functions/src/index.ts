@@ -6,12 +6,13 @@ import {
 } from "ddtools-types";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 
 /** Firebase admin app with full permissions */
 const app = initializeApp();
 
-// const db = getFirestore(app);
+const db = getFirestore(app);
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
@@ -34,6 +35,17 @@ const arrayEqual = (arr1: any[] | undefined, arr2: any[] | undefined) =>
 // function logToCampaign(campaignId: string, item: LogItem) {
 //   return db.collection(`campaigns/${campaignId}/log`).add(item);
 // }
+
+exports.inviteToTestCampaign = functions.auth.user().onCreate(async (user) => {
+  // Attempt to find test campaign
+  const snap = await db.collection("campaigns").doc("test-campaign").get();
+
+  if (snap.exists) {
+    await snap.ref.update({
+      dmInviteEmails: FieldValue.arrayUnion(user.email!),
+    });
+  }
+});
 
 /**
  *
