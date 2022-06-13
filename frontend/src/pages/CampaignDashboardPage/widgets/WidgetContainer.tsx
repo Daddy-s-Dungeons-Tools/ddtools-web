@@ -1,5 +1,7 @@
 import {
+  ButtonGroup,
   Icon,
+  IconButton,
   PlacementWithLogical,
   Tab,
   TabList,
@@ -12,6 +14,7 @@ import {
 import { ErrorAlert } from "components/ErrorAlert";
 import { useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { FaCompressAlt, FaExpand } from "react-icons/fa";
 import { handleError } from "services/errors";
 import { CampaignUserContext } from "../context";
 import { Widget } from "./index";
@@ -42,8 +45,21 @@ export function WidgetContainer({
       borderRadius={props.borderRadius ?? "lg"}
       variant={props.variant ?? "solid-rounded"}
       bgColor="gray.700"
+      position="relative"
       {...props}
     >
+      <ButtonGroup size="xs" position="absolute" right={1} top={1} spacing={1}>
+        <IconButton
+          icon={<Icon as={FaCompressAlt} />}
+          aria-label={"Minimize"}
+          size="xs"
+        />
+        <IconButton
+          icon={<Icon as={FaExpand} />}
+          aria-label={"Maximize"}
+          size="xs"
+        />
+      </ButtonGroup>
       <TabList>
         {userWidgets.map((widget) => (
           <Tooltip
