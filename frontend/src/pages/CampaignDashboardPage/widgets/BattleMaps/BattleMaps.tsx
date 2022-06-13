@@ -1,4 +1,5 @@
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { Box, SimpleGrid, Skeleton } from "@chakra-ui/react";
+import { ErrorAlert } from "components/ErrorAlert";
 import { BattleMap } from "ddtools-types";
 import { collection, FirestoreDataConverter, query } from "firebase/firestore";
 import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
@@ -32,7 +33,10 @@ export function BattleMaps() {
   }, [battleMapsError]);
 
   return (
-    <Box ref={boxRef} minW="100%" minH="100%">
+    <Box ref={boxRef} minW="100%" minH="100%" position="relative">
+      {battleMapsError && (
+        <ErrorAlert title="Yikes!" description="Failed to load battle maps." />
+      )}
       {selectedMap ? (
         <BattleMapCanvas
           battleMap={selectedMap}
@@ -45,10 +49,20 @@ export function BattleMaps() {
         />
       ) : (
         <SimpleGrid columns={2} spacing={3}>
+          {isBattleMapsLoading && (
+            <>
+              <Skeleton height={"200px"} />
+              <Skeleton height={"200px"} />
+              <Skeleton height={"200px"} />
+            </>
+          )}
           {battleMaps?.map((map) => (
             <Box
               key={map.id}
               cursor="pointer"
+              padding="6"
+              borderWidth={1}
+              borderRadius="lg"
               onClick={() => setSelectedBattleMapId(map.id)}
             >
               {map.name}
