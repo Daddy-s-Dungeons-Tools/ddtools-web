@@ -74,7 +74,6 @@ export function BackgroundImage({
         <Transformer
           /** @ts-ignore */
           ref={transformerRef}
-          centeredScaling={true}
           rotationSnaps={[0, 90, 180, 270]}
         />
       )}

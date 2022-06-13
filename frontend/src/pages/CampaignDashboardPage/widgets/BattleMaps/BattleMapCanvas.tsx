@@ -1,12 +1,18 @@
 import {
+  Button,
   ButtonGroup,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import { BattleMap, BattleMapBGImage } from "ddtools-types";
 import { ref, uploadBytes } from "firebase/storage";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage as KonvaStage } from "konva/lib/Stage";
@@ -19,7 +25,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { FaEdit, FaFileUpload } from "react-icons/fa";
+import { FaEdit, FaFileUpload, FaImage, FaTrashAlt } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { BattleMapAPI } from "services/api";
 import { FirestoreDoc } from "services/converter";
@@ -51,7 +57,7 @@ export function BattleMapCanvas({
 }: BattleMapCanvasPropTypes) {
   const toast = useToast();
   const { campaign, userRole } = useContext(CampaignUserContext);
-  const stageRef = useRef<KonvaStage>(null);
+  const backgroundLayerRef = useRef<KonvaLayer>(null);
   const [stage, setStage] = useState<{
     x: number;
     y: number;
@@ -242,6 +248,25 @@ export function BattleMapCanvas({
     }
   }
 
+  async function deleteBackgroundImage(bgImageIndex: number) {
+    if (!battleMap.backgroundImages) return;
+    battleMap.backgroundImages.splice(bgImageIndex, 1);
+    try {
+      await BattleMapAPI.update(campaign.id, battleMap.id, {
+        backgroundImages: battleMap.backgroundImages,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: `Failed to Delete Image`,
+        description: `Failed to delete background image. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }
+
   /** Handle all clicks on the stage. Used to deselect objects with transformers. */
   function handleClick(konvaEvent: KonvaEventObject<MouseEvent>) {
     // deselect when clicked on empty area
@@ -291,10 +316,10 @@ export function BattleMapCanvas({
   }
 
   async function saveMapThumbail() {
-    if (!stageRef.current) {
+    if (!backgroundLayerRef.current) {
       return;
     }
-    stageRef.current.toDataURL({
+    backgroundLayerRef.current.toDataURL({
       x: 0,
       y: 0,
       height: GRID_HEIGHT,
@@ -359,7 +384,6 @@ export function BattleMapCanvas({
   return (
     <>
       <Stage
-        ref={stageRef}
         x={stage.x}
         y={stage.y}
         width={stage.width}
@@ -373,7 +397,9 @@ export function BattleMapCanvas({
         onDragEnd={handleStageDragEnd}
         draggable
       >
-        <Layer id="background">{backgroundImages}</Layer>
+        <Layer ref={backgroundLayerRef} id="background">
+          {backgroundImages}
+        </Layer>
 
         <Layer id="grid" draggable={false} x={0} y={0}>
           {gridLines}
@@ -434,6 +460,23 @@ export function BattleMapCanvas({
               onChange={handleBGImageUpload}
             />
           </>
+        )}
+        {userRole === "dm" && isEditingBG && selectedBGImageIndex !== null && (
+          <Menu>
+            <MenuButton as={Button} rightIcon={<FaImage />}>
+              Edit image
+            </MenuButton>
+            <MenuList>
+              <MenuItem disabled>Reset size</MenuItem>
+              <MenuItem disabled>Reset rotation</MenuItem>
+              <MenuItem
+                icon={<FaTrashAlt />}
+                onClick={() => deleteBackgroundImage(selectedBGImageIndex)}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </Menu>
         )}
       </ButtonGroup>
     </>
