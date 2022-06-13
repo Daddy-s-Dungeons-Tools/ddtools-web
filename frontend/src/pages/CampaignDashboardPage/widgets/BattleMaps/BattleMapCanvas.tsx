@@ -14,7 +14,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { BattleMap, BattleMapBGImage, BattleMapToken } from "ddtools-types";
-import { collection, FirestoreDataConverter, query } from "firebase/firestore";
+import {
+  collection,
+  FirestoreDataConverter,
+  PartialWithFieldValue,
+  query,
+} from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -30,13 +35,7 @@ import {
   useState,
 } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import {
-  FaChessBoard,
-  FaEdit,
-  FaFileUpload,
-  FaImage,
-  FaTrashAlt,
-} from "react-icons/fa";
+import { FaEdit, FaFileUpload, FaImage, FaTrashAlt } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { BattleMapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
@@ -45,6 +44,7 @@ import { debounce } from "utils/debounce";
 import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
 import { BattleMapTokenNode } from "./BattleMapToken";
+import { EditGridPopover } from "./EditGridPopover";
 
 type BattleMapCanvasPropTypes = {
   battleMap: BattleMap & FirestoreDoc;
@@ -209,7 +209,7 @@ export function BattleMapCanvas({
     }
   }
 
-  /** Snape the target shape to the nearest grid cell. */
+  /** Snap the target shape to the nearest grid cell. */
   function snapToGrid(target: Shape<ShapeConfig> | KonvaStage) {
     target.to({
       x:
@@ -232,11 +232,9 @@ export function BattleMapCanvas({
     ];
   }
 
-  async function updateMapName(newName: string) {
+  async function updateMap(updates: PartialWithFieldValue<BattleMap>) {
     try {
-      await BattleMapAPI.update(campaign.id, battleMap.id, {
-        name: newName,
-      });
+      await BattleMapAPI.update(campaign.id, battleMap.id, updates);
     } catch (error) {
       console.error(error);
       toast({
@@ -386,7 +384,11 @@ export function BattleMapCanvas({
   }
 
   const gridLines = useMemo(() => {
-    return [...Array(battleMap.gridTotalHeight / battleMap.gridCellSize + 1)]
+    return [
+      ...Array(
+        Math.round(battleMap.gridTotalHeight / battleMap.gridCellSize + 1),
+      ),
+    ]
       .map((_, index) => (
         <Line
           key={"x" + index}
@@ -400,20 +402,22 @@ export function BattleMapCanvas({
         />
       ))
       .concat(
-        [...Array(battleMap.gridTotalWidth / battleMap.gridCellSize + 1)].map(
-          (_, index) => (
-            <Line
-              key={"y" + index}
-              stroke="black"
-              points={[
-                index * battleMap.gridCellSize,
-                0,
-                index * battleMap.gridCellSize,
-                battleMap.gridTotalHeight,
-              ]}
-            />
+        [
+          ...Array(
+            Math.round(battleMap.gridTotalWidth / battleMap.gridCellSize + 1),
           ),
-        ),
+        ].map((_, index) => (
+          <Line
+            key={"y" + index}
+            stroke="black"
+            points={[
+              index * battleMap.gridCellSize,
+              0,
+              index * battleMap.gridCellSize,
+              battleMap.gridTotalHeight,
+            ]}
+          />
+        )),
       );
   }, [
     battleMap.gridTotalHeight,
@@ -456,7 +460,13 @@ export function BattleMapCanvas({
         onDragEnd={handleStageDragEnd}
         draggable
       >
-        <Layer ref={backgroundLayerRef} id="background">
+        <Layer
+          ref={backgroundLayerRef}
+          id="background"
+          onDragEnd={(e) => {
+            snapToGrid(e.target);
+          }}
+        >
           {backgroundImages}
         </Layer>
 
@@ -500,7 +510,7 @@ export function BattleMapCanvas({
           isDisabled={userRole !== "dm"}
           fontSize={"2xl"}
           fontWeight="semibold"
-          onSubmit={updateMapName}
+          onSubmit={(newName) => updateMap({ name: newName })}
         >
           <EditablePreview />
           <EditableInput />
@@ -534,9 +544,7 @@ export function BattleMapCanvas({
               </Tooltip>
             ),
             isEditingBG && (
-              <Button leftIcon={<FaChessBoard />} colorScheme="teal">
-                Edit grid
-              </Button>
+              <EditGridPopover map={battleMap} handleMapUpdate={updateMap} />
             ),
             <input
               type="file"
@@ -564,7 +572,7 @@ export function BattleMapCanvas({
             ),
             !isEditingBG && (
               <Menu>
-                <MenuButton as={Button} rightIcon={<FaImage />}>
+                <MenuButton as={Button} rightIcon={<FaImage />} disabled>
                   Add token
                 </MenuButton>
                 <MenuList>
