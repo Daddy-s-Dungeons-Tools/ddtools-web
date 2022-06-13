@@ -10,7 +10,7 @@ import { firestore } from "services/firebase";
 import { BattleMapCanvas } from "./BattleMapCanvas";
 
 export function BattleMaps() {
-  const { campaign, user } = useContext(CampaignUserContext);
+  const { campaign } = useContext(CampaignUserContext);
   // Firestore data
   const [battleMaps, isBattleMapsLoading, battleMapsError] = useCollectionData(
     query(

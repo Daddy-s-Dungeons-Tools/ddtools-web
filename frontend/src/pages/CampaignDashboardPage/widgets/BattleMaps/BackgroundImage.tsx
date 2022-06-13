@@ -1,5 +1,4 @@
 import { BattleMapBGImage } from "ddtools-types";
-import { PartialWithFieldValue } from "firebase/firestore";
 import { ref } from "firebase/storage";
 import { Image as ImageType } from "konva/lib/shapes/Image";
 import { useEffect, useRef } from "react";
@@ -12,13 +11,15 @@ type BackgroundImagePropTypes = {
   bgImage: BattleMapBGImage;
   isSelected: boolean;
   onSelect: () => void;
-  onChange: (changes: PartialWithFieldValue<BattleMapBGImage>) => void;
+  onChange: (changes: Partial<BattleMapBGImage>) => void;
+  isEditable: boolean;
 };
 export function BackgroundImage({
   bgImage,
   onSelect,
   onChange,
   isSelected,
+  isEditable,
 }: BackgroundImagePropTypes) {
   const shapeRef = useRef<ImageType>(null);
   const transformerRef = useRef<Transformer>(null);
@@ -43,16 +44,11 @@ export function BackgroundImage({
         onTap={onSelect}
         onClick={onSelect}
         image={image}
-        onDragMove={(e) => {
-          e.cancelBubble = true;
-        }}
+        onDragStart={() => onSelect()}
         onDragEnd={(e) => {
-          e.cancelBubble = true;
           onChange({ x: e.target.x(), y: e.target.y() });
         }}
         onTransformEnd={(e) => {
-          e.cancelBubble = true;
-
           const node = shapeRef.current;
           if (!node) {
             return;
@@ -66,13 +62,13 @@ export function BackgroundImage({
           onChange({
             x: node.x(),
             y: node.y(),
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            width: Math.max(5, node.width() * scaleX), // determine min
+            height: Math.min(node.height() * scaleY), // determine max
           });
         }}
-        draggable
+        draggable={isEditable}
       />
-      {isSelected && (
+      {isSelected && isEditable && (
         <Transformer
           /** @ts-ignore */
           ref={transformerRef}

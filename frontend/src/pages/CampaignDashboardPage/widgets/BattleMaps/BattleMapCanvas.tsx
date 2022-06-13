@@ -1,3 +1,4 @@
+import { ButtonGroup, Icon, IconButton, Tooltip } from "@chakra-ui/react";
 import { BattleMap, BattleMapBGImage } from "ddtools-types";
 import {
   collection,
@@ -10,6 +11,7 @@ import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage as KonvaStage } from "konva/lib/Stage";
 import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { FaEdit } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
@@ -38,7 +40,7 @@ export function BattleMapCanvas({
   gridCellSize,
   stagePadding,
 }: BattleMapCanvasPropTypes) {
-  const { campaign } = useContext(CampaignUserContext);
+  const { campaign, userRole } = useContext(CampaignUserContext);
   const [stage, setStage] = useState<{
     x: number;
     y: number;
@@ -52,6 +54,11 @@ export function BattleMapCanvas({
     height: 500,
     scale: 1,
   });
+
+  const [isEditingBG, setIsEditingBG] = useState<boolean>(false);
+  const [selectedBGImageIndex, setSelectedBGImageIndex] = useState<
+    number | null
+  >(null);
 
   /** Set the stage size to the size of the parent container. */
   function resizeStage() {
@@ -191,6 +198,14 @@ export function BattleMapCanvas({
     }
   }
 
+  const handleClick = (konvaEvent: KonvaEventObject<MouseEvent>) => {
+    // deselect when clicked on empty area
+    const clickedOnEmpty = konvaEvent.target === konvaEvent.target.getStage();
+    if (clickedOnEmpty) {
+      setSelectedBGImageIndex(null);
+    }
+  };
+
   const gridLines = useMemo(() => {
     return [...Array(GRID_HEIGHT / gridCellSize + 1)]
       .map((_, index) => (
@@ -222,51 +237,77 @@ export function BattleMapCanvas({
         <BackgroundImage
           key={index}
           bgImage={bgImg}
-          isSelected={true}
-          onSelect={function (): void {
-            throw new Error("Function not implemented.");
+          isSelected={index === selectedBGImageIndex}
+          onSelect={() => {
+            if (userRole === "dm" && isEditingBG) {
+              setSelectedBGImageIndex(index);
+            }
           }}
           onChange={(changes) => updateBackgroundImage(index, changes)}
+          isEditable={userRole === "dm" && isEditingBG}
         />
       )) ?? []
     );
-  }, [battleMap]);
+  }, [userRole, battleMap, selectedBGImageIndex, isEditingBG]);
 
   return (
-    <Stage
-      x={stage.x}
-      y={stage.y}
-      width={stage.width}
-      height={stage.height}
-      scaleX={stage.scale}
-      scaleY={stage.scale}
-      onWheel={handleScrollWheel}
-      draggable
-      onDragMove={handleStageDragMove}
-      onDragEnd={handleStageDragEnd}
-    >
-      <Layer id="background">{backgroundImages}</Layer>
+    <>
+      <Stage
+        x={stage.x}
+        y={stage.y}
+        width={stage.width}
+        height={stage.height}
+        scaleX={stage.scale}
+        scaleY={stage.scale}
+        onClick={handleClick}
+        onTap={handleClick}
+        onWheel={handleScrollWheel}
+        onDragMove={handleStageDragMove}
+        onDragEnd={handleStageDragEnd}
+        draggable
+      >
+        <Layer id="background">{backgroundImages}</Layer>
 
-      <Layer id="grid" draggable={false} x={0} y={0}>
-        {gridLines}
-      </Layer>
-      <Layer>
-        <Rect
-          x={gridCellSize}
-          y={gridCellSize}
-          width={gridCellSize}
-          height={gridCellSize}
-          fill="red"
-          onDragMove={(e) => {
-            e.cancelBubble = true;
-          }}
-          onDragEnd={(e) => {
-            e.cancelBubble = true;
-            snapToGrid(e.target);
-          }}
-          draggable
-        />
-      </Layer>
-    </Stage>
+        <Layer id="grid" draggable={false} x={0} y={0}>
+          {gridLines}
+        </Layer>
+        <Layer>
+          <Rect
+            x={gridCellSize}
+            y={gridCellSize}
+            width={gridCellSize}
+            height={gridCellSize}
+            fill="red"
+            onDragMove={(e) => {
+              e.cancelBubble = true;
+            }}
+            onDragEnd={(e) => {
+              e.cancelBubble = true;
+              snapToGrid(e.target);
+            }}
+            draggable
+          />
+        </Layer>
+      </Stage>
+
+      <ButtonGroup
+        flexDir="column"
+        size="sm"
+        position="absolute"
+        top={3}
+        left={3}
+      >
+        {userRole === "dm" && (
+          <Tooltip label="Edit battle map" placement="right">
+            <IconButton
+              icon={<Icon as={FaEdit} />}
+              aria-label={"edit battle map"}
+              colorScheme="pink"
+              onClick={() => setIsEditingBG(!isEditingBG)}
+            />
+          </Tooltip>
+        )}
+      </ButtonGroup>
+    </>
   );
 }
