@@ -272,6 +272,7 @@ export function BattleMapCanvas({
           y: 0,
           height: 500, // TODO: get actual image size
           width: 500,
+          rotation: 0,
         };
 
         await addBackgroundImage(newBGImage);

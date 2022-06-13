@@ -41,6 +41,7 @@ export function BackgroundImage({
         y={bgImage.y}
         width={bgImage.width}
         height={bgImage.height}
+        rotation={bgImage.rotation}
         onTap={onSelect}
         onClick={onSelect}
         image={image}
@@ -64,6 +65,7 @@ export function BackgroundImage({
             y: node.y(),
             width: Math.max(5, node.width() * scaleX), // determine min
             height: Math.min(node.height() * scaleY), // determine max
+            rotation: node.rotation(),
           });
         }}
         draggable={isEditable}
@@ -72,6 +74,8 @@ export function BackgroundImage({
         <Transformer
           /** @ts-ignore */
           ref={transformerRef}
+          centeredScaling={true}
+          rotationSnaps={[0, 90, 180, 270]}
         />
       )}
     </>
