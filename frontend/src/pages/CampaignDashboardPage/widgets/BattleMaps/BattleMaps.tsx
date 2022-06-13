@@ -19,6 +19,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { BattleMapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
 import { firestore } from "services/firebase";
+import { BattleMapBox } from "./BattleMapBox";
 import { BattleMapCanvas } from "./BattleMapCanvas";
 
 type NewBattleMap = Pick<BattleMap, "name">;
@@ -135,16 +136,11 @@ export function BattleMaps() {
             </Formik>
           </Box>
           {battleMaps?.map((map) => (
-            <Box
+            <BattleMapBox
               key={map.id}
-              cursor="pointer"
-              padding="6"
-              borderWidth={1}
-              borderRadius="lg"
-              onClick={() => setSelectedBattleMapId(map.id)}
-            >
-              {map.name}
-            </Box>
+              map={map}
+              onSelect={() => setSelectedBattleMapId(map.id)}
+            />
           ))}
         </SimpleGrid>
       )}
