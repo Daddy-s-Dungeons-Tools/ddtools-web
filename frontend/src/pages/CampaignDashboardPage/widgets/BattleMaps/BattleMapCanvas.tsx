@@ -1,23 +1,34 @@
-import { Box } from "@chakra-ui/react";
+import { BattleMap } from "ddtools-types";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage as KonvaStage } from "konva/lib/Stage";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layer, Line, Rect, Stage } from "react-konva";
-import { clamp } from "utils";
 import { debounce } from "utils/debounce";
+import { clamp } from "utils/index";
+import { BackgroundImage } from "./BackgroundImage";
 
-/** Size of grid cell in pixels */
-const GRID_CELL_SIZE = 50;
 const GRID_WIDTH = 1500;
 const GRID_HEIGHT = 1000;
-const SCALE_BY = 1.2;
-const SCALE_MAX = 3;
-const SCALE_MIN = 0.5;
-const STAGE_DRAG_PADDING = 500;
 
-export function BattleMaps() {
-  const boxRef = useRef<HTMLDivElement>(null);
+type BattleMapCanvasPropTypes = {
+  battleMap: BattleMap;
+  parentDiv: HTMLDivElement;
+  scaleBy: number;
+  scaleMin: number;
+  scaleMax: number;
+  gridCellSize: number;
+  stagePadding: number;
+};
+export function BattleMapCanvas({
+  battleMap,
+  parentDiv,
+  scaleBy,
+  scaleMin,
+  scaleMax,
+  gridCellSize,
+  stagePadding,
+}: BattleMapCanvasPropTypes) {
   const [stage, setStage] = useState<{
     x: number;
     y: number;
@@ -34,11 +45,7 @@ export function BattleMaps() {
 
   /** Set the stage size to the size of the parent container. */
   function resizeStage() {
-    if (!boxRef.current) {
-      return;
-    }
-
-    const { offsetWidth, offsetHeight } = boxRef.current;
+    const { offsetWidth, offsetHeight } = parentDiv;
 
     setStage({
       ...stage,
@@ -50,7 +57,7 @@ export function BattleMaps() {
   // Resize the stage on first load
   useEffect(() => {
     resizeStage();
-  }, [boxRef.current]);
+  }, [parentDiv]);
 
   // Resize the stage whenever the window is resized, which probably results in container resize
   useEffect(() => {
@@ -72,9 +79,9 @@ export function BattleMaps() {
     };
 
     let newScale =
-      konvaEvent.evt.deltaY < 0 ? oldScale * SCALE_BY : oldScale / SCALE_BY;
+      konvaEvent.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    newScale = Math.min(Math.max(newScale, SCALE_MIN), SCALE_MAX);
+    newScale = Math.min(Math.max(newScale, scaleMin), scaleMax);
     let newX =
       (curStage.getPointerPosition()!.x / newScale - mousePointTo.x) * newScale;
     let newY =
@@ -85,7 +92,7 @@ export function BattleMaps() {
     if (newScale !== oldScale) {
       setStage({
         ...stage,
-        scale: clamp(newScale, SCALE_MIN, SCALE_MAX),
+        scale: clamp(newScale, scaleMin, scaleMax),
         x: clamp(newX, stageBoundingBox[2], stageBoundingBox[0]),
         y: clamp(newY, stageBoundingBox[3], stageBoundingBox[1]),
       });
@@ -125,40 +132,35 @@ export function BattleMaps() {
   /** Snape the target shape to the nearest grid cell. */
   function snapToGrid(target: Shape<ShapeConfig> | KonvaStage) {
     target.to({
-      x: Math.round(target.x() / GRID_CELL_SIZE) * GRID_CELL_SIZE,
-      y: Math.round(target.y() / GRID_CELL_SIZE) * GRID_CELL_SIZE,
+      x: Math.round(target.x() / gridCellSize) * gridCellSize,
+      y: Math.round(target.y() / gridCellSize) * gridCellSize,
       duration: 0.1,
     });
   }
 
   /** x1,y1, x2,y2 */
   function getStageBoundingBox(): [number, number, number, number] {
-    return [STAGE_DRAG_PADDING, STAGE_DRAG_PADDING, -500, -400];
+    return [stagePadding, stagePadding, -500, -400];
   }
 
   const gridLines = useMemo(() => {
-    return [...Array(GRID_HEIGHT / GRID_CELL_SIZE + 1)]
+    return [...Array(GRID_HEIGHT / gridCellSize + 1)]
       .map((_, index) => (
         <Line
           key={"x" + index}
           stroke="black"
-          points={[
-            0,
-            index * GRID_CELL_SIZE,
-            GRID_WIDTH,
-            index * GRID_CELL_SIZE,
-          ]}
+          points={[0, index * gridCellSize, GRID_WIDTH, index * gridCellSize]}
         />
       ))
       .concat(
-        [...Array(GRID_WIDTH / GRID_CELL_SIZE + 1)].map((_, index) => (
+        [...Array(GRID_WIDTH / gridCellSize + 1)].map((_, index) => (
           <Line
             key={"y" + index}
             stroke="black"
             points={[
-              index * GRID_CELL_SIZE,
+              index * gridCellSize,
               0,
-              index * GRID_CELL_SIZE,
+              index * gridCellSize,
               GRID_HEIGHT,
             ]}
           />
@@ -166,38 +168,56 @@ export function BattleMaps() {
       );
   }, []);
 
+  const backgroundImages = useMemo(() => {
+    return (
+      battleMap.backgroundImages?.map((bgImg, index) => (
+        <BackgroundImage
+          key={index}
+          bgImage={bgImg}
+          isSelected={false}
+          onSelect={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          onChange={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
+      )) ?? []
+    );
+  }, []);
+
   return (
-    <Box ref={boxRef} minW="100%" minH="100%">
-      <Stage
-        x={stage.x}
-        y={stage.y}
-        width={stage.width}
-        height={stage.height}
-        scaleX={stage.scale}
-        scaleY={stage.scale}
-        onWheel={handleScrollWheel}
-        draggable
-        onDragMove={handleStageDragMove}
-        onDragEnd={handleStageDragEnd}
-      >
-        <Layer id="grid" draggable={false} x={0} y={0}>
-          {gridLines}
-        </Layer>
-        <Layer>
-          <Rect
-            x={GRID_CELL_SIZE}
-            y={GRID_CELL_SIZE}
-            width={GRID_CELL_SIZE}
-            height={GRID_CELL_SIZE}
-            fill="red"
-            onDragEnd={(e) => {
-              e.cancelBubble = true;
-              snapToGrid(e.target);
-            }}
-            draggable
-          />
-        </Layer>
-      </Stage>
-    </Box>
+    <Stage
+      x={stage.x}
+      y={stage.y}
+      width={stage.width}
+      height={stage.height}
+      scaleX={stage.scale}
+      scaleY={stage.scale}
+      onWheel={handleScrollWheel}
+      draggable
+      onDragMove={handleStageDragMove}
+      onDragEnd={handleStageDragEnd}
+    >
+      <Layer id="background">{backgroundImages}</Layer>
+
+      <Layer id="grid" draggable={false} x={0} y={0}>
+        {gridLines}
+      </Layer>
+      <Layer>
+        <Rect
+          x={gridCellSize}
+          y={gridCellSize}
+          width={gridCellSize}
+          height={gridCellSize}
+          fill="red"
+          onDragEnd={(e) => {
+            e.cancelBubble = true;
+            snapToGrid(e.target);
+          }}
+          draggable
+        />
+      </Layer>
+    </Stage>
   );
 }
