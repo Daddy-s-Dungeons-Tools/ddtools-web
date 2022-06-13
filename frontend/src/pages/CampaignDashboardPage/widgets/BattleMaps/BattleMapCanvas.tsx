@@ -1,11 +1,11 @@
-import { ButtonGroup, Icon, IconButton, Tooltip } from "@chakra-ui/react";
-import { BattleMap, BattleMapBGImage } from "ddtools-types";
 import {
-  collection,
-  doc,
-  FirestoreDataConverter,
-  updateDoc,
-} from "firebase/firestore";
+  ButtonGroup,
+  Icon,
+  IconButton,
+  Tooltip,
+  useToast,
+} from "@chakra-ui/react";
+import { BattleMap, BattleMapBGImage } from "ddtools-types";
 import { ref, uploadBytes } from "firebase/storage";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
@@ -21,8 +21,9 @@ import {
 } from "react";
 import { FaEdit, FaFileUpload } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
-import { converter, FirestoreDoc } from "services/converter";
-import { firestore, storage } from "services/firebase";
+import { BattleMapAPI } from "services/api";
+import { FirestoreDoc } from "services/converter";
+import { storage } from "services/firebase";
 import { debounce } from "utils/debounce";
 import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
@@ -48,6 +49,7 @@ export function BattleMapCanvas({
   gridCellSize,
   stagePadding,
 }: BattleMapCanvasPropTypes) {
+  const toast = useToast();
   const { campaign, userRole } = useContext(CampaignUserContext);
   const [stage, setStage] = useState<{
     x: number;
@@ -64,6 +66,7 @@ export function BattleMapCanvas({
   });
 
   const uploadBGImageInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingBGImage, setIsUploadingBGImage] = useState<boolean>(false);
   const [isEditingBG, setIsEditingBG] = useState<boolean>(false);
   const [selectedBGImageIndex, setSelectedBGImageIndex] = useState<
     number | null
@@ -182,6 +185,7 @@ export function BattleMapCanvas({
     ];
   }
 
+  /** Updates a single background image for the battle map. */
   async function updateBackgroundImage(
     imageIndex: number,
     updates: Partial<BattleMapBGImage>,
@@ -193,20 +197,27 @@ export function BattleMapCanvas({
       ...updates,
     };
     try {
-      await updateDoc(
-        doc(
-          collection(firestore, "campaigns", campaign.id, "battlemaps"),
-          battleMap.id,
-        ).withConverter(converter as FirestoreDataConverter<BattleMap>),
+      await BattleMapAPI.update(
+        campaign.id,
+        battleMap.id,
         {
           backgroundImages: battleMap.backgroundImages,
         },
+        "Updated background image",
       );
     } catch (error) {
       console.error(error);
+      toast({
+        title: `An Error Occurred`,
+        description: "Failed to save your changes. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   }
 
+  /** Adds a new background image for the battle map. */
   async function addBackgroundImage(bgImage: BattleMapBGImage) {
     if (!battleMap.backgroundImages) {
       battleMap.backgroundImages = [];
@@ -214,20 +225,27 @@ export function BattleMapCanvas({
 
     battleMap.backgroundImages.push(bgImage);
     try {
-      await updateDoc(
-        doc(
-          collection(firestore, "campaigns", campaign.id, "battlemaps"),
-          battleMap.id,
-        ).withConverter(converter as FirestoreDataConverter<BattleMap>),
+      await BattleMapAPI.update(
+        campaign.id,
+        battleMap.id,
         {
           backgroundImages: battleMap.backgroundImages,
         },
+        "Added new BG image",
       );
     } catch (error) {
       console.error(error);
+      toast({
+        title: `Failed to Add Image`,
+        description: `Failed to add background image. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   }
 
+  /** Handle all clicks on the stage. Used to deselect objects with transformers. */
   function handleClick(konvaEvent: KonvaEventObject<MouseEvent>) {
     // deselect when clicked on empty area
     const clickedOnEmpty = konvaEvent.target === konvaEvent.target.getStage();
@@ -236,11 +254,9 @@ export function BattleMapCanvas({
     }
   }
 
-  function handleUploadBGImageClick() {
-    uploadBGImageInputRef.current?.click();
-  }
-
   async function handleBGImageUpload(event: ChangeEvent<HTMLInputElement>) {
+    setIsUploadingBGImage(true);
+
     const target = event.currentTarget;
     if (!target.files) return;
 
@@ -257,19 +273,23 @@ export function BattleMapCanvas({
           "/bgimages/" +
           file.name,
       );
-      const uploadResult = await uploadBytes(fileRef, file);
+      try {
+        const uploadResult = await uploadBytes(fileRef, file);
 
-      const newBGImage: BattleMapBGImage = {
-        filePath: uploadResult.ref.fullPath,
-        // height: file.size,
-        x: 0,
-        y: 0,
-        height: 500,
-        width: 500,
-      };
+        const newBGImage: BattleMapBGImage = {
+          filePath: uploadResult.ref.fullPath,
+          x: 0,
+          y: 0,
+          height: 500, // TODO: get actual image size
+          width: 500,
+        };
 
-      await addBackgroundImage(newBGImage);
+        await addBackgroundImage(newBGImage);
+      } catch (error) {
+        console.error(error);
+      }
     }
+    setIsUploadingBGImage(false);
   }
 
   const gridLines = useMemo(() => {
@@ -381,12 +401,14 @@ export function BattleMapCanvas({
                 icon={<Icon as={FaFileUpload} />}
                 aria-label={"add background image"}
                 colorScheme="green"
-                onClick={handleUploadBGImageClick}
+                isLoading={isUploadingBGImage}
+                onClick={() => uploadBGImageInputRef.current?.click()}
               />
             </Tooltip>
             <input
               type="file"
               style={{ display: "none" }}
+              accept=".png,.jpg"
               ref={uploadBGImageInputRef}
               onChange={handleBGImageUpload}
             />

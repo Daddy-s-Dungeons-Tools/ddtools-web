@@ -6,5 +6,8 @@ export const clamp = (value: number, min: number, max: number): number =>
  */
 export const updateMessage = (updates: Record<string, any>) =>
   Object.entries(updates)
-    .map(([field, newValue]) => `Field \`${field}\` set to \`'${newValue}'\``)
+    .map(
+      ([field, newValue]) =>
+        `Field \`${field}\` set to \`'${JSON.stringify(newValue)}'\``,
+    )
     .join(", ");

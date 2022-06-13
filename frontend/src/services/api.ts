@@ -355,7 +355,7 @@ export abstract class BattleMapAPI {
   private static mapConverter = converter as FirestoreDataConverter<BattleMap>;
   private static campaignCollection = collection(firestore, "campaigns");
 
-  /** Add a new world map for a particular campaign. */
+  /** Add a new battle map for a particular campaign. */
   public static async add(
     userId: string,
     campaignId: string,
@@ -384,6 +384,7 @@ export abstract class BattleMapAPI {
     campaignId: string,
     mapId: FirestoreDoc["id"],
     updates: PartialWithFieldValue<BattleMap>,
+    logMessage?: string,
   ) {
     const mapsCollection = collection(
       this.campaignCollection,
@@ -394,7 +395,7 @@ export abstract class BattleMapAPI {
     await updateDoc(doc(mapsCollection, mapId), updates);
 
     return LogAPI.log(campaignId, {
-      message: updateMessage(updates),
+      message: logMessage ?? updateMessage(updates),
       type: "battle map created",
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
     });
