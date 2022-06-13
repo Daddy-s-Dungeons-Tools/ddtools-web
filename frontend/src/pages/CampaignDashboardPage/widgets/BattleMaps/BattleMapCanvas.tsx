@@ -6,15 +6,23 @@ import {
   FirestoreDataConverter,
   updateDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Stage as KonvaStage } from "konva/lib/Stage";
 import { CampaignUserContext } from "pages/CampaignDashboardPage/context";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { FaEdit } from "react-icons/fa";
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { FaEdit, FaFileUpload } from "react-icons/fa";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { converter, FirestoreDoc } from "services/converter";
-import { firestore } from "services/firebase";
+import { firestore, storage } from "services/firebase";
 import { debounce } from "utils/debounce";
 import { clamp } from "utils/index";
 import { BackgroundImage } from "./BackgroundImage";
@@ -55,6 +63,7 @@ export function BattleMapCanvas({
     scale: 1,
   });
 
+  const uploadBGImageInputRef = useRef<HTMLInputElement>(null);
   const [isEditingBG, setIsEditingBG] = useState<boolean>(false);
   const [selectedBGImageIndex, setSelectedBGImageIndex] = useState<
     number | null
@@ -198,13 +207,70 @@ export function BattleMapCanvas({
     }
   }
 
-  const handleClick = (konvaEvent: KonvaEventObject<MouseEvent>) => {
+  async function addBackgroundImage(bgImage: BattleMapBGImage) {
+    if (!battleMap.backgroundImages) {
+      battleMap.backgroundImages = [];
+    }
+
+    battleMap.backgroundImages.push(bgImage);
+    try {
+      await updateDoc(
+        doc(
+          collection(firestore, "campaigns", campaign.id, "battlemaps"),
+          battleMap.id,
+        ).withConverter(converter as FirestoreDataConverter<BattleMap>),
+        {
+          backgroundImages: battleMap.backgroundImages,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function handleClick(konvaEvent: KonvaEventObject<MouseEvent>) {
     // deselect when clicked on empty area
     const clickedOnEmpty = konvaEvent.target === konvaEvent.target.getStage();
     if (clickedOnEmpty) {
       setSelectedBGImageIndex(null);
     }
-  };
+  }
+
+  function handleUploadBGImageClick() {
+    uploadBGImageInputRef.current?.click();
+  }
+
+  async function handleBGImageUpload(event: ChangeEvent<HTMLInputElement>) {
+    const target = event.currentTarget;
+    if (!target.files) return;
+
+    const files = Array.from(target.files);
+    target.files = null;
+
+    for (const file of files) {
+      const fileRef = ref(
+        storage,
+        "campaigns/" +
+          campaign.id +
+          "/battlemaps/" +
+          battleMap.id +
+          "/bgimages/" +
+          file.name,
+      );
+      const uploadResult = await uploadBytes(fileRef, file);
+
+      const newBGImage: BattleMapBGImage = {
+        filePath: uploadResult.ref.fullPath,
+        // height: file.size,
+        x: 0,
+        y: 0,
+        height: 500,
+        width: 500,
+      };
+
+      await addBackgroundImage(newBGImage);
+    }
+  }
 
   const gridLines = useMemo(() => {
     return [...Array(GRID_HEIGHT / gridCellSize + 1)]
@@ -290,22 +356,41 @@ export function BattleMapCanvas({
         </Layer>
       </Stage>
 
-      <ButtonGroup
-        flexDir="column"
-        size="sm"
-        position="absolute"
-        top={3}
-        left={3}
-      >
+      <ButtonGroup size="sm" position="absolute" top={1} left={3}>
         {userRole === "dm" && (
-          <Tooltip label="Edit battle map" placement="right">
+          <Tooltip label="Edit battle map">
             <IconButton
               icon={<Icon as={FaEdit} />}
               aria-label={"edit battle map"}
               colorScheme="pink"
-              onClick={() => setIsEditingBG(!isEditingBG)}
+              onClick={() => {
+                if (isEditingBG) {
+                  setIsEditingBG(false);
+                  setSelectedBGImageIndex(null);
+                } else {
+                  setIsEditingBG(true);
+                }
+              }}
             />
           </Tooltip>
+        )}
+        {userRole === "dm" && isEditingBG && (
+          <>
+            <Tooltip label="Add background image">
+              <IconButton
+                icon={<Icon as={FaFileUpload} />}
+                aria-label={"add background image"}
+                colorScheme="green"
+                onClick={handleUploadBGImageClick}
+              />
+            </Tooltip>
+            <input
+              type="file"
+              style={{ display: "none" }}
+              ref={uploadBGImageInputRef}
+              onChange={handleBGImageUpload}
+            />
+          </>
         )}
       </ButtonGroup>
     </>
