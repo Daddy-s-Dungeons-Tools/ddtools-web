@@ -374,6 +374,9 @@ export abstract class BattleMapAPI {
     ).withConverter(this.mapConverter);
     await addDoc(mapsCollection, {
       ...map,
+      gridCellSize: 50,
+      gridTotalHeight: 50 * 10,
+      gridTotalWidth: 50 * 15,
       isActive: false,
       ownerUserId: userId,
       createdAt: serverTimestamp(),
