@@ -1,0 +1,17 @@
+{
+    "name": "ddtools",
+    "dependencies": {
+        "concurrently": "^7.2.1"
+    },
+    "scripts": {
+        "postinstall": "cd frontend/ && npm install && cd ../functions/ && npm install",
+        "start": "concurrently --prefix \"{name} |\" --n 'Frontend ','Functions' -c blue,green \"cd frontend/ && npm run start\" \"cd functions/ && npm run start\"",
+        "frontend-start": "concurrently --prefix \"{name} |\" --n 'Frontend' -c blue \"cd frontend/ && npm run start\"",
+        "frontend-build": "concurrently --prefix \"{name} |\" --n 'Frontend' -c blue \"cd frontend/ && npm run build\"",
+        "functions-start": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run start\"",
+        "functions-serve": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run serve\"",
+        "functions-build": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run build\"",
+        "functions-deploy": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run deploy\""
+    },
+    "private": true
+}
