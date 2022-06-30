@@ -336,7 +336,9 @@ export abstract class WorldMapAPI {
   public static add(
     userId: string,
     campaignId: string,
-    map: WithFieldValue<WorldMap>,
+    map: WithFieldValue<
+      Omit<WorldMap, "ownerUserId" | "createdAt" | "sharedWith" | "updatedAt">
+    >,
   ) {
     const mapsCollection = collection(
       this.campaignCollection,

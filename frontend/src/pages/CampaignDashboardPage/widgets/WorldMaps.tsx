@@ -1,13 +1,17 @@
 import {
   Box,
+  Button,
   Editable,
   EditableInput,
   EditablePreview,
   EditableTextarea,
   Flex,
+  FormControl,
+  FormLabel,
   Heading,
   IconButton,
   Image,
+  Input,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -23,6 +27,7 @@ import {
 import { ErrorAlert } from "components/ErrorAlert";
 import { WorldMap, WorldMapPin } from "ddtools-types";
 import { collection, FirestoreDataConverter, query } from "firebase/firestore";
+import { Field, Formik, FormikHelpers } from "formik";
 import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { FaFlag } from "react-icons/fa";
@@ -37,7 +42,7 @@ type WorldMapWithUrl = WorldMap & {
 };
 
 export function WorldMaps() {
-  const { campaign, userRole } = useContext(CampaignUserContext);
+  const { campaign, user, userRole } = useContext(CampaignUserContext);
 
   const [mapDocs, isMapDocsLoading, mapDocsError] = useCollectionData(
     query(
@@ -63,6 +68,16 @@ export function WorldMaps() {
   const [isPinning, setIsPinning] = useState<boolean>(false);
   const [currentMapID, setCurrentMapID] = useState<string | null>(null);
   const currentMap = mapDocs?.find((map) => map.id === currentMapID);
+
+  type NewMap = { name: string };
+  function handleAddMap(values: NewMap, formikHelpers: FormikHelpers<NewMap>) {
+    WorldMapAPI.add(user.uid, campaign.id, {
+      name: values.name,
+      // @ts-ignore
+      imageURL:
+        "https://preview.redd.it/6qoafiw0nnvz.png?width=640&crop=smart&auto=webp&s=923f5f6d1ee646f7c5f7f20e7f61cfcf51973bf2",
+    });
+  }
 
   function placePin(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (userRole !== "dm") {
@@ -176,14 +191,41 @@ export function WorldMaps() {
           )}
 
           <SimpleGrid columns={2} spacing={4}>
-            <Flex
-              minW="100%"
-              height={200}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              mb="5"
-            />
+            <Box padding="6" borderWidth={1} borderRadius="lg">
+              <Formik
+                initialValues={{
+                  name: "",
+                }}
+                onSubmit={handleAddMap}
+              >
+                {({ handleSubmit, isSubmitting }) => (
+                  <form onSubmit={handleSubmit}>
+                    <VStack align="start">
+                      <FormControl>
+                        <FormLabel htmlFor="world-map-name">
+                          New World Map Name
+                        </FormLabel>
+                        <Field
+                          as={Input}
+                          name="name"
+                          id="world-map-name"
+                          placeholder="Cool Map"
+                          required
+                        />
+                      </FormControl>
+                      <Button
+                        type="submit"
+                        colorScheme="teal"
+                        isLoading={isSubmitting}
+                        loadingText="Adding map"
+                      >
+                        Add
+                      </Button>
+                    </VStack>
+                  </form>
+                )}
+              </Formik>
+            </Box>
 
             {isMapDocsLoading && (
               <>
