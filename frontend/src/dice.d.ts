@@ -24,7 +24,7 @@ declare module "@3d-dice/dice-box" {
 
     init();
 
-    roll(diceNotation: string | Roll): Promise<DieResult>;
+    roll(diceNotation: string | Roll): Promise<DieResult[]>;
     roll(diceNotation: (string | Roll)[]): Promise<DieResult[]>;
   }
 }

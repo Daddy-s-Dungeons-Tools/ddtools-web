@@ -115,7 +115,7 @@ export abstract class CampaignAPI {
     }
 
     await setDoc(doc(this.campaignCollection, docId), campaignDoc);
-    return LogAPI.log(docId, {
+    return LogAPI.add(docId, {
       type: "campaign created",
       sourceUserIds: dmUserIds,
     });
@@ -130,7 +130,7 @@ export abstract class CampaignAPI {
   ) {
     await updateDoc(doc(this.campaignCollection, campaignId), updates);
 
-    return LogAPI.log(campaignId, {
+    return LogAPI.add(campaignId, {
       type: "campaign updated",
       payload: updates,
       message: updateMessage(updates),
@@ -173,7 +173,7 @@ export abstract class CampaignAPI {
       },
     );
 
-    return LogAPI.log(campaignId, {
+    return LogAPI.add(campaignId, {
       type: "player invited",
       message: `Invites for ${as} sent to \`${userEmails.join(", ")}\``,
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
@@ -196,7 +196,7 @@ export abstract class CampaignAPI {
       },
     );
 
-    return LogAPI.log(campaignId, {
+    return LogAPI.add(campaignId, {
       type: "player uninvited",
       message: `Invites for ${as} removed for \`${userEmails.join(", ")}\``,
       sourceUserIds: auth.currentUser ? [auth.currentUser.uid] : [],
@@ -208,7 +208,7 @@ export abstract class LogAPI {
   private static campaignCollection = collection(firestore, "campaigns");
 
   /** Add an item to a campaign's log. */
-  public static log(
+  public static add(
     campaignId: string,
     item: WithFieldValue<
       Pick<
@@ -223,6 +223,28 @@ export abstract class LogAPI {
       "log",
     ).withConverter(this.logConverter);
     return addDoc(logCollection, { ...item, createdAt: serverTimestamp() });
+  }
+
+  /** Update an item in a campaign's log. */
+  public static update(
+    campaignId: string,
+    logItemId: string,
+    itemUpdates: PartialWithFieldValue<
+      Pick<
+        LogItem,
+        "type" | "message" | "payload" | "sourceUserIds" | "targetUserIds"
+      >
+    >,
+  ) {
+    const logCollection = collection(
+      this.campaignCollection,
+      campaignId,
+      "log",
+    ).withConverter(this.logConverter);
+    return updateDoc(doc(logCollection, logItemId), {
+      ...itemUpdates,
+      updatedAt: serverTimestamp(),
+    });
   }
 }
 export abstract class CharacterAPI {
@@ -383,7 +405,7 @@ export abstract class BattleMapAPI {
       sharedWith: [],
     });
 
-    return LogAPI.log(campaignId, {
+    return LogAPI.add(campaignId, {
       message: `Battle map \`${map.name}\` created`,
       type: "battle map created",
       sourceUserIds: [userId],
@@ -415,7 +437,7 @@ export abstract class BattleMapAPI {
       "worldmaps",
     ).withConverter(this.mapConverter);
     await deleteDoc(doc(mapsCollection, mapId));
-    LogAPI.log(campaignId, {
+    LogAPI.add(campaignId, {
       type: "battle map deleted",
       payload: {
         mapId,

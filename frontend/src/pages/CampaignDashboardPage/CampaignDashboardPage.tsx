@@ -15,7 +15,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
 import { converter, FirestoreDoc } from "services/converter";
-import { diceBox } from "services/dice";
+import { roll } from "services/dice";
 import { handleError } from "services/errors";
 import { auth, firestore } from "services/firebase";
 import { Params, useLocation } from "wouter";
@@ -154,7 +154,7 @@ export default function CampaignDashboardPage({ params }: { params: Params }) {
           <Button
             leftIcon={<GiDiceTwentyFacesTwenty />}
             size="lg"
-            onClick={() => diceBox.roll("1d20")}
+            onClick={() => roll(campaignId, "1d20")}
           >
             Roll
           </Button>
