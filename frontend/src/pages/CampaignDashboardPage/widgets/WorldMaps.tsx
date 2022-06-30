@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Editable,
   EditableInput,
   EditablePreview,
@@ -35,7 +36,7 @@ import {
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { FaFlag } from "react-icons/fa";
+import { FaFlag, FaTrash } from "react-icons/fa";
 import { GiPin, GiTreasureMap } from "react-icons/gi";
 import { WorldMapAPI } from "services/api";
 import { converter, FirestoreDoc } from "services/converter";
@@ -50,6 +51,7 @@ function PinPopover(props: {
   pin: WorldMapPin;
   pinKey: number;
   updatePin: (pinUpdates: PartialWithFieldValue<WorldMapPin>) => void;
+  deletePin: () => void;
 }) {
   const { userRole } = useContext(CampaignUserContext);
   const xPercentage = 100 * props.pin.location.xPercentage;
@@ -90,6 +92,19 @@ function PinPopover(props: {
             <EditablePreview />
             <EditableTextarea />
           </Editable>
+
+          {userRole === "dm" && (
+            <ButtonGroup size="xs" mt="2">
+              <Button>Show to Players</Button>
+              <Button
+                colorScheme="pink"
+                leftIcon={<FaTrash />}
+                onClick={props.deletePin}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
+          )}
         </PopoverBody>
       </PopoverContent>
     </Popover>
@@ -171,7 +186,19 @@ export function WorldMaps() {
 
     Object.assign(map.pins[pinIndex], pinUpdates);
 
-    WorldMapAPI.update(campaignId, map.id, map);
+    return WorldMapAPI.update(campaignId, map.id, map);
+  }
+
+  function deletePin(
+    campaignId: string,
+    map: WorldMap & FirestoreDoc,
+    pinIndex: number,
+  ) {
+    if (!map.pins) return;
+
+    map.pins.splice(pinIndex, 1);
+
+    return WorldMapAPI.update(campaignId, map.id, map);
   }
 
   return (
@@ -308,6 +335,7 @@ export function WorldMaps() {
                 updatePin={(pinUpdates) =>
                   updatePin(campaign.id, currentMap, index, pinUpdates)
                 }
+                deletePin={() => deletePin(campaign.id, currentMap, index)}
               />
             ))}
 
