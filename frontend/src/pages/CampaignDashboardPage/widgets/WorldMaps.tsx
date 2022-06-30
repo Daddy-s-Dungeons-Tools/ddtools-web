@@ -26,7 +26,12 @@ import {
 } from "@chakra-ui/react";
 import { ErrorAlert } from "components/ErrorAlert";
 import { WorldMap, WorldMapPin } from "ddtools-types";
-import { collection, FirestoreDataConverter, query } from "firebase/firestore";
+import {
+  collection,
+  FirestoreDataConverter,
+  PartialWithFieldValue,
+  query,
+} from "firebase/firestore";
 import { Field, Formik, FormikHelpers } from "formik";
 import { useContext, useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -40,6 +45,56 @@ import { CampaignUserContext } from "../context";
 type WorldMapWithUrl = WorldMap & {
   imageURL?: string;
 };
+
+function PinPopover(props: {
+  pin: WorldMapPin;
+  pinKey: number;
+  updatePin: (pinUpdates: PartialWithFieldValue<WorldMapPin>) => void;
+}) {
+  const { userRole } = useContext(CampaignUserContext);
+  const xPercentage = 100 * props.pin.location.xPercentage;
+  const yPercentage = 100 * props.pin.location.yPercentage;
+
+  return (
+    <Popover>
+      <PopoverTrigger>
+        <IconButton
+          position="absolute"
+          left={xPercentage + "%"}
+          top={yPercentage + "%"}
+          icon={<FaFlag color="red" size="20" />}
+          aria-label="Pin"
+        />
+      </PopoverTrigger>
+      <PopoverContent>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <PopoverHeader>
+          <Editable
+            defaultValue={props.pin.name || "Unnamed Pin"}
+            placeholder={props.pin.name || "Unnamed Pin"}
+            isDisabled={userRole !== "dm"}
+            onSubmit={(newVal) => props.updatePin({ name: newVal })}
+          >
+            <EditablePreview />
+            <EditableInput />
+          </Editable>
+        </PopoverHeader>
+        <PopoverBody>
+          <Editable
+            defaultValue={props.pin.description || "No description given..."}
+            placeholder={props.pin.description || "No description given..."}
+            isDisabled={userRole !== "dm"}
+            onSubmit={(newVal) => props.updatePin({ description: newVal })}
+          >
+            <EditablePreview />
+            <EditableTextarea />
+          </Editable>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export function WorldMaps() {
   const { campaign, user, userRole } = useContext(CampaignUserContext);
@@ -106,47 +161,17 @@ export function WorldMaps() {
     }
   }
 
-  function PinPopover(props: { pin: WorldMapPin; pinKey: number }) {
-    const xPercentage = 100 * props.pin.location.xPercentage;
-    const yPercentage = 100 * props.pin.location.yPercentage;
+  function updatePin(
+    campaignId: string,
+    map: WorldMap & FirestoreDoc,
+    pinIndex: number,
+    pinUpdates: PartialWithFieldValue<WorldMapPin>,
+  ) {
+    if (!map.pins) return;
 
-    return (
-      <Popover>
-        <PopoverTrigger>
-          <IconButton
-            position="absolute"
-            left={xPercentage + "%"}
-            top={yPercentage + "%"}
-            icon={<FaFlag color="red" size="20" />}
-            aria-label="Pin"
-          />
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Editable
-              defaultValue={props.pin.name || "Unnamed Pin"}
-              placeholder={props.pin.name || "Unnamed Pin"}
-              isDisabled={userRole !== "dm"}
-            >
-              <EditablePreview />
-              <EditableInput />
-            </Editable>
-          </PopoverHeader>
-          <PopoverBody>
-            <Editable
-              defaultValue={props.pin.description || "No description given..."}
-              placeholder={props.pin.description || "No description given..."}
-              isDisabled={userRole !== "dm"}
-            >
-              <EditablePreview />
-              <EditableTextarea />
-            </Editable>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    );
+    Object.assign(map.pins[pinIndex], pinUpdates);
+
+    WorldMapAPI.update(campaignId, map.id, map);
   }
 
   return (
@@ -276,7 +301,14 @@ export function WorldMaps() {
         <Box position="relative">
           {currentMap.pins &&
             currentMap.pins.map((tempPin, index) => (
-              <PinPopover key={index} pin={tempPin} pinKey={index} />
+              <PinPopover
+                key={index}
+                pin={tempPin}
+                pinKey={index}
+                updatePin={(pinUpdates) =>
+                  updatePin(campaign.id, currentMap, index, pinUpdates)
+                }
+              />
             ))}
 
           <Image
