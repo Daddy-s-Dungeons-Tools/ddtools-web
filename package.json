@@ -8,6 +8,8 @@
         "start": "concurrently --prefix \"{name} |\" --n 'Frontend ','Functions' -c blue,green \"cd frontend/ && npm run start\" \"cd functions/ && npm run start\"",
         "frontend-start": "concurrently --prefix \"{name} |\" --n 'Frontend' -c blue \"cd frontend/ && npm run start\"",
         "frontend-build": "concurrently --prefix \"{name} |\" --n 'Frontend' -c blue \"cd frontend/ && npm run build\"",
+        "frontend-storybook": "concurrently --prefix \"{name} |\" --n 'Storybook' -c blue \"cd frontend/ && npm run storybook\"",
+        "frontend-build-storybook": "concurrently --prefix \"{name} |\" --n 'Storybook' -c blue \"cd frontend/ && npm run build-storybook\"",
         "functions-start": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run start\"",
         "functions-serve": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run serve\"",
         "functions-build": "concurrently --prefix \"{name} |\" --n 'Functions' -c green \"cd functions/ && npm run build\"",
